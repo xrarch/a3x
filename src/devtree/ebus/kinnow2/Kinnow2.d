@@ -122,9 +122,6 @@ procedure BuildKinnow (* -- *)
 	KinnowVsyncOn
 end
 
-var KinnowBlitterNode 0
-var KinnowBlitterC 0
-
 procedure KinnowBlitBack (* x y w h mode bitmap -- *)
 	auto ptr
 	ptr!
@@ -139,42 +136,7 @@ procedure KinnowBlitBack (* x y w h mode bitmap -- *)
 	auto x
 	x!
 
-	auto bnode
-	KinnowBlitterNode@ bnode!
-
-	if (bnode@ 0 ==)
-		"/blitter" DevTreeWalk bnode!
-		if (bnode@ 0 ==)
-			return
-		end
-
-		bnode@ KinnowBlitterNode!
-
-		bnode@ DeviceSelectNode
-			"blit" DGetMethod KinnowBlitterC!
-		DeviceExit
-	end
-
-	auto fbstart
-	KinnowFBStart@ fbstart!
-
-	auto fbw
-	auto fbh
-	KinnowInfo fbw! fbh!
-
-	fbstart@ x@ + y@ fbw@ * + fbstart!
-
-	auto modulo
-	fbw@ w@ - modulo!
-
-	modulo@
-	w@
-	h@
-	ptr@
-	fbstart@
-	mode@
-
-	KinnowBlitterC@ Call
+	(* todo *)
 end
 
 procedure KinnowBlit (* x y w h mode bitmap -- *)
@@ -191,42 +153,7 @@ procedure KinnowBlit (* x y w h mode bitmap -- *)
 	auto x
 	x!
 
-	auto bnode
-	KinnowBlitterNode@ bnode!
-
-	if (bnode@ 0 ==)
-		"/blitter" DevTreeWalk bnode!
-		if (bnode@ 0 ==)
-			return
-		end
-
-		bnode@ KinnowBlitterNode!
-
-		bnode@ DeviceSelectNode
-			"blit" DGetMethod KinnowBlitterC!
-		DeviceExit
-	end
-
-	auto fbstart
-	KinnowFBStart@ fbstart!
-
-	auto fbw
-	auto fbh
-	KinnowInfo fbw! fbh!
-
-	fbstart@ x@ + y@ fbw@ * + fbstart!
-
-	auto modulo
-	fbw@ w@ - 16 << modulo!
-
-	modulo@
-	w@
-	h@
-	fbstart@
-	ptr@
-	mode@
-
-	KinnowBlitterC@ Call
+	(* todo *)
 end
 
 procedure KinnowInit (* -- *)
