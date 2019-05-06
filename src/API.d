@@ -76,12 +76,8 @@ procedure APIGets
 	;r0 - s
 	;r1 - max
 
-	xch r0, r1
-
 	pushv r5, r0
-
-	mov r0, r1
-	pushv r5, r0
+	pushv r5, r1
 
 	call Gets
 
