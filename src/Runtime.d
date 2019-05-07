@@ -186,6 +186,7 @@ procedure strtok (* str buf del -- next *)
 	0 i!
 
 	if (str@ gb 0 ==)
+		0 buf@ sb
 		0 return
 	end
 
@@ -240,6 +241,7 @@ procedure strntok (* str buf del n -- next *)
 	0 i!
 
 	if (str@ gb 0 ==)
+		0 buf@ sb
 		0 return
 	end
 
