@@ -36,7 +36,7 @@ var GConsoleModified 0
 asm "
 
 GConsoleFont:
-	.static devtree/gconsole/haiku.bmp
+	.static devtree/gconsole/font-haiku.bmp
 
 "
 
