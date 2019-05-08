@@ -1,7 +1,7 @@
 procedure Main (* -- *)
 	"verbose?" NVRAMGetVar dup if (0 ==)
-		drop "false" "verbose?" NVRAMSetVar
-		"false"
+		drop "true" "verbose?" NVRAMSetVar
+		"true"
 	end
 
 	if ("true" strcmp)
