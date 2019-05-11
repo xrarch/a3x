@@ -55,6 +55,8 @@ procedure AHDBPartitions (* id -- *)
 						ptr@ AHDB_PTE_Blocks + @ "blocks" DAddProperty
 						offset@ "offset" DAddProperty
 
+						"logical" "type" DAddProperty
+
 						pointerof AHDBRead "readBlock" DAddMethod
 						pointerof AHDBWrite "writeBlock" DAddMethod
 
@@ -99,6 +101,8 @@ procedure BuildAHDB (* -- *)
 					i@ "id" DAddProperty
 					blocks@ "blocks" DAddProperty
 					0 "offset" DAddProperty
+
+					"disk" "type" DAddProperty
 
 					pointerof AHDBRead "readBlock" DAddMethod
 					pointerof AHDBWrite "writeBlock" DAddMethod
