@@ -365,7 +365,7 @@ procedure MonitorLsH (* tabs dev -- *)
 		auto pnode
 		n@ ListNodeValue pnode!
 
-		n@ "\t%x:" Printf
+		pnode@ "\t%x:" Printf
 
 		auto i
 		0 i!
