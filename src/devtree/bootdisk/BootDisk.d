@@ -25,6 +25,8 @@ procedure BuildBootDisk (* -- *)
 	if (SBootDiskNode@ 0 ~=)
 		SBootDiskNode@ DeviceClone
 			"bootdisk" DSetName
+
+			SBootDiskNode@ "bootAlias" DAddProperty
 		DeviceExit
 	end
 end
