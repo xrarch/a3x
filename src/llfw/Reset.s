@@ -27,7 +27,7 @@ Reset:
 	li r0, LLFWHLRString
 	call LLFWSerialPuts
 	
-	li r5, 0x0FFF
+	li r5, 0x1000
 	call AntecedentEntry
 	b Hang
 
