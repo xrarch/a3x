@@ -117,8 +117,8 @@ FaultsHandlerASM:
 	pop r1
 	pop r1
 
-	li sp, 0x1FFF ;put stack in known location
-	li r5, 0x0FFF ;this too
+	li sp, 0x2000 ;put stack in known location
+	li r5, 0x1000 ;this too
 
 	pushv r5, r0
 
