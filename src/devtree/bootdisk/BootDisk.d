@@ -4,16 +4,16 @@ var SBootDiskNode 0
 
 procedure GBootDiskDefault (* -- defaultnode *)
 	"boot-dev" NVRAMGetVar dup if (0 ==)
-		drop "/ebus/platformboard/citron/ahdb/0/a" "boot-dev" NVRAMSetVar
-		"/ebus/platformboard/citron/ahdb/0/a"
+		drop "/ebus/platformboard/citron/dks/0/a" "boot-dev" NVRAMSetVar
+		"/ebus/platformboard/citron/dks/0/a"
 	end
 
 	auto dn
 	DevTreeWalk dn!
 
 	if (dn@ 0 ==)
-		"/ebus/platformboard/citron/ahdb/0/a" "boot-dev" NVRAMSetVar
-		"/ebus/platformboard/citron/ahdb/0/a" DevTreeWalk dn!
+		"/ebus/platformboard/citron/dks/0/a" "boot-dev" NVRAMSetVar
+		"/ebus/platformboard/citron/dks/0/a" DevTreeWalk dn!
 	end
 
 	dn@

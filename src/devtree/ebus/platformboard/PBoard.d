@@ -1,10 +1,10 @@
-#include "devtree/ebus/platformboard/citron/Citron.d"
-
-var PBInterruptsVT 0
-
 const PBBase 0xF8000000
 const PBInfo 0xF8000800
 const PBInfoIRQ 0xF8000FFC
+
+#include "devtree/ebus/platformboard/citron/Citron.d"
+
+var PBInterruptsVT 0
 
 procedure BuildPBoard (* -- *)
 	1024 Calloc PBInterruptsVT!

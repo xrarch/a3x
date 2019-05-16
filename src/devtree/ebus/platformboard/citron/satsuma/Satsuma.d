@@ -8,6 +8,8 @@ const AHDBCmdWrite 0x3
 const AHDBCmdInfo 0x4
 const AHDBCmdPoll 0x5
 
+const AHDBBuffer 0xF8020000
+
 struct AHDB_VDB
 	16 Label
 	128 PartitionTable
@@ -79,9 +81,9 @@ procedure AHDBPartitions (* id -- *)
 	vdbuf@ Free
 end
 
-procedure BuildAHDB (* -- *)
+procedure BuildSatsuma (* -- *)
 	DeviceNew
-		"ahdb" DSetName
+		"dks" DSetName
 
 		auto i
 		0 i!
@@ -140,8 +142,9 @@ procedure AHDBRead (* ptr block -- ok? *)
 	id@ AHDBSelect
 
 	block@ AHDBPortA DCitronOutl
-	ptr@ AHDBPortB DCitronOutl
 	AHDBCmdRead AHDBCmdPort DCitronCommand
+
+	ptr@ AHDBBuffer 4096 memcpy
 
 	rs@ InterruptRestore
 
@@ -167,8 +170,9 @@ procedure AHDBWrite (* ptr block -- ok? *)
 
 	id@ AHDBSelect
 
+	AHDBBuffer ptr@ 4096 memcpy
+
 	block@ AHDBPortA DCitronOutl
-	ptr@ AHDBPortB DCitronOutl
 	AHDBCmdWrite AHDBCmdPort DCitronCommand
 
 	rs@ InterruptRestore
