@@ -119,7 +119,7 @@ procedure GConsoleLongestLine (* -- width *)
 end
 
 procedure GConsoleClear (* -- *)
-	GCColorBG@ GConsoleLongestLine GConsoleFontWidth * GCHeight@ GConsoleFontHeight * 0 0 GConsoleRect
+	0 0 GConsoleLongestLine GConsoleFontWidth * GCHeight@ GConsoleFontHeight * GCColorBG@ GConsoleRect
 
 	0 GCCurX!
 	0 GCCurY!
@@ -129,7 +129,7 @@ procedure GConsoleClear (* -- *)
 	1 GConsoleModified!
 end
 
-procedure GConsoleRect (* color w h x y -- *)
+procedure GConsoleRect (* x y w h color -- *)
 	GCScreenNode@ DeviceSelectNode
 		GCRectP@ Call
 	DeviceExit
@@ -145,7 +145,7 @@ procedure GConsoleScroll (* rows -- *)
 	GCScreenNode@ DeviceSelectNode
 		0 0
 		GConsoleLongestLine GConsoleFontWidth *
-		GConsoleFontHeight GCHeight@ *
+		GConsoleFontHeight GCHeight@ * 1 +
 		GCColorBG@
 		rows@ GConsoleFontHeight *
 		GCScrollP@ Call
@@ -182,7 +182,10 @@ procedure GConsoleScroll (* rows -- *)
 end
 
 procedure GConsoleDoCur (* color -- *)
-	GConsoleFontWidth GConsoleFontHeight GCCurX@ GConsoleFontWidth * GCCurY@ GConsoleFontHeight * GConsoleRect
+	auto color
+	color!
+
+	GCCurX@ GConsoleFontWidth * GCCurY@ GConsoleFontHeight * GConsoleFontWidth GConsoleFontHeight color@ GConsoleRect
 
 	1 GConsoleModified!
 end

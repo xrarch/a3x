@@ -5,7 +5,7 @@ const EBusBoardMagic 0x0C007CA1
 
 #include "devtree/ebus/dma/DMA.d"
 #include "devtree/ebus/platformboard/PBoard.d"
-#include "devtree/ebus/kinnow2/Kinnow2.d"
+#include "devtree/ebus/kinnow3/Kinnow3.d"
 
 procedure BuildEBus (* -- *)
 	DeviceNew
@@ -13,7 +13,7 @@ procedure BuildEBus (* -- *)
 
 		BuildDMA
 		BuildPBoard
-		BuildKinnow
+		BuildKinnow3
 	DeviceExit
 end
 

@@ -1,4 +1,4 @@
-(* antecedent driver for Kinnow2 framebuffer *)
+(* antecedent driver for Kinnow3 framebuffer *)
 
 var KinnowSlotSpace 0
 var KinnowSlot 0
@@ -8,7 +8,7 @@ var KinnowFBStart 0
 const KinnowCmdPorts 0x4000
 const KinnowSlotFB 0x100000
 
-const KinnowSlotMID 0x4B494E57
+const KinnowSlotMID 0x4B494E58
 
 const KinnowGPUCmdPort 0
 const KinnowGPUPortA 4
@@ -17,9 +17,8 @@ const KinnowGPUPortC 12
 
 const KinnowGPUInfo 0x1
 const KinnowGPURectangle 0x2
-const KinnowGPUVsync 0x3
-const KinnowGPUScroll 0x4
-const KinnowGPUWindow 0x6
+const KinnowGPUScroll 0x3
+const KinnowGPUVsync 0x4
 
 var KinnowWidth 0
 var KinnowHeight 0
@@ -76,7 +75,7 @@ procedure KinnowInfo (* -- h w *)
 	rs@ InterruptRestore
 end
 
-procedure BuildKinnow (* -- *)
+procedure BuildKinnow3 (* -- *)
 	auto kslot
 	KinnowSlotMID EBusFindFirstBoard kslot!
 
@@ -99,7 +98,7 @@ procedure BuildKinnow (* -- *)
 	KinnowSlotSpace@ KinnowSlotFB + KinnowFBStart!
 
 	DeviceNew
-		"kinnow2" DSetName
+		"kinnow3" DSetName
 
 		KinnowFBStart@ "framebuffer" DAddProperty
 		w@ "width" DAddProperty
@@ -158,38 +157,10 @@ end
 
 procedure KinnowInit (* -- *)
 	if (KinnowNeedsInit@)
-		"screen-bg" NVRAMGetVarNum KinnowWidth@ KinnowHeight@ 0 0 KinnowRectangle
+		0 0 KinnowWidth@ KinnowHeight@ "screen-bg" NVRAMGetVarNum KinnowRectangle
 
 		0 KinnowNeedsInit!
 	end
-end
-
-procedure KinnowWindow (* x y w h -- *)
-	auto h
-	h!
-
-	auto w
-	w!
-
-	auto y
-	y!
-
-	auto x
-	x!
-
-	auto wh
-	w@ 16 << h@ | wh!
-
-	auto rs
-	InterruptDisable rs!
-
-	x@ KinnowOutPortA
-	y@ KinnowOutPortB
-	wh@ KinnowOutPortC
-
-	KinnowGPUWindow KinnowCommand
-
-	rs@ InterruptRestore
 end
 
 asm "
@@ -252,32 +223,42 @@ procedure KinnowScroll (* x y w h color rows -- *)
 	auto x
 	x!
 
-	x@ y@ w@ h@ KinnowWindow
+	auto cxy
+	x@ 16 << y@ | cxy!
 
-	rows@ KinnowOutPortA
-	color@ KinnowOutPortB
+	auto cwh
+	w@ 16 << h@ | cwh!
+
+	auto crc
+	rows@ 16 << color@ | crc!
+
+	cxy@ KinnowOutPortA
+	cwh@ KinnowOutPortB
+	crc@ KinnowOutPortC
 
 	KinnowGPUScroll KinnowCommand
-
-	0 0 0 0 KinnowWindow
 
 	rs@ InterruptRestore
 end
 
-procedure KinnowRectangle (* color w h x y -- *)
+procedure KinnowRectangle (* x y w h color -- *)
 	auto rs
 	InterruptDisable rs!
 
-	auto y
-	y!
-	auto x
-	x!
-	auto h
-	h!
-	auto w
-	w!
 	auto color
 	color!
+
+	auto h
+	h!
+
+	auto w
+	w!
+
+	auto y
+	y!
+
+	auto x
+	x!
 
 	auto cxy
 	x@ 16 << y@ | cxy!
@@ -285,8 +266,8 @@ procedure KinnowRectangle (* color w h x y -- *)
 	auto cwh
 	w@ 16 << h@ | cwh!
 
-	cwh@ KinnowOutPortA
-	cxy@ KinnowOutPortB
+	cxy@ KinnowOutPortA
+	cwh@ KinnowOutPortB
 	color@ KinnowOutPortC
 
 	KinnowGPURectangle KinnowCommand
