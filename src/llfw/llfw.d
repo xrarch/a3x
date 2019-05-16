@@ -5,7 +5,7 @@ asm preamble "
 .include llfw/POST.s
 .include llfw/Serial.s
 .include llfw/Error.s
-.include llfw/Kinnow2.s
+.include llfw/Kinnow3.s
 
 AntecedentBase:
 .org 0x2000
