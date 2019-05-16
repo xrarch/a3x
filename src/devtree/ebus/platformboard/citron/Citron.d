@@ -1,4 +1,4 @@
-#include "devtree/ebus/platformboard/citron/ahdb/AHDB.d"
+#include "devtree/ebus/platformboard/citron/satsuma/Satsuma.d"
 #include "devtree/ebus/platformboard/citron/clock/Clock.d"
 #include "devtree/ebus/platformboard/citron/serial/Serial.d"
 #include "devtree/ebus/platformboard/citron/amanatsu/Amanatsu.d"
@@ -12,7 +12,7 @@ procedure BuildCitron (* -- *)
 	DeviceNew
 		"citron" DSetName
 
-		BuildAHDB
+		BuildSatsuma
 		BuildCClock
 		BuildCSerial
 		BuildAmanatsu

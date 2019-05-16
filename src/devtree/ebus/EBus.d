@@ -3,6 +3,7 @@ const EBusSlots 7
 const EBusSlotSpace 0x8000000
 const EBusBoardMagic 0x0C007CA1
 
+#include "devtree/ebus/dma/DMA.d"
 #include "devtree/ebus/platformboard/PBoard.d"
 #include "devtree/ebus/kinnow2/Kinnow2.d"
 
@@ -10,6 +11,7 @@ procedure BuildEBus (* -- *)
 	DeviceNew
 		"ebus" DSetName
 
+		BuildDMA
 		BuildPBoard
 		BuildKinnow
 	DeviceExit
