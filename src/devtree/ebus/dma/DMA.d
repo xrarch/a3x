@@ -27,7 +27,7 @@ procedure DMADoOperation (* -- *)
 	DMARegisterStatus@ 1 | DMARegisterStatus!
 end
 
-procedure DMATransfer (* src dest srcinc decinc count mode -- *)
+procedure DMATransfer (* src dest srcinc destinc count mode -- *)
 	auto mode
 	mode!
 

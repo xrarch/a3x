@@ -33,6 +33,19 @@ procedure AHDBDMATransferBlock (* src dest -- *)
 	auto src
 	src!
 
+	if (AHDBDMANode@ 0 ==)
+		auto ndma
+		"/dma" DevTreeWalk ndma!
+
+		if (ndma@ 0 ~=)
+			ndma@ AHDBDMANode!
+
+			ndma@ DeviceSelectNode
+				"transfer" DGetMethod AHDBDMATransfer!
+			DeviceExit
+		end
+	end
+
 	if (AHDBDMANode@ 0 ~=)
 		AHDBDMANode@ DeviceSelectNode
 			src@ dest@
@@ -105,17 +118,6 @@ procedure AHDBPartitions (* id -- *)
 end
 
 procedure BuildSatsuma (* -- *)
-	auto ndma
-	"/ebus/dma" DevTreeWalk ndma!
-
-	if (ndma@ 0 ~=)
-		ndma@ AHDBDMANode!
-
-		ndma@ DeviceSelectNode
-			"transfer" DGetMethod AHDBDMATransfer!
-		DeviceExit
-	end
-
 	DeviceNew
 		"dks" DSetName
 
