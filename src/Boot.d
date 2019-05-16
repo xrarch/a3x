@@ -22,6 +22,7 @@ table BootErrors
 	"aborted while loading boot blocks"
 	"bad boot blocks"
 	"no such device"
+	"not enough memory"
 endtable
 
 procedure DevBootable (* dnode -- bootable? *)
@@ -118,6 +119,19 @@ procedure BootNode (* devnode args -- ok? *)
 
 	auto ptr
 	BootBottom ptr!
+
+	auto tmem
+	"/memory" DeviceSelect
+		"totalRAM" DGetProperty tmem!
+	DeviceExit
+
+	auto nmem
+	ptr@ bbc@ 4096 * + nmem!
+
+	if (nmem@ tmem@ >=)
+		tmem@ nmem@ " at least %d bytes of contiguous memory is required to load this bootloader, only %d bytes present\n" Printf
+		8 return
+	end
 
 	ptr@ bbc@ " loading %d boot blocks at 0x%x" Printf
 
