@@ -1,5 +1,6 @@
 #include "devtree/Memory.d"
 #include "devtree/ebus/EBus.d"
+#include "devtree/dma/DMA.d"
 #include "devtree/screen/Screen.d"
 #include "devtree/serial/Serial.d"
 #include "devtree/gconsole/GConsole.d"
@@ -19,6 +20,7 @@ procedure BuildTree (* -- *)
 	BuildMemory
 
 	(* platform independent pseudo-devices *)
+	BuildDMA
 	BuildSerial
 	BuildScreen
 	BuildGConsole

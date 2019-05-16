@@ -10,6 +10,9 @@ const AHDBCmdPoll 0x5
 
 const AHDBBuffer 0xF8020000
 
+var AHDBDMANode 0
+var AHDBDMATransfer 0
+
 struct AHDB_VDB
 	16 Label
 	128 PartitionTable
@@ -22,6 +25,26 @@ struct AHDB_PTE
 	1 Status
 	3 Unused
 endstruct
+
+procedure AHDBDMATransferBlock (* src dest -- *)
+	auto dest
+	dest!
+
+	auto src
+	src!
+
+	if (AHDBDMANode@ 0 ~=)
+		AHDBDMANode@ DeviceSelectNode
+			src@ dest@
+			4 4
+			1024
+			2
+			AHDBDMATransfer@ Call
+		DeviceExit
+	end else
+		dest@ src@ 4096 memcpy
+	end
+end
 
 procedure AHDBPartitions (* id -- *)
 	auto id
@@ -82,6 +105,17 @@ procedure AHDBPartitions (* id -- *)
 end
 
 procedure BuildSatsuma (* -- *)
+	auto ndma
+	"/ebus/dma" DevTreeWalk ndma!
+
+	if (ndma@ 0 ~=)
+		ndma@ AHDBDMANode!
+
+		ndma@ DeviceSelectNode
+			"transfer" DGetMethod AHDBDMATransfer!
+		DeviceExit
+	end
+
 	DeviceNew
 		"dks" DSetName
 
@@ -144,7 +178,7 @@ procedure AHDBRead (* ptr block -- ok? *)
 	block@ AHDBPortA DCitronOutl
 	AHDBCmdRead AHDBCmdPort DCitronCommand
 
-	ptr@ AHDBBuffer 4096 memcpy
+	AHDBBuffer ptr@ AHDBDMATransferBlock
 
 	rs@ InterruptRestore
 
@@ -170,7 +204,7 @@ procedure AHDBWrite (* ptr block -- ok? *)
 
 	id@ AHDBSelect
 
-	AHDBBuffer ptr@ 4096 memcpy
+	ptr@ AHDBBuffer AHDBDMATransferBlock
 
 	block@ AHDBPortA DCitronOutl
 	AHDBCmdWrite AHDBCmdPort DCitronCommand
