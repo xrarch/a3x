@@ -4,16 +4,16 @@ var SScreenNode 0
 
 procedure GScreenDefault (* -- defaultnode *)
 	"screen-dev" NVRAMGetVar dup if (0 ==)
-		drop "/ebus/kinnow2" "screen-dev" NVRAMSetVar
-		"/ebus/kinnow2"
+		drop "/ebus/kinnow3" "screen-dev" NVRAMSetVar
+		"/ebus/kinnow3"
 	end
 
 	auto dn
 	DevTreeWalk dn!
 
 	if (dn@ 0 ==)
-		"/ebus/kinnow2" "screen-dev" NVRAMSetVar
-		"/ebus/kinnow2" DevTreeWalk dn!
+		"/ebus/kinnow3" "screen-dev" NVRAMSetVar
+		"/ebus/kinnow3" DevTreeWalk dn!
 	end
 
 	dn@
