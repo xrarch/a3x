@@ -1,5 +1,5 @@
 ;outputs:
-;r0 - 0 if no kinnow2 board detected, or ptr to base of slotspace
+;r0 - 0 if no kinnow3 board detected, or ptr to base of slotspace
 LLFWK2Find:
 	;we have to find the ebus slot containing the kinnow2 card (if one exists)
 	;start at slot 0
@@ -19,7 +19,7 @@ LLFWK2Find:
 	addi r0, r0, 4
 	lrr.l r1, r0
 	pop r0
-	cmpi r1, 0x4B494E57 ;kinnow2?
+	cmpi r1, 0x4B494E58 ;kinnow3?
 	be .kfound ;yes
 
 .kfnext:
@@ -142,11 +142,11 @@ LLFWK2Fill:
 	pop r0
 	push r0
 	mov r1, r2
-	call LLFWK2WPortA
+	call LLFWK2WPortB
 	li r1, 0
 	pop r0
 	push r0
-	call LLFWK2WPortB
+	call LLFWK2WPortA
 	pop r0
 	pop r1
 	push r0
