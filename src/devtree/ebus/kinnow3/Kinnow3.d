@@ -4,6 +4,7 @@ var KinnowSlotSpace 0
 var KinnowSlot 0
 
 var KinnowFBStart 0
+var KinnowPipeStart 0
 
 const KinnowCmdPorts 0x4000
 const KinnowSlotFB 0x100000
@@ -14,11 +15,19 @@ const KinnowGPUCmdPort 0
 const KinnowGPUPortA 4
 const KinnowGPUPortB 8
 const KinnowGPUPortC 12
+const KinnowGPUPixelPipe 16
 
 const KinnowGPUInfo 0x1
 const KinnowGPURectangle 0x2
 const KinnowGPUScroll 0x3
 const KinnowGPUVsync 0x4
+const KinnowGPUSetPPR 0x5
+const KinnowGPUSetPPW 0x6
+const KinnowGPUSetPPI 0x7
+const KinnowGPUS2S 0x8
+
+var KinnowDMANode 0
+var KinnowDMATransfer 0
 
 var KinnowWidth 0
 var KinnowHeight 0
@@ -75,6 +84,77 @@ procedure KinnowInfo (* -- h w *)
 	rs@ InterruptRestore
 end
 
+procedure KinnowSetPixelRead (* x y w h -- *)
+	auto h
+	h!
+
+	auto w
+	w!
+
+	auto y
+	y!
+
+	auto x
+	x!
+
+	auto rs
+	InterruptDisable rs!
+
+	auto cxy
+	x@ 16 << y@ | cxy!
+
+	auto cwh
+	w@ 16 << h@ | cwh!
+
+	cxy@ KinnowOutPortA
+	cwh@ KinnowOutPortB
+
+	KinnowGPUSetPPR KinnowCommand
+
+	rs@ InterruptRestore
+end
+
+procedure KinnowSetPixelWrite (* x y w h -- *)
+	auto h
+	h!
+
+	auto w
+	w!
+
+	auto y
+	y!
+
+	auto x
+	x!
+
+	auto rs
+	InterruptDisable rs!
+
+	auto cxy
+	x@ 16 << y@ | cxy!
+
+	auto cwh
+	w@ 16 << h@ | cwh!
+
+	cxy@ KinnowOutPortA
+	cwh@ KinnowOutPortB
+
+	KinnowGPUSetPPW KinnowCommand
+
+	rs@ InterruptRestore
+end
+
+procedure KinnowSetPixelIgnore (* color -- *)
+	auto rs
+	InterruptDisable rs!
+
+	KinnowOutPortA
+
+	KinnowGPUSetPPI KinnowCommand
+
+	rs@ InterruptRestore
+end
+
 procedure BuildKinnow3 (* -- *)
 	auto kslot
 	KinnowSlotMID EBusFindFirstBoard kslot!
@@ -96,6 +176,7 @@ procedure BuildKinnow3 (* -- *)
 	end
 
 	KinnowSlotSpace@ KinnowSlotFB + KinnowFBStart!
+	KinnowSlotSpace@ KinnowCmdPorts + KinnowGPUPixelPipe + KinnowPipeStart!
 
 	DeviceNew
 		"kinnow3" DSetName
@@ -110,6 +191,7 @@ procedure BuildKinnow3 (* -- *)
 		pointerof KinnowVsyncAdd "vsyncAdd" DAddMethod
 		pointerof KinnowBlit "blit" DAddMethod
 		pointerof KinnowBlitBack "blitBack" DAddMethod
+		pointerof KinnowBlitS2S "blitS2S" DAddMethod
 		pointerof KinnowInit "init" DAddMethod
 	DeviceExit
 
@@ -121,38 +203,152 @@ procedure BuildKinnow3 (* -- *)
 	KinnowVsyncOn
 end
 
-procedure KinnowBlitBack (* x y w h mode bitmap -- *)
-	auto ptr
-	ptr!
-	auto mode
-	mode!
+procedure KinnowBlitS2S (* x1 y1 x2 y2 w h -- *)
 	auto h
 	h!
+
 	auto w
 	w!
-	auto y
-	y!
-	auto x
-	x!
+
+	auto y2
+	y2!
+
+	auto x2
+	x2!
+
+	auto y1
+	y1!
+
+	auto x1
+	x1!
 
 	(* todo *)
 end
 
-procedure KinnowBlit (* x y w h mode bitmap -- *)
+procedure KinnowPipeRead (* to count -- *)
+	auto count
+	count!
+
+	auto to
+	to!
+
+	if (KinnowDMANode@ 0 ==)
+		auto ndma
+		"/dma" DevTreeWalk ndma!
+
+		if (ndma@ 0 ~=)
+			ndma@ KinnowDMANode!
+
+			ndma@ DeviceSelectNode
+				"transfer" DGetMethod KinnowDMATransfer!
+			DeviceExit
+		end
+	end
+
+	if (KinnowDMANode@ 0 ~=)
+		KinnowDMANode@ DeviceSelectNode
+			KinnowPipeStart@ to@
+			0 1
+			count@
+			0
+			KinnowDMATransfer@ Call
+		DeviceExit
+	end else
+		auto i
+		0 i!
+		while (i@ count@ <)
+			KinnowPipeStart@ gb to@ sb
+
+			to@ 1 + to!
+			i@ 1 + i!
+		end
+	end
+end
+
+procedure KinnowPipeWrite (* from count -- *)
+	auto count
+	count!
+
+	auto from
+	from!
+
+	if (KinnowDMANode@ 0 ==)
+		auto ndma
+		"/dma" DevTreeWalk ndma!
+
+		if (ndma@ 0 ~=)
+			ndma@ KinnowDMANode!
+
+			ndma@ DeviceSelectNode
+				"transfer" DGetMethod KinnowDMATransfer!
+			DeviceExit
+		end
+	end
+
+	if (KinnowDMANode@ 0 ~=)
+		KinnowDMANode@ DeviceSelectNode
+			from@ KinnowPipeStart@
+			1 0
+			count@
+			0
+			KinnowDMATransfer@ Call
+		DeviceExit
+	end else
+		auto i
+		0 i!
+		while (i@ count@ <)
+			from@ gb KinnowPipeStart@ sb
+
+			from@ 1 + from!
+			i@ 1 + i!
+		end
+	end
+end
+
+procedure KinnowBlitBack (* x y w h bitmap -- *)
 	auto ptr
 	ptr!
-	auto mode
-	mode!
+
 	auto h
 	h!
+
 	auto w
 	w!
+
 	auto y
 	y!
+
 	auto x
 	x!
 
-	(* todo *)
+	x@ y@ w@ h@ KinnowSetPixelRead
+
+	ptr@ w@ h@ * KinnowPipeRead
+end
+
+procedure KinnowBlit (* x y w h ignore bitmap -- *)
+	auto ptr
+	ptr!
+
+	auto ignore
+	ignore!
+
+	auto h
+	h!
+
+	auto w
+	w!
+
+	auto y
+	y!
+
+	auto x
+	x!
+
+	ignore@ KinnowSetPixelIgnore
+	x@ y@ w@ h@ KinnowSetPixelWrite
+
+	ptr@ w@ h@ * KinnowPipeWrite
 end
 
 procedure KinnowInit (* -- *)
