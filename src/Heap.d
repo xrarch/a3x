@@ -164,8 +164,8 @@ procedure Calloc (* sz -- ptr *)
 
 	sz@ Malloc he!
 
-	if (he@ 0 ==)
-		0 return
+	if (he@ ERR ==)
+		ERR return
 	end
 
 	he@ sz@ 0 memset
@@ -241,6 +241,7 @@ procedure Free (* ptr -- *)
 
 	if (ptr@ 0 == ptr@ ERR == ||)
 		ptr@ "tried to free 0x%x!\n" Printf
+		while (1) end
 	end
 
 	auto nptr
