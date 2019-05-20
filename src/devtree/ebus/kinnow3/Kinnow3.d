@@ -138,6 +138,7 @@ procedure KinnowSetPixelWrite (* x y w h -- *)
 
 	cxy@ KinnowOutPortA
 	cwh@ KinnowOutPortB
+	0 KinnowOutPortC
 
 	KinnowGPUSetPPW KinnowCommand
 
