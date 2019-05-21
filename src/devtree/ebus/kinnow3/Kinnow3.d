@@ -114,7 +114,19 @@ procedure KinnowSetPixelRead (* x y w h -- *)
 	rs@ InterruptRestore
 end
 
-procedure KinnowSetPixelWrite (* x y w h -- *)
+procedure KinnowSetPixelWriteRaw (* x y w h fg bg bitd writetype -- *)
+	auto writetype
+	writetype!
+
+	auto bitd
+	bitd!
+
+	auto bg
+	bg!
+
+	auto fg
+	fg!
+
 	auto h
 	h!
 
@@ -136,13 +148,24 @@ procedure KinnowSetPixelWrite (* x y w h -- *)
 	auto cwh
 	w@ 16 << h@ | cwh!
 
+	auto fbw
+	fg@ 24 << bg@ 16 << | bitd@ 8 << | writetype@ | fbw!
+
 	cxy@ KinnowOutPortA
 	cwh@ KinnowOutPortB
-	0 KinnowOutPortC
+	fbw@ KinnowOutPortC
 
 	KinnowGPUSetPPW KinnowCommand
 
 	rs@ InterruptRestore
+end
+
+procedure KinnowSetPixelWriteBits (* x y w h fg bg bitd -- *)
+	1 KinnowSetPixelWriteRaw
+end
+
+procedure KinnowSetPixelWrite (* x y w h -- *)
+	0 0 0 0 KinnowSetPixelWriteRaw
 end
 
 procedure KinnowSetPixelIgnore (* color -- *)
@@ -193,6 +216,7 @@ procedure BuildKinnow3 (* -- *)
 		pointerof KinnowBlit "blit" DAddMethod
 		pointerof KinnowBlitBack "blitBack" DAddMethod
 		pointerof KinnowBlitS2S "blitS2S" DAddMethod
+		pointerof KinnowBlitBits "blitBits" DAddMethod
 		pointerof KinnowInit "init" DAddMethod
 	DeviceExit
 
@@ -350,6 +374,39 @@ procedure KinnowBlit (* x y w h ignore bitmap -- *)
 	x@ y@ w@ h@ KinnowSetPixelWrite
 
 	ptr@ w@ h@ * KinnowPipeWrite
+end
+
+procedure KinnowBlitBits (* x y w h bpr fg bg bitd bmp -- *)
+	auto ptr
+	ptr!
+
+	auto bitd
+	bitd!
+
+	auto bg
+	bg!
+
+	auto fg
+	fg!
+
+	auto bpr
+	bpr!
+
+	auto h
+	h!
+
+	auto w
+	w!
+
+	auto y
+	y!
+
+	auto x
+	x!
+
+	x@ y@ w@ h@ fg@ bg@ bitd@ KinnowSetPixelWriteBits
+
+	ptr@ bpr@ h@ * KinnowPipeWrite
 end
 
 procedure KinnowInit (* -- *)

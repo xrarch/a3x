@@ -16,7 +16,7 @@ var GCHeight 0
 
 var GCScreenNode 0
 
-var GCNeedsInit 1
+var GCNeedsDraw 1
 
 const GConsoleFontWidth 6
 const GConsoleFontWidthA 5
@@ -30,6 +30,7 @@ var GCLineLenBuf 0
 
 var GCRectP 0
 var GCScrollP 0
+var GCBBP 0
 
 var GConsoleModified 0
 
@@ -53,6 +54,7 @@ procedure BuildGConsole (* -- *)
 
 		"rectangle" DGetMethod GCRectP!
 		"scroll" DGetMethod GCScrollP!
+		"blitBits" DGetMethod GCBBP!
 	DeviceExit
 
 	DeviceNew
@@ -127,6 +129,12 @@ procedure GConsoleClear (* -- *)
 	GCLineLenBuf@ GCHeight@ 4 * 0 memset
 
 	1 GConsoleModified!
+end
+
+procedure GConsoleBlitBits (* x y w h bpr fg bg bitd bmp -- *)
+	GCScreenNode@ DeviceSelectNode
+		GCBBP@ Call
+	DeviceExit
 end
 
 procedure GConsoleRect (* x y w h color -- *)
@@ -223,7 +231,7 @@ procedure GConsoleBack (* -- *)
 	GCCurX@ 1 - GCCurX!
 end
 
-procedure GConsoleInit (* -- *)
+procedure GConsoleDraw (* -- *)
 	GCScreenNode@ DeviceSelectNode
 		"init" DCallMethod drop
 	DeviceExit
@@ -302,26 +310,33 @@ procedure GConsolePutChar (* char -- *)
 end
 
 procedure GConsolePutCharF (* char -- *)
-	if (GCNeedsInit@)
-		GConsoleInit
-		0 GCNeedsInit!
-	end
-
 	auto char
 	char!
 
 	if (char@ '\n' ==)
 		GConsoleNewline
 		return
-	end else if (char@ '\b' ==)
+	end else
+
+	if (char@ '\b' ==)
 		GConsoleBack
 		return
-	end else if (char@ '\t' ==)
+	end else
+
+	if (char@ '\t' ==)
 		GConsoleTab
 		return
-	end end
+	end
 
-	GCCurX@ GConsoleFontWidth * GCCurY@ GConsoleFontHeight * char@ GCColorFG@ GConsoleDrawChar
+	end
+
+	end
+
+	GCCurX@ GConsoleFontWidth *
+	GCCurY@ GConsoleFontHeight *
+	char@
+	GCColorFG@
+	GConsoleDrawChar
 
 	GCCurX@ 1 + GCCurX!
 
@@ -330,135 +345,32 @@ procedure GConsolePutCharF (* char -- *)
 	end
 end
 
-(* here be ugly dragons *)
-
-asm "
-
-GCGPPStub:
-	push r5
-
-	lri.l r5, GCGWidth
-	mul r1, r5, r1
-	add r1, r1, r0
-	lri.l r5, GCFBStart
-	add r1, r1, r5
-	srr.b r1, r2
-
-	pop r5
-	ret
-
-;r0 - char
-;r1 - x
-;r2 - y
-;r3 - color
-;draw bitmap character at specified location on screen
-GConsoleDrawCharASM:
-	cmpi r0, 0x20 ;dont draw if space
-	be .spout
-
-	;push r3 ;use r3 as y iterator
-	push r4 ;use r4 as x iterator
-	push r11 ;use r11 to store ptr to current byte in font to look at
-	push r6 ;use r6 to store current byte
-	push r7 ;use r7 for scratch in xloop
-	push r8 ;use r8 to cache 0x7
-	push r9 ;use r9 for more scratch in xloop
-	push r10 ;use r10 to store color
-
-	mov r10, r3
-
-	muli r11, r0, GConsoleFontBytesPerRow
-	muli r11, r11, GConsoleFontHeight
-	addi r11, r11, GConsoleFont
-	li r3, 0
-.yloop:
-	cmpi r3, GConsoleFontHeight
-	bge .yend
-
-	;body of y loop
-
-	lrr.l r6, r11
-
-	li r4, 0 ;ctr
-	li r8, GConsoleFontWidthA ;reverse ctr
-.xloop:
-	cmpi r4, GConsoleFontWidth
-	bge .ynext
-
-	rsh r7, r6, r4 ;use r4 or r8 depending on bit order
-	andi r7, r7, 1
-	cmpi r7, 1
-	bne .xnext
-
-	;thunk over to GraphicsPutPixel.
-	;it expects x,y in r0,r1
-	;and color in r2.
-	;all of these get trashed so we
-	;have to push them first.
-
-	push r0
-	push r1
-	push r2
-
-	add r0, r1, r4 ;add bx and x iterator
-	add r1, r2, r3 ;add by and y iterator
-	mov r2, r10 ;get color
-
-	call GCGPPStub
-
-	pop r2
-	pop r1
-	pop r0
-
-.xnext:
-	addi r4, r4, 1
-	subi r8, r8, 1
-	b .xloop
-
-.ynext:
-	addi r11, r11, GConsoleFontBytesPerRow
-	addi r3, r3, 1
-	b .yloop
-
-.yend:
-	pop r10
-	pop r9
-	pop r8
-	pop r7
-	pop r6
-	pop r11
-	pop r4
-
-.spout:
-	ret
-
-"
-
 procedure GConsoleDrawChar (* x y char color -- *)
-	asm "
+	auto color
+	color!
 
-	popv r5, r3
+	auto char
+	char!
 
-	popv r5, r0
+	auto y
+	y!
 
-	popv r5, r2
+	auto x
+	x!
 
-	popv r5, r1
+	(* dont draw spaces *)
+	if (char@ ' ' ==)
+		return
+	end
 
-	call GConsoleDrawCharASM
+	if (GCNeedsDraw@)
+		GConsoleDraw
+		0 GCNeedsDraw!
+	end
 
-	"
+	auto bmp
+	char@ GConsoleFontBytesPerRow GConsoleFontHeight * * pointerof GConsoleFont + bmp!
 
-	1 GConsoleModified!
+	x@ y@ GConsoleFontWidth GConsoleFontHeight GConsoleFontBytesPerRow color@ GCColorBG@ 0 bmp@ GConsoleBlitBits
+
 end
-
-
-
-
-
-
-
-
-
-
-
