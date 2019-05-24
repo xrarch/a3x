@@ -89,7 +89,7 @@ procedure AKeyboardRead (* -- c *)
 
 		if (code@ 50 >=) code@ AKeyboardSpecial return end
 
-		pointerof AKeyboardLayoutShift code@ + gb c!
+		[code@]AKeyboardLayoutShift@ c!
 
 	end else if (code@ 0xF1 ==) (* ctrl *)
 
@@ -97,13 +97,13 @@ procedure AKeyboardRead (* -- c *)
 
 		if (code@ 50 >=) code@ AKeyboardSpecial return end
 
-		pointerof AKeyboardLayoutCtrl code@ + gb c!
+		[code@]AKeyboardLayoutCtrl@ c!
 
 	end else
 
 		if (code@ 50 >=) code@ AKeyboardSpecial return end
 
-		pointerof AKeyboardLayout code@ + gb c!
+		[code@]AKeyboardLayout@ c!
 
 	end
 	end
@@ -118,93 +118,95 @@ procedure AKeyboardInit (* -- *)
 	DeviceExit
 end
 
-asm "
+table AKeyboardLayout
+	'a'
+	'b' 'c' 'd'
+	'e' 'f' 'g'
+	'h' 'i' 'j'
+	'k' 'l' 'm'
+	'n' 'o' 'p'
+	'q' 'r' 's'
+	't' 'u' 'v'
+	'w' 'x' 'y'
+	'z'
+	'0' '1' '2'
+	'3' '4' '5'
+	'6' '7' '8'
+	'9'
+	';'
+	' '
+	' '
+	'-'
+	'='
+	'['
+	']'
+	'\\'
+	0
+	'/'
+	'.'
+	'\''
+	','
+	'`'
+endtable
 
-AKeyboardLayout:
-	.db \"a\"
-	.db \"b\", \"c\", \"d\"
-	.db \"e\", \"f\", \"g\"
-	.db \"h\", \"i\", \"j\"
-	.db \"k\", \"l\", \"m\"
-	.db \"n\", \"o\", \"p\"
-	.db \"q\", \"r\", \"s\"
-	.db \"t\", \"u\", \"v\"
-	.db \"w\", \"x\", \"y\"
-	.db \"z\"
-	.db \"0\", \"1\", \"2\"
-	.db \"3\", \"4\", \"5\"
-	.db \"6\", \"7\", \"8\"
-	.db \"9\"
-	.db \";\"
-	.db 0x20
-	.db 0x20
-	.db \"-\"
-	.db \"=\"
-	.db \"[\"
-	.db \"]\"
-	.db \"\\\"
-	.db \";\"
-	.db \"/\"
-	.db \".\"
-	.db \"'\"
-	.db \",\"
+table AKeyboardLayoutCtrl
+	'a'
+	'b' 'c' 'd'
+	'e' 'f' 'g'
+	'h' 'i' 'j'
+	'k' 'l' 'm'
+	'n' 'o' 'p'
+	'q' 'r' 's'
+	't' 'u' 'v'
+	'w' 'x' 'y'
+	'z'
+	'0' '1' '2'
+	'3' '4' '5'
+	'6' '7' '8'
+	'9'
+	';'
+	' '
+	' '
+	'-'
+	'='
+	'['
+	']'
+	'\\'
+	0
+	'/'
+	'.'
+	'\''
+	','
+	'`'
+endtable
 
-AKeyboardLayoutCtrl:
-	.db \"t\"
-	.db \"h\", \"i\", \"s\"
-	.db \"f\", \"i\", \"r\"
-	.db \"m\", \"w\", \"a\"
-	.db \"r\", \"e\", \"s\"
-	.db \"u\", \"c\", \"k\"
-	.db \"s\", \"r\", \"s\"
-	.db \"t\", \"u\", \"v\"
-	.db \"w\", \"x\", \"y\"
-	.db \"z\"
-	.db \"0\", \"1\", \"2\"
-	.db \"3\", \"4\", \"5\"
-	.db \"6\", \"7\", \"8\"
-	.db \"9\"
-	.db \";\"
-	.db 0x20
-	.db 0x20
-	.db \"-\"
-	.db \"=\"
-	.db \"[\"
-	.db \"]\"
-	.db \"\\\"
-	.db \";\"
-	.db \"/\"
-	.db \".\"
-	.db \"'\"
-	.db \",\"
-
-AKeyboardLayoutShift:
-	.db \"A\"
-	.db \"B\", \"C\", \"D\"
-	.db \"E\", \"F\", \"G\"
-	.db \"H\", \"I\", \"J\"
-	.db \"K\", \"L\", \"M\"
-	.db \"N\", \"O\", \"P\"
-	.db \"Q\", \"R\", \"S\"
-	.db \"T\", \"U\", \"V\"
-	.db \"W\", \"X\", \"Y\"
-	.db \"Z\"
-	.db \")\", \"!\", \"@\"
-	.db \"#\", \"$\", \"%\"
-	.db \"^\", \"&\", \"*\"
-	.db \"(\"
-	.db \":\"
-	.db 0x20
-	.db 0x20
-	.db \"_\"
-	.db \"+\"
-	.db \"{\"
-	.db \"}\"
-	.db \"|\"
-	.db \":\"
-	.db \"?\"
-	.db \">\"
-	.db \"\"\"
-	.db \"<\"
-
-"
+table AKeyboardLayoutShift
+	'A'
+	'B' 'C' 'D'
+	'E' 'F' 'G'
+	'H' 'I' 'J'
+	'K' 'L' 'M'
+	'N' 'O' 'P'
+	'Q' 'R' 'S'
+	'T' 'U' 'V'
+	'W' 'X' 'Y'
+	'Z'
+	')' '!' '@'
+	'#' '$' '%'
+	'^' '&' '*'
+	'('
+	':'
+	' '
+	' '
+	'_'
+	'+'
+	'{'
+	'}'
+	'|'
+	0
+	'?'
+	'>'
+	'"'
+	'<'
+	'~'
+endtable
