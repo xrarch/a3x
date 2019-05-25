@@ -93,6 +93,18 @@ procedure itoa (* n buf -- *)
 	str@ reverse
 end
 
+procedure strdup (* str -- allocstr *)
+	auto str
+	str!
+
+	auto astr
+	str@ strlen 1 + Malloc astr!
+
+	astr@ str@ strcpy
+
+	astr@
+end
+
 procedure reverse (* str -- *)
 	auto str
 	str!
@@ -320,6 +332,57 @@ procedure strcpy (* dest src -- *)
 	end
 
 	0 dest@ sb
+end
+
+procedure strncpy (* dest src max -- *)
+	auto max
+	max!
+
+	auto src
+	src!
+
+	auto dest
+	dest!
+
+	dest@ max@ + max!
+
+	while (src@ gb 0 ~= dest@ max@ < &&)
+		src@ gb dest@ sb
+
+		dest@ 1 + dest!
+		src@ 1 + src!
+	end
+
+	0 dest@ sb
+end
+
+procedure strcat (* dest src -- *)
+	auto src
+	src!
+
+	auto dest
+	dest!
+
+	dest@ strlen 1 + dest@ + src@ strcpy
+end
+
+procedure strncat (* dest src max -- *)
+	auto max
+	max!
+
+	auto src
+	src!
+
+	auto dest
+	dest!
+
+	auto ds
+	dest@ strlen 1 + ds!
+
+	auto md
+	max@ ds@ - md!
+
+	ds@ dest@ + src@ md@ strncpy
 end
 
 procedure atoi (* str -- n *)
