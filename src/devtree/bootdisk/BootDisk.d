@@ -11,11 +11,6 @@ procedure GBootDiskDefault (* -- defaultnode *)
 	auto dn
 	DevTreeWalk dn!
 
-	if (dn@ 0 ==)
-		"/ebus/platformboard/citron/dks/0/a" "boot-dev" NVRAMSetVar
-		"/ebus/platformboard/citron/dks/0/a" DevTreeWalk dn!
-	end
-
 	dn@
 end
 

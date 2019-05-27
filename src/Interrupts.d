@@ -50,10 +50,10 @@ table FaultsNames
 	"Page fault"
 	"Privilege violation"
 	"General fault"
-	"Fatal fault"
-	"Double fault"
+	"Unknown"
+	"Unknown"
 	"Bus error"
-	"I/O error"
+	"Unknown"
 	"Spurious interrupt"
 endtable
 

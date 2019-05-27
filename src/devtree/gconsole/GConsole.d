@@ -24,6 +24,8 @@ const GConsoleFontWidthA 5
 const GConsoleFontBytesPerRow 1
 const GConsoleFontHeight 12
 
+const GConsoleFontBitD 0
+
 var GCEscape 0
 
 var GCLineLenBuf 0
@@ -292,6 +294,10 @@ procedure GConsolePutChar (* char -- *)
 	auto char
 	char!
 
+	if (char@ 255 >)
+		return
+	end
+
 	if (GCEscape@) char@ GConsoleParseEscape return end
 
 	if (char@ 0x1b ==)
@@ -371,6 +377,6 @@ procedure GConsoleDrawChar (* x y char color -- *)
 	auto bmp
 	char@ GConsoleFontBytesPerRow GConsoleFontHeight * * pointerof GConsoleFont + bmp!
 
-	x@ y@ GConsoleFontWidth GConsoleFontHeight GConsoleFontBytesPerRow color@ GCColorBG@ 0 bmp@ GConsoleBlitBits
+	x@ y@ GConsoleFontWidth GConsoleFontHeight GConsoleFontBytesPerRow color@ GCColorBG@ GConsoleFontBitD bmp@ GConsoleBlitBits
 
 end
