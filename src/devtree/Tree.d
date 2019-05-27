@@ -12,7 +12,7 @@
 procedure BuildTree (* -- *)
 	DeviceNew
 		"cpu" DSetName
-		"limn" "type" DAddProperty
+		"limn1k" "type" DAddProperty
 	DeviceExit
 
 	BuildEBus

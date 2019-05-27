@@ -33,6 +33,8 @@ procedure DevStackPOP (* -- v *)
 	DevStack@ + @
 end
 
+(* TODO: find out why when this is used as a call, the path string is
+   occasionally corrupted with a zero *)
 procedure DevTreeWalk (* path -- node or 0 *)
 	auto path
 	path!
@@ -47,7 +49,7 @@ procedure DevTreeWalk (* path -- node or 0 *)
 		path@ pcomp@ '/' 255 strntok path!
 
 		if (pcomp@ strlen 0 ==)
-			cnode@ pcomp@ Free return
+			pcomp@ Free cnode@ return
 		end
 
 		auto tnc
