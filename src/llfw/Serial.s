@@ -48,7 +48,7 @@ LLFWSerialRead:
 	bne .wait
 
 	sii.b LLFWSerialPortA, 2
-	lri.b r0, LLFWSerialPortB
+	lri.i r0, LLFWSerialPortB
 
 	pop r1
 	ret
