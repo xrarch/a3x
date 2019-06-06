@@ -11,7 +11,21 @@ Reset:
 	bl LLFWNoStack ;don't even try to set the stack pointer or show an error message.
 
 	li ivt, LLFWFaults
-	li sp, 0x1FFF
+	li sp, 0x2000
+
+	;zero out bottom 8kb of RAM
+	
+	li r1, 0
+.sloop:
+	cmpi r1, 0x2000
+	bge .sld
+
+	sri.l r1, 0
+
+	addi r1, r1, 4
+	b .sloop
+
+.sld:
 
 	push r0
 
@@ -39,7 +53,6 @@ Hang:
 LLFWShadow:
 	li r0, LLFWShadowString
 	call LLFWSerialPuts
-
 
 	li r0, AntecedentBase
 	li r1, 0x2000
