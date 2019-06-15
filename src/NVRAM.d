@@ -15,8 +15,7 @@ struct NVRAMVariable
 endstruct
 
 procedure NVRAMCheck (* -- ok? *)
-	NVRAMHeader_Magic NVRAMOffset @
-	if (NVRAMMagic ==)
+	if (NVRAMHeader_Magic NVRAMOffset @ NVRAMMagic ==)
 		1 return
 	end
 	0 return
