@@ -50,7 +50,7 @@ table FaultsNames
 	"Page fault"
 	"Privilege violation"
 	"General fault"
-	"Unknown"
+	"Breakpoint"
 	"Unknown"
 	"Bus error"
 	"Unknown"
