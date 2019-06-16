@@ -77,7 +77,7 @@ procedure FaultsHandler (* num loc -- *)
 	end
 
 	if (ConsoleInMethod@ 0 ~=)
-		loc@ [num@]FaultsNames@ "\n!!!FAULT!!! %s at %x, resetting on console input.\n\t'c' to clear NVRAM.\n\t'v' to clear NVRAM and set 'verbose?'='true'.\n\t'b' to only set 'auto-boot?'='false'.\n" Printf
+		loc@ [num@]FaultsNames@ "\n!!!FAULT!!! %s at %x, resetting on console input.\n\t'c' to clear NVRAM.\n\t'v' to clear NVRAM and set 'verbose?'='true'.\n\t'b' to only set 'auto-boot?'='false'.\n\tany other key to reset normally.\n" Printf
 
 		auto c
 		ERR c!
