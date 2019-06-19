@@ -171,7 +171,13 @@ procedure MonitorCommandBoot (* -- *)
 	MonitorParseDevPath dev!
 	if (dev@ 0 ==) return end
 
-	[dev@ MonitorLinePoint@ 1 + BootNode]BootErrors@ " boot: %s\n" Printf
+	auto arg
+	0 arg!
+	if (MonitorLinePoint@ 0 ~=)
+		MonitorLinePoint@ 1 + arg!
+	end
+
+	[dev@ arg@ BootNode]BootErrors@ " boot: %s\n" Printf
 end
 
 procedure MonitorCommandExit (* -- *)
