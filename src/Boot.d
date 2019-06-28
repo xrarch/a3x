@@ -23,6 +23,7 @@ table BootErrors
 	"bad boot blocks"
 	"no such device"
 	"not enough memory"
+	"system software error"
 endtable
 
 procedure DevBootable (* dnode -- bootable? *)
@@ -175,6 +176,8 @@ procedure BootNode (* devnode args -- ok? *)
 
 	pusha
 
+	li k0, 0
+
 	call .layer
 	b .out
 
@@ -185,7 +188,16 @@ procedure BootNode (* devnode args -- ok? *)
 
 	popa
 
+	pushv r5, k0
+
 	"
 
-	1 (* ok *)
+	auto retv
+	retv!
+
+	if (retv@ 0 ==)
+		1 (* ok *) return
+	end else
+		9 return
+	end
 end
