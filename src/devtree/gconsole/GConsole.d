@@ -65,6 +65,7 @@ procedure BuildGConsole (* -- *)
 		pointerof GConsolePutChar "write" DAddMethod
 		pointerof GConsoleModifiedF "chkModified" DAddMethod
 		pointerof GConsoleSetScreen "setScreen" DAddMethod
+		pointerof GConsoleSuppressDraw "suppressDraw" DAddMethod
 
 		GConsoleFontWidth "fontWidth" DAddProperty
 		GConsoleFontHeight "fontHeight" DAddProperty
@@ -77,6 +78,10 @@ procedure BuildGConsole (* -- *)
 	GCGHeight@ GConsoleFontHeight / GCHeight!
 
 	GCHeight@ 4 * Calloc GCLineLenBuf!
+end
+
+procedure GConsoleSuppressDraw (* -- *)
+	0 GCNeedsDraw!
 end
 
 procedure GConsoleSetScreen (* fbp w h prect pscroll -- *)
