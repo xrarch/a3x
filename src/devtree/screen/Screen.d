@@ -28,10 +28,10 @@ procedure BuildScreen (* -- *)
 		DeviceExit
 
 		if ("screen-bg" NVRAMGetVar 0 ==)
-			0x98 "screen-bg" NVRAMSetVarNum
+			78 "screen-bg" NVRAMSetVarNum
 		end
 		if ("screen-fg" NVRAMGetVar 0 ==)
-			0x0F "screen-fg" NVRAMSetVarNum
+			0x0 "screen-fg" NVRAMSetVarNum
 		end
 	end
 end

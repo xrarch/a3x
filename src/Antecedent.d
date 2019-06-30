@@ -4,11 +4,13 @@
 #include "Heap.d"
 #include "lib/List.d"
 #include "lib/Tree.d"
+#include "lib/Font/Font.d"
 #include "Console.d"
 #include "Interrupts.d"
 #include "DeviceTree.d"
 #include "NVRAM.d"
 #include "Boot.d"
+#include "BootUI.d"
 #include "Main.d"
 #include "Monitor/Monitor.d"
 
@@ -45,6 +47,8 @@ procedure AntecedentEntry (* -- *)
 	ConsoleInit
 
 	FaultsRegister (* let llfw handle faults up until here *)
+
+	FontInit
 
 	Main
 end
