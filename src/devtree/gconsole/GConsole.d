@@ -1,4 +1,3 @@
-var GCFBStart 0
 var GCGWidth 0
 var GCGHeight 0
 
@@ -18,13 +17,7 @@ var GCScreenNode 0
 
 var GCNeedsDraw 1
 
-const GConsoleFontWidth 6
-const GConsoleFontWidthA 5
-
-const GConsoleFontBytesPerRow 1
-const GConsoleFontHeight 12
-
-const GConsoleFontBitD 0
+var GCInitialConfig 1
 
 var GCEscape 0
 
@@ -32,16 +25,39 @@ var GCLineLenBuf 0
 
 var GCRectP 0
 var GCScrollP 0
-var GCBBP 0
+
+var GConsoleX 0
+var GConsoleY 0
 
 var GConsoleModified 0
 
-asm "
+procedure GConsoleDefault (* -- *)
+	GCScreenNode@ DeviceSelectNode
+		"width" DGetProperty GCGWidth!
+		"height" DGetProperty GCGHeight!
+	DeviceExit
 
-GConsoleFont:
-	.static devtree/gconsole/font-haiku.bmp
+	"screen-bg" NVRAMGetVarNum dup GCColorBG! GCColorOBG!
+	"screen-fg" NVRAMGetVarNum dup GCColorFG! GCColorOFG!
 
-"
+	GCGWidth@ FontWidth / GCWidth!
+	GCGHeight@ FontHeight / GCHeight!
+
+	0 GConsoleX!
+	0 GConsoleY!
+
+	0 GCCurX!
+	0 GCCurY!
+
+	if (GCLineLenBuf@ 0 ~=)
+		GCLineLenBuf@ Free
+	end
+
+	GCHeight@ 4 * Calloc GCLineLenBuf!
+
+	1 GCInitialConfig!
+	1 GCNeedsDraw!
+end
 
 procedure BuildGConsole (* -- *)
 	"/screen" DevTreeWalk GCScreenNode!
@@ -50,13 +66,8 @@ procedure BuildGConsole (* -- *)
 	end
 
 	GCScreenNode@ DeviceSelectNode
-		"framebuffer" DGetProperty GCFBStart!
-		"width" DGetProperty GCGWidth!
-		"height" DGetProperty GCGHeight!
-
 		"rectangle" DGetMethod GCRectP!
 		"scroll" DGetMethod GCScrollP!
-		"blitBits" DGetMethod GCBBP!
 	DeviceExit
 
 	DeviceNew
@@ -67,37 +78,60 @@ procedure BuildGConsole (* -- *)
 		pointerof GConsoleSetScreen "setScreen" DAddMethod
 		pointerof GConsoleSuppressDraw "suppressDraw" DAddMethod
 
-		GConsoleFontWidth "fontWidth" DAddProperty
-		GConsoleFontHeight "fontHeight" DAddProperty
+		FontWidth "fontWidth" DAddProperty
+		FontHeight "fontHeight" DAddProperty
 	DeviceExit
 
-	"screen-bg" NVRAMGetVarNum GCColorBG!
-	"screen-fg" NVRAMGetVarNum GCColorFG!
-
-	GCGWidth@ GConsoleFontWidth / GCWidth!
-	GCGHeight@ GConsoleFontHeight / GCHeight!
-
-	GCHeight@ 4 * Calloc GCLineLenBuf!
+	GConsoleDefault
 end
 
 procedure GConsoleSuppressDraw (* -- *)
 	0 GCNeedsDraw!
 end
 
-procedure GConsoleSetScreen (* fbp w h prect pscroll -- *)
-	0 GConsoleModified!
+procedure GConsoleSetScreen (* fg bg x y w h -- *)
+	auto h
+	h!
 
-	GCScrollP!
-	GCRectP!
+	auto w
+	w!
 
-	GCGHeight!
-	GCGWidth!
-	GCFBStart!
+	auto y
+	y!
 
-	GCGWidth@ GConsoleFontWidth / GCWidth!
-	GCGHeight@ GConsoleFontHeight / GCHeight!
+	auto x
+	x!
 
-	GConsoleClear
+	auto bg
+	bg!
+
+	auto fg
+	fg!
+
+	if (x@ -1 ==)
+		GConsoleDefault
+		return
+	end
+
+	x@ GConsoleX!
+	y@ GConsoleY!
+
+	0 GCCurX!
+	0 GCCurY!
+
+	w@ dup FontWidth / GCWidth! GCGWidth!
+	h@ dup FontHeight / GCHeight! GCGHeight!
+
+	if (GCLineLenBuf@ 0 ~=)
+		GCLineLenBuf@ Free
+	end
+	
+	GCHeight@ 4 * Calloc GCLineLenBuf!
+
+	fg@ dup GCColorFG! GCColorOFG!
+	bg@ dup GCColorBG! GCColorOBG!
+
+	0 GCInitialConfig!
 end
 
 procedure GConsoleModifiedF (* -- modified? *)
@@ -128,7 +162,7 @@ procedure GConsoleLongestLine (* -- width *)
 end
 
 procedure GConsoleClear (* -- *)
-	0 0 GConsoleLongestLine GConsoleFontWidth * GCHeight@ GConsoleFontHeight * GCColorBG@ GConsoleRect
+	0 0 GConsoleLongestLine FontWidth * GCHeight@ FontHeight * GCColorBG@ GConsoleRect
 
 	0 GCCurX!
 	0 GCCurY!
@@ -138,14 +172,27 @@ procedure GConsoleClear (* -- *)
 	1 GConsoleModified!
 end
 
-procedure GConsoleBlitBits (* x y w h bpr fg bg bitd bmp -- *)
-	GCScreenNode@ DeviceSelectNode
-		GCBBP@ Call
-	DeviceExit
-end
-
 procedure GConsoleRect (* x y w h color -- *)
+	auto color
+	color!
+
+	auto h
+	h!
+
+	auto w
+	w!
+
+	auto y
+	y!
+
+	auto x
+	x!
+
 	GCScreenNode@ DeviceSelectNode
+		x@ GConsoleX@ +
+		y@ GConsoleY@ +
+		w@ h@
+		color@
 		GCRectP@ Call
 	DeviceExit
 end
@@ -154,19 +201,14 @@ procedure GConsoleScroll (* rows -- *)
 	auto rows
 	rows!
 
-	auto rs
-	InterruptDisable rs!
-
 	GCScreenNode@ DeviceSelectNode
-		0 0
-		GConsoleLongestLine GConsoleFontWidth *
-		GConsoleFontHeight GCHeight@ * 1 +
+		GConsoleX@ GConsoleY@
+		GConsoleLongestLine FontWidth *
+		FontHeight GCHeight@ * 1 +
 		GCColorBG@
-		rows@ GConsoleFontHeight *
+		rows@ FontHeight *
 		GCScrollP@ Call
 	DeviceExit
-
-	rs@ InterruptRestore
 
 	auto k
 	GCHeight@ k!
@@ -200,7 +242,7 @@ procedure GConsoleDoCur (* color -- *)
 	auto color
 	color!
 
-	GCCurX@ GConsoleFontWidth * GCCurY@ GConsoleFontHeight * GConsoleFontWidth GConsoleFontHeight color@ GConsoleRect
+	GCCurX@ FontWidth * GCCurY@ FontHeight * FontWidth FontHeight color@ GConsoleRect
 
 	1 GConsoleModified!
 end
@@ -239,9 +281,11 @@ procedure GConsoleBack (* -- *)
 end
 
 procedure GConsoleDraw (* -- *)
-	GCScreenNode@ DeviceSelectNode
-		"init" DCallMethod drop
-	DeviceExit
+	if (GCInitialConfig@)
+		GCScreenNode@ DeviceSelectNode
+			"init" DCallMethod drop
+		DeviceExit
+	end
 end
 
 procedure GConsoleTab (* -- *)
@@ -343,45 +387,21 @@ procedure GConsolePutCharF (* char -- *)
 
 	end
 
-	GCCurX@ GConsoleFontWidth *
-	GCCurY@ GConsoleFontHeight *
+	if (GCNeedsDraw@)
+		GConsoleDraw
+		0 GCNeedsDraw!
+	end
+
+	GCCurX@ FontWidth * GConsoleX@ +
+	GCCurY@ FontHeight * GConsoleY@ +
 	char@
+	GCColorBG@
 	GCColorFG@
-	GConsoleDrawChar
+	FontDrawChar
 
 	GCCurX@ 1 + GCCurX!
 
 	if (GCCurX@ GCWidth@ >=)
 		GConsoleNewline
 	end
-end
-
-procedure GConsoleDrawChar (* x y char color -- *)
-	auto color
-	color!
-
-	auto char
-	char!
-
-	auto y
-	y!
-
-	auto x
-	x!
-
-	(* dont draw spaces *)
-	if (char@ ' ' ==)
-		return
-	end
-
-	if (GCNeedsDraw@)
-		GConsoleDraw
-		0 GCNeedsDraw!
-	end
-
-	auto bmp
-	char@ GConsoleFontBytesPerRow GConsoleFontHeight * * pointerof GConsoleFont + bmp!
-
-	x@ y@ GConsoleFontWidth GConsoleFontHeight GConsoleFontBytesPerRow color@ GCColorBG@ GConsoleFontBitD bmp@ GConsoleBlitBits
-
 end

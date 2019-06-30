@@ -41,7 +41,7 @@ procedure DevBootableR (* dnode -- brecord bootable? *)
 	auto brecord
 	4096 Calloc brecord!
 
-	" loading boot record\n" Printf
+	"loading boot record\n" Printf
 
 	devnode@ DeviceSelectNode
 		auto ok
@@ -69,7 +69,7 @@ procedure DevBootableR (* dnode -- brecord bootable? *)
 end
 
 procedure AutoBoot (* -- ok? *)
-	" autoboot: /bootdisk\n\n" Printf
+	"autoboot: /bootdisk\n\n" Printf
 
 	auto bootnode
 
@@ -96,7 +96,7 @@ procedure BootNode (* devnode args -- ok? *)
 	auto devnode
 	devnode!
 
-	args@ devnode@ " bootnode:\n\tnode: %x\n\targs: %s\n\n" Printf
+	args@ devnode@ "bootnode:\n\tnode: %x\n\targs: %s\n\n" Printf
 
 	auto brecord
 	auto ok
@@ -114,7 +114,7 @@ procedure BootNode (* devnode args -- ok? *)
 	brecord@ BootRecord_BootBlockStart + @ bblock!
 	brecord@ BootRecord_BootBlockCount + @ bbc!
 
-	brecord@ BootRecord_OSLabel + bblock@ bbc@ " boot record info:\n\tboot blocks: %d\n\tstarting at: block %d\n\tOS label: %s\n\n" Printf
+	brecord@ BootRecord_OSLabel + bblock@ bbc@ "boot record info:\n\tboot blocks: %d\n\tstarting at: block %d\n\tOS label: %s\n\n" Printf
 
 	brecord@ Free
 
@@ -130,11 +130,11 @@ procedure BootNode (* devnode args -- ok? *)
 	ptr@ bbc@ 4096 * + nmem!
 
 	if (nmem@ tmem@ >=)
-		tmem@ nmem@ " at least %d bytes of contiguous memory is required to load this bootloader, only %d bytes present\n" Printf
+		tmem@ nmem@ "at least %d bytes of contiguous memory is required to load this bootloader, only %d bytes present\n" Printf
 		8 return
 	end
 
-	ptr@ bbc@ " loading %d boot blocks at 0x%x" Printf
+	ptr@ bbc@ "loading %d boot blocks at 0x%x" Printf
 
 	devnode@ DeviceSelectNode
 		auto i
@@ -162,7 +162,7 @@ procedure BootNode (* devnode args -- ok? *)
 		6 return
 	end
 
-	BootBottom 4 + @ args@ devnode@ API " passing control to boot blocks\n with:\tAPI: %x\n\tnode: %x\n\targs: %s\n\tentrypoint: 0x%x\n\n" Printf
+	BootBottom 4 + @ args@ devnode@ API "passing control to boot blocks\n with:\tAPI: %x\n\tnode: %x\n\targs: %s\n\tentrypoint: 0x%x\n\n" Printf
 
 	API devnode@ args@ BootBottom 4 + @ asm "
 

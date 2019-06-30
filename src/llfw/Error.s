@@ -66,7 +66,7 @@ LLFWErrorGraphical:
 	be .out
 	mov r2, r0
 
-	li r1, 0x67
+	li r1, 78
 	call LLFWK2Fill
 
 	mov r3, r2

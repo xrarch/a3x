@@ -222,7 +222,13 @@ LLFWK2BlitIcon:
 
 			add r5, r3, r1
 			lrr.b r2, r4
+
+			cmpi r2, 103
+			be .cont
+
 			srr.b r5, r2
+
+			.cont:
 
 			addi r4, r4, 1
 			addi r1, r1, 1

@@ -1,16 +1,18 @@
 procedure Main (* -- *)
 	"verbose?" NVRAMGetVar dup if (0 ==)
-		drop "true" "verbose?" NVRAMSetVar
-		"true"
+		drop "false" "verbose?" NVRAMSetVar
+		"false"
 	end
 
 	if ("true" strcmp)
 		ConsoleUserOut
+	end else
+		BootUI
 	end
 
 	"auto-boot?" NVRAMGetVar dup if (0 ==)
-		drop "false" "auto-boot?" NVRAMSetVar
-		"false"
+		drop "true" "auto-boot?" NVRAMSetVar
+		"true"
 	end
 
 	if ("true" strcmp)

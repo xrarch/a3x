@@ -376,7 +376,19 @@ procedure KinnowBlit (* x y w h ignore bitmap -- *)
 	ptr@ w@ h@ * KinnowPipeWrite
 end
 
-procedure KinnowBlitBits (* x y w h bpr fg bg bitd bmp -- *)
+procedure KinnowBlitBits (* bpr fg bg bitd bmp x y w h -- *)
+	auto h
+	h!
+
+	auto w
+	w!
+
+	auto y
+	y!
+
+	auto x
+	x!
+	
 	auto ptr
 	ptr!
 
@@ -391,18 +403,6 @@ procedure KinnowBlitBits (* x y w h bpr fg bg bitd bmp -- *)
 
 	auto bpr
 	bpr!
-
-	auto h
-	h!
-
-	auto w
-	w!
-
-	auto y
-	y!
-
-	auto x
-	x!
 
 	x@ y@ w@ h@ fg@ bg@ bitd@ KinnowSetPixelWriteBits
 
