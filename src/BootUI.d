@@ -89,7 +89,7 @@ procedure BootUIAuto (* -- *)
 		"  boot-args:\tnone specified\n" Printf
 	end
 
-	"[ENTER] Boot right now.\t[PERIOD] View more options.\n" Printf
+	"[RETURN] Boot right now.\t[PERIOD] View more options.\n" Printf
 
 	auto cn
 	"/clock" DevTreeWalk cn!
