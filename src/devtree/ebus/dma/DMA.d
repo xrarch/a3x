@@ -9,14 +9,25 @@ const DMARegisterMode 0x38000014
 const DMARegisterStatus 0x38000018
 
 procedure BuildDMA (* -- *)
-	DeviceNew
-		"dma" DSetName
+	"\n\t\t\tChecking for DMA presence..." Puts
+	if (DMARegisterSource@ -1 ==)
+		"No DMA!\n\t\t" Puts
+		0
+	end
+	else
+		"\n\t\t\tBuilding device... " Puts
+		DeviceNew
+			"dma" DSetName
 
-		pointerof DMATransfer "transfer" DAddMethod
-	DeviceExit
+			pointerof DMATransfer "transfer" DAddMethod
+		DeviceExit
+		"complete!\n\t\t\tWaiting for DMA to not be busy..." Puts
 
-	DMAWaitUnbusy
-	0 DMARegisterStatus!
+		DMAWaitUnbusy
+		"complete!\n\t\t"
+		0 DMARegisterStatus!
+		1
+	end
 end
 
 procedure DMAWaitUnbusy (* -- *)

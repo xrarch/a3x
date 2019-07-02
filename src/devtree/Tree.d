@@ -15,17 +15,34 @@ procedure BuildTree (* -- *)
 		"limn1k" "type" DAddProperty
 	DeviceExit
 
-	BuildEBus
+	if (1)
+		"\n\tSetting up ebus... " Puts
+		BuildEBus
+		"complete!" Puts  
+	end
+	else
+		"\n\tebus disabled..." Puts *)
+	end
+	"\n\tSetting up memory... " Puts
 
 	BuildMemory
+	"complete!\n\tSetting up DMA... " Puts
 
 	(* platform independent pseudo-devices *)
-	BuildDMA
+	BuildGDMA
+	"complete!\n\tSetting up Serial... " Puts
 	BuildSerial
+	"complete!\n\tSetting up Screen... " Puts
 	BuildScreen
+	"complete!\n\tSetting up GConsole... " Puts
 	BuildGConsole
+	"complete!\n\tSetting up Keyboard... " Puts
 	BuildKeyboard
+	"complete!\n\tSetting up Mouse... " Puts
 	BuildMouse
+	"complete!\n\tSetting up BootDisk... " Puts
 	BuildBootDisk
+	"complete!\n\tSetting up Clock... " Puts
 	BuildClock
+	"complete!\n" Puts
 end

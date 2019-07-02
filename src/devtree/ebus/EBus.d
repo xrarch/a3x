@@ -11,9 +11,23 @@ procedure BuildEBus (* -- *)
 	DeviceNew
 		"ebus" DSetName
 
-		BuildDMA
+		"\n\t\tSetting up DMA... " Puts
+		BuildDMA 
+		if (1 ==)
+			"complete!"
+		end
+		else
+			"aborted!"
+		end
+		Puts
+		"\n\t\tSetting up PBoard... " Puts
 		BuildPBoard
+		if (1 ==)
+			"complete!\n\t\t" Puts
+		end
+		"Setting up Kinnow3... " Puts
 		BuildKinnow3
+		"complete!\n\t" Puts
 	DeviceExit
 end
 

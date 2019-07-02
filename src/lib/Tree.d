@@ -31,7 +31,22 @@ procedure TreeNodeChildren (* node -- children *)
 	TreeNode_Children + @
 end
 
+asm "
+ct_str:
+	.db 9
+	.ds Allocating tree memory...
+	.db 0x0A, 9, 0
+dss:
+	.db 9
+	.ds Doing some stuff...
+	.db 0x0A, 9, 0
+asms:
+	.ds And some more stuff...
+	.db 0x0A, 9, 0
+"
+
 procedure TreeCreate (* -- tree *)
+	
 	auto out
 	Tree_SIZEOF Calloc out!
 

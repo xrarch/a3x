@@ -40,16 +40,20 @@ procedure AntecedentEntry (* -- *)
 	if (NVRAMCheck ~~)
 		NVRAMFormat
 	end
-
+	
+	"Initializing heap...\n" Puts
 	HeapInit
+	HeapDump
+	"Initializing interrupts..." Puts
 	InterruptsInit
+	" complete!\nSetting up device tree..." Puts
 	DeviceInit
+	" complete!\nSetting up console..." Puts
 	ConsoleInit
-
+	" complete!\nPrepping fault handlers..." Puts
 	FaultsRegister (* let llfw handle faults up until here *)
-
+	" complete!\n" Puts
 	FontInit
-
 	Main
 end
 

@@ -9,14 +9,23 @@
 const DCitronBase 0xF8000000
 
 procedure BuildCitron (* -- *)
-	DeviceNew
-		"citron" DSetName
-
-		BuildSatsuma
-		BuildCClock
-		BuildCSerial
-		BuildAmanatsu
-	DeviceExit
+	if (DCitronBase@ -1 ==)
+		"no citron board!\n\t\t\t" Puts
+	end
+	else
+		DeviceNew
+			"citron" DSetName
+			"\n\t\t\t\tSetting up Satsuma... " Puts
+			BuildSatsuma
+			"complete!\n\t\t\t\tSetting up CClock... " Puts
+			BuildCClock
+			"complete!\n\t\t\t\tSetting up CSerial... " Puts
+			BuildCSerial
+			"complete!\n\t\t\t\tSetting up Amanatsu... " Puts
+			BuildAmanatsu
+			"complete!\n\t\t\t" Puts
+		DeviceExit
+	end
 end
 
 procedure DCitronInb (* port -- byte *)

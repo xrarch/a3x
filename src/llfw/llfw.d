@@ -1,4 +1,4 @@
-asm preamble "
+asm "
 
 .include llfw/ROMHeader.s
 .include llfw/Reset.s

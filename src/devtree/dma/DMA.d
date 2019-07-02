@@ -1,5 +1,3 @@
-(* platform independent keyboard interface, antecedent standard *)
-
 var SDMANode 0
 
 procedure GDMADefault (* -- defaultnode *)
