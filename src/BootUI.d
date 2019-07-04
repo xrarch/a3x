@@ -165,12 +165,14 @@ procedure BootUIOptions (* -- *)
 	auto buf
 	256 Calloc buf!
 
+	auto buf2
+
 	while (1)
-		"== BOOT OPTIONS ==\n" Printf
+		"== BOOT OPTIONS == (or 'reset')\n" Printf
 		"1. Boot the system\n" Printf
 		"2. Exit to full screen ROM prompt\n" Printf
 		"3. Modify boot device and arguments\n" Printf
-		"4. Toggle auto boot\n" Printf
+		"4. Toggle auto boot and set boot delay\n" Printf
 		"5. Print boot information\n" Printf
 
 		"? " Printf
@@ -202,6 +204,8 @@ procedure BootUIOptions (* -- *)
 			auto mod
 			0 mod!
 
+			240 Calloc buf2!
+
 			"Pressing ENTER with an empty line will preserve contents.\n" Printf
 
 			auto bd
@@ -215,10 +219,10 @@ procedure BootUIOptions (* -- *)
 
 			"  new     :\t" Printf
 
-			buf@ 239 Gets
+			buf2@ 239 Gets
 
-			if (buf@ strlen 0 >)
-				buf@ "boot-dev" NVRAMSetVar
+			if (buf2@ strlen 0 >)
+				buf2@ "boot-dev" NVRAMSetVar
 				1 mod!
 			end
 
@@ -233,10 +237,10 @@ procedure BootUIOptions (* -- *)
 
 			"  new      :\t" Printf
 
-			buf@ 239 Gets
+			buf2@ 239 Gets
 
-			if (buf@ strlen 0 >)
-				buf@ "boot-args" NVRAMSetVar
+			if (buf2@ strlen 0 >)
+				buf2@ "boot-args" NVRAMSetVar
 				1 mod!
 			end
 
@@ -247,17 +251,44 @@ procedure BootUIOptions (* -- *)
 
 				LateReset
 			end
+
+			buf2@ Free
 		end
 
 		if (buf@ "4" strcmp)
-			auto bf
-			6 Calloc bf!
+			8 Calloc buf2!
 
-			"  auto-boot? = [true/false] " Printf
+			"Pressing ENTER with an empty line will preserve contents.\n" Printf
 
-			bf@ 5 Gets
+			"auto-boot?" NVRAMGetVar bd!
 
-			bf@ "auto-boot?" NVRAMSetVar
+			if (bd@ 0 ~=)
+				bd@ "  auto-boot?:\t%s\n" Printf
+			end
+
+			"  new       :\t" Printf
+
+			buf2@ 6 Gets
+
+			if (buf2@ strlen 0 >)
+				buf2@ "auto-boot?" NVRAMSetVar
+			end
+
+			"boot-delay" NVRAMGetVarNum ba!
+
+			if (ba@ 0 ~=)
+				ba@ 1000 / "  boot-delay:\t%d sec\n" Printf
+			end
+
+			"  new       :\t" Printf
+
+			buf2@ 7 Gets
+
+			if (buf2@ strlen 0 >)
+				buf2@ atoi 1000 * "boot-delay" NVRAMSetVarNum
+			end
+
+			buf2@ Free
 		end
 
 		if (buf@ "5" strcmp)
@@ -277,12 +308,41 @@ procedure BootUIOptions (* -- *)
 				"  boot-args:\tnone specified\n" Printf
 			end
 
+			"auto-boot?" NVRAMGetVar ba!
+
+			if (ba@ 0 ~=)
+				ba@ "  auto-boot?:\t%s\n" Printf
+			end else
+				"  auto-boot:\tnone specified\n" Printf
+			end
+
+			"boot-delay" NVRAMGetVarNum ba!
+
+			if (ba@ 0 ~=)
+				ba@ 1000 / "  boot-delay:\t%d sec\n" Printf
+			end else
+				"  boot-delay:\tnone specified\n" Printf
+			end
+
 			BootUIMore
+		end
+
+		if (buf@ "reset" strcmp)
+			LateReset
 		end
 	end
 end
 
 procedure BootUI (* -- *)
+	"boot-ui?" NVRAMGetVar dup if (0 ==)
+		drop "true" "boot-ui?" NVRAMSetVar
+		"true"
+	end
+
+	if ("true" strcmp ~~)
+		return
+	end
+
 	"/gconsole" DevTreeWalk BUIGCNode!
 
 	if (BUIGCNode@ 0 ==)

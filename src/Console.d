@@ -41,14 +41,14 @@ end
 procedure Putc (* c -- *)
 	if (ConsoleOutMethod@ 0 ==)
 
-	asm "
+		asm "
 
-	popv r5, r0
-	.db 0xF1
+		popv r5, r0
+		.db 0xF1
 
-	"
+		"
 
-	return
+		return
 	end
 
 	ConsoleOut@ DeviceSelectNode
