@@ -49,11 +49,7 @@ procedure GConsoleDefault (* -- *)
 	0 GCCurX!
 	0 GCCurY!
 
-	if (GCLineLenBuf@ 0 ~=)
-		GCLineLenBuf@ Free
-	end
-
-	GCHeight@ 4 * Calloc GCLineLenBuf!
+	GCLineLenBuf@ GCHeight@ 4 * 0 memset
 
 	1 GCInitialConfig!
 	1 GCNeedsDraw!
@@ -64,6 +60,8 @@ procedure BuildGConsole (* -- *)
 	if (GCScreenNode@ 0 ==)
 		return
 	end
+
+	1024 Calloc GCLineLenBuf!
 
 	GCScreenNode@ DeviceSelectNode
 		"rectangle" DGetMethod GCRectP!
@@ -122,14 +120,10 @@ procedure GConsoleSetScreen (* fg bg x y w h -- *)
 	w@ dup FontWidth / GCWidth! GCGWidth!
 	h@ dup FontHeight / GCHeight! GCGHeight!
 
-	if (GCLineLenBuf@ 0 ~=)
-		GCLineLenBuf@ Free
-	end
-	
-	GCHeight@ 4 * Calloc GCLineLenBuf!
-
 	fg@ dup GCColorFG! GCColorOFG!
 	bg@ dup GCColorBG! GCColorOBG!
+
+	GCLineLenBuf@ GCHeight@ 4 * 0 memset
 
 	0 GCInitialConfig!
 end

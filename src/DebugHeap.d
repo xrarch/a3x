@@ -3,10 +3,13 @@
 var KHeapStart 0x22000
 var KHeapSize 0xDDFFF
 
+const KHeapMagic 0xCAFEBABE
+
 struct KHeapHeader
 	4 size
 	4 last
 	4 next
+	4 magic
 	4 allocby
 	1 allocated
 endstruct
@@ -120,6 +123,8 @@ procedure DMalloc (* cp sz -- ptr *)
 				*)
 
 				if (big@ 1 + size@ ==) (* just the right size *)
+					KHeapMagic ept@ KHeapHeader_magic + !
+
 					ept@ KHeapHeader_allocated + 1 sb
 					cp@ ept@ KHeapHeader_allocby + !
 					ept@ KHeapHeader_SIZEOF +
@@ -147,6 +152,8 @@ procedure DMalloc (* cp sz -- ptr *)
 
 					sz@ KHeapHeader_SIZEOF + ept@ KHeapHeader_size + !
 				end
+
+				KHeapMagic ept@ KHeapHeader_magic + !
 
 				1 ept@ KHeapHeader_allocated + sb
 				cp@ ept@ KHeapHeader_allocby + !
@@ -305,10 +312,15 @@ procedure Free (* ptr -- *)
 
 	if (ptr@ 0 == ptr@ ERR == ||)
 		ptr@ "tried to free 0x%x!\n" Printf
+		while (1) end
 	end
 
 	auto nptr
 	ptr@ KHeapHeader_SIZEOF - nptr!
+
+	if (nptr@ KHeapHeader_magic + @ KHeapMagic ~=)
+		nptr@ KHeapHeader_magic + @ "bad magic: %x\n" Printf
+	end
 
 	0 nptr@ KHeapHeader_allocated + sb
 
