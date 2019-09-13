@@ -29,7 +29,7 @@ LLFWError:
 	cmpi r0, 0xFFFF
 	bne .reset
 	b .wloop
-
+	
 .reset:
 	cmpi r0, "c"
 	be .clear
