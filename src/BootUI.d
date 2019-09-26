@@ -10,8 +10,8 @@ var BUIHeight 0
 
 var BUIRectP 0
 
-const BUIBoxW 426
-const BUIBoxH 144
+var BUIBoxW 426
+var BUIBoxH 144
 
 var BUIX 0
 var BUIY 0
@@ -24,34 +24,37 @@ procedure private BUIRect (* x y w h color -- *)
 	DeviceExit
 end
 
-procedure private BUIBox (* title x y w h -- *)
-	auto h
-	h!
+procedure private BUIBox (* -- *)
+	auto bbx
+	BUIWidth@ 2 / BUIBoxW@ 2 / - bbx!
 
-	auto w
-	w!
+	auto bby
+	BUIHeight@ 2 / BUIBoxH@ 2 / - bby!
 
-	auto y
-	y!
+	bbx@ BUIX!
+	bby@ BUIY!
 
-	auto x
-	x!
+	BUIGCNode@ DeviceSelectNode
+		0x00 29 bbx@ 26 + bby@ 37 + BUIBoxW@ 50 - BUIBoxH@ 60 - "setScreen" DCallMethod drop
+	DeviceExit
+
+	ConsoleUserOut
+
+	BUIX@ BUIY@ BUIBoxW@ BUIBoxH@ 0x0F BUIRect
+	BUIX@ 1 + BUIY@ 1 + BUIBoxW@ BUIBoxH@ 25 BUIRect
+	BUIX@ 1 + BUIY@ 1 + BUIBoxW@ 1 - BUIBoxH@ 1 - 29 BUIRect
+	BUIX@ 10 + BUIY@ 20 + BUIBoxW@ 18 - BUIBoxH@ 28 - 0x0F BUIRect
+	BUIX@ 10 + BUIY@ 20 + BUIBoxW@ 19 - BUIBoxH@ 29 - 25 BUIRect
+	BUIX@ 11 + BUIY@ 21 + BUIBoxW@ 21 - BUIBoxH@ 31 - 0x0F BUIRect
+	BUIX@ 12 + BUIY@ 22 + BUIBoxW@ 22 - BUIBoxH@ 32 - 29 BUIRect
 
 	auto title
-	title!
-
-	x@ y@ w@ h@ 0x0F BUIRect
-	x@ 1 + y@ 1 + w@ h@ 25 BUIRect
-	x@ 1 + y@ 1 + w@ 1 - h@ 1 - 29 BUIRect
-	x@ 10 + y@ 20 + w@ 18 - h@ 28 - 0x0F BUIRect
-	x@ 10 + y@ 20 + w@ 19 - h@ 29 - 25 BUIRect
-	x@ 11 + y@ 21 + w@ 21 - h@ 31 - 0x0F BUIRect
-	x@ 12 + y@ 22 + w@ 22 - h@ 32 - 29 BUIRect
+	"ANTECEDENT 3.x Firmware" title!
 
 	auto tw
 	title@ strlen FontWidth * tw!
 
-	x@ w@ 2 / tw@ 2 / - + y@ 5 + title@ -1 0 FontDrawString
+	BUIX@ BUIBoxW@ 2 / tw@ 2 / - + BUIY@ 5 + title@ -1 0 FontDrawString
 end
 
 procedure private BUIConDef (* -- *)
@@ -148,7 +151,7 @@ procedure private BootUIAuto (* -- *)
 	"proceeding\n" Printf
 
 	auto r
-	AutoBoot r!
+	BootUIBoot r!
 
 	BUIConDef
 
@@ -166,6 +169,15 @@ procedure private BootUIMore (* -- *)
 	ob@ Free
 end
 
+procedure private BootUIBoot (* -- *)
+	530 BUIBoxW!
+	348 BUIBoxH!
+
+	BUIBox
+
+	AutoBoot
+end
+
 procedure private BootUIOptions (* -- *)
 	auto buf
 	256 Calloc buf!
@@ -173,6 +185,7 @@ procedure private BootUIOptions (* -- *)
 	auto buf2
 
 	while (1)
+		"\[c" Puts
 		"== BOOT OPTIONS == (or 'reset')\n" Printf
 		"1. Boot the system\n" Printf
 		"2. Exit to full screen ROM prompt\n" Printf
@@ -186,7 +199,7 @@ procedure private BootUIOptions (* -- *)
 
 		if (buf@ "1" strcmp)
 			auto r
-			AutoBoot r!
+			BootUIBoot r!
 
 			BUIConDef
 
@@ -369,22 +382,10 @@ procedure BootUI (* -- *)
 		"init" DCallMethod drop
 	DeviceExit
 
-	auto bbx
-	BUIWidth@ 2 / BUIBoxW 2 / - bbx!
+	426 BUIBoxW!
+	144 BUIBoxH!
 
-	auto bby
-	BUIHeight@ 2 / BUIBoxH 2 / - bby!
-
-	bbx@ BUIX!
-	bby@ BUIY!
-
-	"ANTECEDENT 3.x Firmware" bbx@ bby@ BUIBoxW BUIBoxH BUIBox
-
-	BUIGCNode@ DeviceSelectNode
-		0x00 29 bbx@ 26 + bby@ 37 + BUIBoxW 50 - BUIBoxH 60 - "setScreen" DCallMethod drop
-	DeviceExit
-
-	ConsoleUserOut
+	BUIBox
 
 	"auto-boot?" NVRAMGetVar dup if (0 ==)
 		drop "true" "auto-boot?" NVRAMSetVar
