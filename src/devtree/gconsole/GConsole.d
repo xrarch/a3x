@@ -1,3 +1,6 @@
+#include "<df>/dragonfruit.h"
+#include "<inc>/a3x.h"
+
 var GCGWidth 0
 var GCGHeight 0
 

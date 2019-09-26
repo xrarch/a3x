@@ -1,19 +1,14 @@
+#include "<df>/dragonfruit.h"
+#include "<inc>/a3x.h"
+
 var FontScreenNode 0
-
-const FontWidth 6
-const FontWidthA 5
-
-const FontBytesPerRow 1
-const FontHeight 12
-
-const FontBitD 0
 
 var FontBBP 0
 
 asm "
 
 Font:
-	.static lib/Font/font-haiku.bmp
+	.static font-haiku.bmp
 
 "
 
@@ -28,7 +23,7 @@ procedure FontInit (* -- *)
 	DeviceExit
 end
 
-procedure FontBlitBits (* bpr fg bg bitd bmp x y w h -- *)
+procedure private FontBlitBits (* bpr fg bg bitd bmp x y w h -- *)
 	FontScreenNode@ DeviceSelectNode
 		FontBBP@ Call
 	DeviceExit

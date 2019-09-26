@@ -1,9 +1,17 @@
+#include "<df>/dragonfruit.h"
+#include "<inc>/a3x.h"
+
 var MonitorRunning 0
+public MonitorRunning
 
 var MonitorCommandList 0
+public MonitorCommandList
 
 var MonitorLine 0
+public MonitorLine
+
 var MonitorLinePoint 0
+public MonitorLinePoint
 
 var MonitorNvramrc 0
 var MonitorOldCI 0
@@ -13,13 +21,11 @@ var MonitorNvramrcLen 0
 var MonitorNvramrcPtr 0
 var MonitorPastNvramrc 0
 
-struct MonitorCommand
-	4 Name
-	4 Callback
-	4 HelpText
-endstruct
+#include "monitor.h"
 
-#include "Monitor/Commands.d"
+extern MonitorCommandsInit
+
+extern MonitorCommandBanner
 
 procedure Monitor (* -- *)
 	if (MonitorCommandList@ 0 ==)

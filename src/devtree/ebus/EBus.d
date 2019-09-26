@@ -1,11 +1,9 @@
-const EBusSlotsStart 0xC0000000
-const EBusSlots 7
-const EBusSlotSpace 0x8000000
-const EBusBoardMagic 0x0C007CA1
+#include "<df>/dragonfruit.h"
+#include "<inc>/a3x.h"
 
-#include "devtree/ebus/dma/DMA.d"
-#include "devtree/ebus/platformboard/PBoard.d"
-#include "devtree/ebus/kinnow3/Kinnow3.d"
+extern BuildDMA
+extern BuildPBoard
+extern BuildKinnow3
 
 procedure BuildEBus (* -- *)
 	DeviceNew

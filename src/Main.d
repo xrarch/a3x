@@ -1,3 +1,8 @@
+#include "<df>/dragonfruit.h"
+#include "<inc>/a3x.h"
+
+extern Monitor
+
 procedure Main (* -- *)
 	"verbose?" NVRAMGetVar dup if (0 ==)
 		drop "false" "verbose?" NVRAMSetVar

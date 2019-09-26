@@ -1,6 +1,18 @@
+.extern LLFWSerialPuts
+.extern LLFWSerialPutInteger
+.extern LLFWSerialWrite
+.extern LLFWSerialRead
+
+.extern LLFWK2Find
+.extern LLFWK2Fill
+.extern LLFWK2BlitIcon
+
+.extern Reset
+
 ;r0 - message
 ;r1 - number
 LLFWError:
+.global LLFWError
 	li sp, 0x1FFF
 
 	push r0
@@ -102,4 +114,4 @@ LLFWErrorStringC:
 	.db 0xA, 0x0
 
 LLFWErrorBMP:
-	.static llfw/llfwerror.bmp
+	.static llfwerror.bmp

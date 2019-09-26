@@ -1,0 +1,2 @@
+FirmwareBase:
+.global FirmwareBase

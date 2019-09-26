@@ -1,5 +1,11 @@
-#include "devtree/ebus/platformboard/citron/amanatsu/keyboard/AKeyboard.d"
-#include "devtree/ebus/platformboard/citron/amanatsu/mouse/AMouse.d"
+#include "<df>/dragonfruit.h"
+#include "<inc>/a3x.h"
+
+extern AKeyboardInit
+extern AKeyboardPoll
+
+extern AMouseInit
+extern AMousePoll
 
 procedure BuildAmanatsu (* -- *)
 	DeviceNew
@@ -15,12 +21,6 @@ end
 
 (* start assigning interrupts at 0x80 *)
 var AmaLastInterrupt 0x80
-
-const AmaPortDev 0x30
-const AmaPortMID 0x31
-const AmaPortCMD 0x32
-const AmaPortA 0x33
-const AmaPortB 0x34
 
 buffer AmaInterruptMap 256
 

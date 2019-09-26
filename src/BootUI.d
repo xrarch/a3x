@@ -1,3 +1,6 @@
+#include "<df>/dragonfruit.h"
+#include "<inc>/a3x.h"
+
 var BUIGCNode 0
 
 var BUIScreenNode 0
@@ -13,13 +16,15 @@ const BUIBoxH 144
 var BUIX 0
 var BUIY 0
 
-procedure BUIRect (* x y w h color -- *)
+extern Monitor
+
+procedure private BUIRect (* x y w h color -- *)
 	BUIScreenNode@ DeviceSelectNode
 		BUIRectP@ Call
 	DeviceExit
 end
 
-procedure BUIBox (* title x y w h -- *)
+procedure private BUIBox (* title x y w h -- *)
 	auto h
 	h!
 
@@ -49,17 +54,17 @@ procedure BUIBox (* title x y w h -- *)
 	x@ w@ 2 / tw@ 2 / - + y@ 5 + title@ -1 0 FontDrawString
 end
 
-procedure BUIConDef (* -- *)
+procedure private BUIConDef (* -- *)
 	BUIGCNode@ DeviceSelectNode
 		-1 -1 -1 -1 -1 -1 "setScreen" DCallMethod drop
 	DeviceExit
 end
 
-procedure BUIABD (* -- *)
+procedure private BUIABD (* -- *)
 	"false" "auto-boot?" NVRAMSetVar
 end
 
-procedure BootUIAuto (* -- *)
+procedure private BootUIAuto (* -- *)
 	auto delay
 
 	"boot-delay" NVRAMGetVar dup if (0 ==)
@@ -150,7 +155,7 @@ procedure BootUIAuto (* -- *)
 	[r@]BootErrors@ " boot: %s\n" Printf
 end
 
-procedure BootUIMore (* -- *)
+procedure private BootUIMore (* -- *)
 	auto ob
 	2 Calloc ob!
 
@@ -161,7 +166,7 @@ procedure BootUIMore (* -- *)
 	ob@ Free
 end
 
-procedure BootUIOptions (* -- *)
+procedure private BootUIOptions (* -- *)
 	auto buf
 	256 Calloc buf!
 

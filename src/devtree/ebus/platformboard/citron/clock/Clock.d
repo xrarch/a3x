@@ -1,3 +1,6 @@
+#include "<df>/dragonfruit.h"
+#include "<inc>/a3x.h"
+
 const ClockPortCmd 0x20
 const ClockPortA 0x21
 

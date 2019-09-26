@@ -1,13 +1,17 @@
-#include "devtree/Memory.d"
-#include "devtree/ebus/EBus.d"
-#include "devtree/dma/DMA.d"
-#include "devtree/screen/Screen.d"
-#include "devtree/serial/Serial.d"
-#include "devtree/gconsole/GConsole.d"
-#include "devtree/mouse/Mouse.d"
-#include "devtree/keyboard/Keyboard.d"
-#include "devtree/bootdisk/BootDisk.d"
-#include "devtree/clock/Clock.d"
+#include "<df>/dragonfruit.h"
+#include "<inc>/a3x.h"
+
+extern BuildEBus
+extern BuildMemory
+
+extern BuildDMA
+extern BuildSerial
+extern BuildScreen
+extern BuildGConsole
+extern BuildKeyboard
+extern BuildMouse
+extern BuildBootDisk
+extern BuildClock
 
 procedure BuildTree (* -- *)
 	DeviceNew

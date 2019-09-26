@@ -1,3 +1,6 @@
+#include "<df>/dragonfruit.h"
+#include "<inc>/a3x.h"
+
 const AHDBCmdPort 0x19
 const AHDBPortA 0x1A
 const AHDBPortB 0x1B

@@ -2,6 +2,6 @@
 
 path=$(dirname $0)
 
-./sdk/dragonc.sh -flat ${path}/src/Antecedent.d $1
+make --directory=${path}/src
 
-printf '%s' `expr \`cat ${path}/src/build\` + 1` > ${path}/src/build
+cp ${path}/src/boot.bin $1

@@ -1,3 +1,6 @@
+#include "<df>/dragonfruit.h"
+#include "<inc>/a3x.h"
+
 table API
 	pointerof Putc
 	pointerof Getc
@@ -17,7 +20,8 @@ table API
 	pointerof DCallMethod
 	pointerof DeviceExit
 endtable
+public API
 
-procedure APIDevTree (* -- root dcp *)
+procedure private APIDevTree (* -- root dcp *)
 	DevCurrent@ DevTree@
 end

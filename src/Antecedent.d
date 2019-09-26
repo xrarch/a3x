@@ -1,41 +1,16 @@
-#include "llfw/llfw.d" (* this MUST be at the beginning!! *)
-#include "Const.d"
-#include "Runtime.d"
-#include "Heap.d"
-#include "lib/List.d"
-#include "lib/Tree.d"
-#include "lib/Font/Font.d"
-#include "Console.d"
-#include "Interrupts.d"
-#include "DeviceTree.d"
-#include "NVRAM.d"
-#include "Boot.d"
-#include "BootUI.d"
-#include "Main.d"
-#include "Monitor/Monitor.d"
+#include "<df>/dragonfruit.h"
+#include "<inc>/a3x.h"
 
-(* asm "
+extern HeapInit
+extern InterruptsInit
+extern DeviceInit
+extern ConsoleInit
+extern FaultsRegister
+extern FontInit
 
-.bc HeapInit ;2ea6
-.bc ListLength ;3ecf
-.bc TreeNodes ;4ac6
-.bc ConsoleSetIn ;5139
-.bc InterruptsInit ;5ca9
-.bc DevStackPUSH
-.bc NVRAMCheck
-.bc AutoBoot
-.bc Main
-.bc MonitorCommandsInit
-.bc Monitor
-.bc AntecedentEnd
+extern Main
 
-" *)
-
-procedure LateReset (* -- *)
-	"\[c" Printf
-	Reset
-end
-
+(* MUST be at the top *)
 procedure AntecedentEntry (* -- *)
 	if (NVRAMCheck ~~)
 		NVRAMFormat
@@ -55,6 +30,14 @@ end
 
 asm "
 
-AntecedentEnd:
+Reset:
+.global Reset
+	lri.l r0, 0xFFFE0000
+	br r0
 
 "
+
+procedure LateReset (* -- *)
+	"\[c" Printf
+	Reset
+end

@@ -1,34 +1,23 @@
-struct DeviceNode
-	4 Name
-	4 Methods
-	4 Properties
-endstruct
-
-(* device methods are called like [ ... node -- ... ] *)
-struct DeviceMethod
-	4 Name
-	4 Func
-endstruct
-
-struct DeviceProperty
-	4 Name
-	4 Value
-endstruct
+#include "<df>/dragonfruit.h"
+#include "<inc>/a3x.h"
 
 var DevTree 0
+public DevTree
+
 var DevCurrent 0
+public DevCurrent
+
+extern DevRootBuild
 
 var DevStack 0 (* we can go 64 layers deep *)
 var DevStackPtr 0
 
-#include "devtree/Root.d"
-
-procedure DevStackPUSH (* v -- *)
+procedure private DevStackPUSH (* v -- *)
 	DevStack@ DevStackPtr@ + !
 	DevStackPtr@ 4 + DevStackPtr!
 end
 
-procedure DevStackPOP (* -- v *)
+procedure private DevStackPOP (* -- v *)
 	DevStackPtr@ 4 - dup DevStackPtr!
 	DevStack@ + @
 end
@@ -293,7 +282,7 @@ procedure DGetProperties (* -- properties *)
 end
 
 
-procedure BuildDeviceTree (* -- *)
+procedure private BuildDeviceTree (* -- *)
 	TreeCreate DevTree!
 
 	DeviceNNew DevTree@ TreeSetRoot DevCurrent!

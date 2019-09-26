@@ -1,3 +1,6 @@
+#include "<df>/dragonfruit.h"
+#include "<inc>/a3x.h"
+
 var AKeyboardDev 0
 var AKeyboardCount 0
 

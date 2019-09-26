@@ -1,3 +1,6 @@
+#include "<df>/dragonfruit.h"
+#include "<inc>/a3x.h"
+
 (* platform independent serial interface, antecedent standard *)
 
 var SSerialNode 0

@@ -3,6 +3,7 @@ LLFWSerialPortB === 0xF8000044
 
 ;r0 - char
 LLFWSerialWrite:
+.global LLFWSerialWrite
 	push r1
 
 	;wait for serial port to become available
@@ -19,6 +20,7 @@ LLFWSerialWrite:
 
 ;r0 - ptr to string
 LLFWSerialPuts:
+.global LLFWSerialPuts
 	push r1
 	mov r1, r0
 
@@ -39,6 +41,7 @@ LLFWSerialPuts:
 ;outputs:
 ;r0 - char or 0xFFFF if buf empty
 LLFWSerialRead:
+.global LLFWSerialRead
 	push r1
 
 	;wait for serial port to become available
@@ -61,6 +64,7 @@ LLFWSerialIntegerChars:
 ;since 32 bit numbers cant get big enough to do that easily.
 ;hexadecimal
 LLFWSerialPutInteger:
+.global LLFWSerialPutInteger
 	push r0
 	push r1
 	push r2

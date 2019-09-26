@@ -1,7 +1,13 @@
-;very low-level reset code for limn cpu, reset vector specified in ROMHeader.s points to Reset routine
+;very low-level reset code for limn1k cpu, reset vector specified in ROMHeader.s points to Reset routine
 ;special purpose registers are reset, the ROM is copied into RAM, and the main firmware procedure is called
 
+.extern LLFWSerialPuts
+.extern LLFWPOST
+.extern FirmwareBase
+.extern LLFWFault
+
 Reset:
+.global Reset
 	li rs, 0x80000000 ;reset ebus
 	cli ; clear interrupt queue
 	li ivt, 0 ;reset ivt
@@ -42,7 +48,7 @@ Reset:
 	call LLFWSerialPuts
 	
 	li r5, 0x1000
-	call AntecedentEntry
+	call FirmwareBase
 	b Hang
 
 LLFWNoStack:
@@ -54,9 +60,9 @@ LLFWShadow:
 	li r0, LLFWShadowString
 	call LLFWSerialPuts
 
-	li r0, AntecedentBase
+	li r0, FirmwareBase
 	li r1, 0x2000
-	addi r2, r0, AntecedentEnd
+	li r2, 0xFFFFFFF0
 
 .loop:
 	cmp r0, r2
@@ -82,11 +88,11 @@ LLFWShadowString:
 
 LLFWHiString:
 	.db 0xA
-	.ds =============================================
+	.ds ==================================
 	.db 0xA
-	.ds ANTECEDENT low-level firmware for LIMNstation
+	.ds low-level firmware for LIMNstation
 	.db 0xA
-	.ds =============================================
+	.ds ==================================
 	.db 0xA, 0x0
 
 ;placeholder ivt

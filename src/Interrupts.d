@@ -1,3 +1,6 @@
+#include "<df>/dragonfruit.h"
+#include "<inc>/a3x.h"
+
 var InterruptsVT 0
 
 procedure InterruptsInit (* -- *)
@@ -56,6 +59,7 @@ table FaultsNames
 	"Unknown"
 	"Spurious interrupt"
 endtable
+public FaultsNames
 
 procedure FaultsHandler (* num loc -- *)
 	auto rs

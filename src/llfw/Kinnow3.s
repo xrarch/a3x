@@ -1,6 +1,7 @@
 ;outputs:
 ;r0 - 0 if no kinnow3 board detected, or ptr to base of slotspace
 LLFWK2Find:
+.global LLFWK2Find
 	;we have to find the ebus slot containing the kinnow2 card (if one exists)
 	;start at slot 0
 	li r0, 0xC0000000
@@ -83,6 +84,7 @@ LLFWK2PortC:
 ;r0 - slotspace base
 ;r1 - command
 LLFWK2Command:
+.global LLFWK2Command
 	push r3
 	push r2
 
@@ -111,6 +113,7 @@ LLFWK2Command:
 ;r0 - width
 ;r1 - height
 LLFWK2Size:
+.global LLFWK2Size
 	li r1, 1
 	call LLFWK2Command
 
@@ -127,12 +130,14 @@ LLFWK2Size:
 ;outputs:
 ;r0 - fb
 LLFWK2FB:
+.global LLFWK2FB
 	addi r0, r0, 0x100000
 	ret
 
 ;r0 - slotspace base
 ;r1 - color
 LLFWK2Fill:
+.global LLFWK2Fill
 	push r2
 	push r1
 	push r0
@@ -162,6 +167,7 @@ LLFWK2Fill:
 ;r2 - ptr
 ;r3 - slotspace base
 LLFWK2BlitIcon:
+.global LLFWK2BlitIcon
 	push r4
 	push r5
 	push r6

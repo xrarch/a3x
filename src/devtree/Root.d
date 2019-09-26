@@ -1,4 +1,7 @@
-#include "devtree/Tree.d"
+#include "<df>/dragonfruit.h"
+#include "<inc>/a3x.h"
+
+extern BuildTree
 
 procedure DevRootBuild (* -- *)
 	"antecedent-ebus" DSetName
@@ -13,7 +16,7 @@ end
 
 asm "
 
-ANTEBN === #build
+ANTEBN === #../build
 
 ANTEBNS:
 	.ds$ ANTEBN

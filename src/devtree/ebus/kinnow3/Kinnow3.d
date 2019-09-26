@@ -1,3 +1,6 @@
+#include "<df>/dragonfruit.h"
+#include "<inc>/a3x.h"
+
 (* antecedent driver for Kinnow3 framebuffer *)
 
 var KinnowSlotSpace 0

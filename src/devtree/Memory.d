@@ -1,3 +1,6 @@
+#include "<df>/dragonfruit.h"
+#include "<inc>/a3x.h"
+
 procedure BuildMemory (* -- *)
 	DeviceNew
 		"memory" DSetName

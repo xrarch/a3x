@@ -1,3 +1,6 @@
+#include "<df>/dragonfruit.h"
+#include "<inc>/a3x.h"
+
 (* ported from AISIX *)
 
 var KHeapStart 0x22000
@@ -77,7 +80,7 @@ end
 
 (* first-fit *)
 
-procedure Malloc1 (* max last sz -- *)
+procedure private Malloc1 (* max last sz -- *)
 	auto rs
 	InterruptDisable rs!
 
@@ -209,7 +212,7 @@ procedure Calloc (* sz -- ptr *)
 	he@
 end
 
-procedure HeapMerge (* ptr msize -- *)
+procedure private HeapMerge (* ptr msize -- *)
 	auto rs
 	InterruptDisable rs!
 

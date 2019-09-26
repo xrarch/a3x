@@ -1,17 +1,5 @@
-#include "API.d"
-
-struct BootRecord
-	4 Magic
-	1 ret
-	16 OSLabel
-	4 BootBlockStart
-	4 BootBlockCount
-endstruct
-
-const BootMagic 0x45544E41
-const BootRM 0x24
-
-const BootBottom 0x100000
+#include "<df>/dragonfruit.h"
+#include "<inc>/a3x.h"
 
 table BootErrors
 	0
@@ -25,6 +13,7 @@ table BootErrors
 	"not enough memory"
 	"system software error"
 endtable
+public BootErrors
 
 procedure DevBootable (* dnode -- bootable? *)
 	DevBootableR swap drop

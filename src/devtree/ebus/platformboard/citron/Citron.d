@@ -1,12 +1,13 @@
-#include "devtree/ebus/platformboard/citron/satsuma/Satsuma.d"
-#include "devtree/ebus/platformboard/citron/clock/Clock.d"
-#include "devtree/ebus/platformboard/citron/serial/Serial.d"
-#include "devtree/ebus/platformboard/citron/amanatsu/Amanatsu.d"
+#include "<df>/dragonfruit.h"
+#include "<inc>/a3x.h"
 
 (* citron bus functions *)
 (* disabling and restoring interrupts is up to the user of these functions *)
 
-const DCitronBase 0xF8000000
+extern BuildSatsuma
+extern BuildCClock
+extern BuildCSerial
+extern BuildAmanatsu
 
 procedure BuildCitron (* -- *)
 	DeviceNew

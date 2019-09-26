@@ -1,3 +1,11 @@
+#include "<df>/dragonfruit.h"
+#include "<inc>/a3x.h"
+
+#include "monitor.h"
+
+extern _DumpStack
+extern HeapDump
+
 procedure MonitorCommandsInit (* -- *)
 	ListCreate MonitorCommandList!
 

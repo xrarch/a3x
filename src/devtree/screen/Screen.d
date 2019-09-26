@@ -1,3 +1,6 @@
+#include "<df>/dragonfruit.h"
+#include "<inc>/a3x.h"
+
 (* platform independent screen interface, antecedent standard *)
 
 var SScreenNode 0

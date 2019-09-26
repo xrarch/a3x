@@ -1,3 +1,6 @@
+#include "<df>/dragonfruit.h"
+#include "<inc>/a3x.h"
+
 const SerialCmdPort 0x10
 const SerialDataPort 0x11
 

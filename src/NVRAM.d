@@ -1,18 +1,5 @@
-const NVRAMBase 0xF8001000
-const NVRAMSize 65536
-
-const NVRAMVarCount 255
-
-const NVRAMMagic 0x0C001CA7
-
-struct NVRAMHeader
-	4 Magic
-endstruct
-
-struct NVRAMVariable
-	16 Name
-	240 Contents
-endstruct
+#include "<df>/dragonfruit.h"
+#include "<inc>/a3x.h"
 
 procedure NVRAMCheck (* -- ok? *)
 	if (NVRAMHeader_Magic NVRAMOffset @ NVRAMMagic ==)

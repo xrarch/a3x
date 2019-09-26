@@ -1,4 +1,4 @@
-.org 0xFFFE0000
+.extern Reset
 
 ;reset vector
 .dl Reset

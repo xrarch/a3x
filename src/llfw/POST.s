@@ -1,8 +1,12 @@
+.extern LLFWSerialPuts
+.extern LLFWError
+
 LLFWPBV === 0x1
 LLFWCPUV === 0x1
 
 ;r0 - RAM count
 LLFWPOST:
+.global LLFWPOST
 	push r0
 	li r0, LLFWPOSTString
 	call LLFWSerialPuts
@@ -46,6 +50,7 @@ LLFWPOST:
 	call LLFWError
 
 LLFWFault:
+.global LLFWFault
 	li r1, 0x02000000
 	ior r1, r1, r0
 	li r0, LLFWFaultString
