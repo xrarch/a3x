@@ -303,15 +303,11 @@ procedure GConsoleSetColor (* -- *)
 		GCColorFG@ GCColorOFG!
 		GCEV0@ GCColorFG!
 		return
-	end
-
-	if (GCEV0@ 512 <)
+	end elseif (GCEV0@ 512 <)
 		GCColorBG@ GCColorOBG!
 		GCEV0@ 256 - GCColorBG!
 		return
-	end
-
-	if (GCEV0@ 1024 ==)
+	end elseif (GCEV0@ 1024 ==)
 		GCColorOBG@ GCColorBG!
 		GCColorOFG@ GCColorFG!
 		return
@@ -329,9 +325,9 @@ procedure GConsoleParseEscape (* c -- *)
 	end
 
 	if (c@ '[' ==) return end
-	if (c@ ';' ==) pointerof GCEV1 GCEV! return end
-	if (c@ 'm' ==) GConsoleSetColor end
-	if (c@ 'c' ==) GConsoleClear end
+	elseif (c@ ';' ==) pointerof GCEV1 GCEV! return end
+	elseif (c@ 'm' ==) GConsoleSetColor end
+	elseif (c@ 'c' ==) GConsoleClear end
 
 	0 GCEscape!
 end
@@ -368,20 +364,12 @@ procedure GConsolePutCharF (* char -- *)
 	if (char@ '\n' ==)
 		GConsoleNewline
 		return
-	end else
-
-	if (char@ '\b' ==)
+	end elseif (char@ '\b' ==)
 		GConsoleBack
 		return
-	end else
-
-	if (char@ '\t' ==)
+	end elseif (char@ '\t' ==)
 		GConsoleTab
 		return
-	end
-
-	end
-
 	end
 
 	if (GCNeedsDraw@)

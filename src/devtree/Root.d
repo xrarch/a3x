@@ -16,10 +16,8 @@ end
 
 asm "
 
-ANTEBN === #../build
-
 ANTEBNS:
-	.ds$ ANTEBN
+	.static ../build
 	.db 0x0
 
 ANTEBDS:

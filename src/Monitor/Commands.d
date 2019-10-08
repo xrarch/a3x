@@ -278,7 +278,7 @@ procedure MonitorCommandNvramrc (* -- *)
 
 		if (linebuf@ ";" strcmp)
 			break
-		end else if (linebuf@ "#" strcmp)
+		end elseif (linebuf@ "#" strcmp)
 			0 len!
 			bigbuf@ strzero
 		end else
@@ -286,7 +286,7 @@ procedure MonitorCommandNvramrc (* -- *)
 			len@ linebuf@ strlen + len!
 			'\n' bigbuf@ len@ + sb
 			len@ 1 + len!
-		end end
+		end
 	end
 
 	if (len@ 240 >=)

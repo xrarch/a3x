@@ -91,19 +91,11 @@ procedure FaultsHandler (* num loc -- *)
 
 		if (c@ 'c' ==)
 			NVRAMFormat
-		end else
-
-		if (c@ 'v' ==)
+		end elseif (c@ 'v' ==)
 			NVRAMFormat
 			"true" "verbose?" NVRAMSetVar
-		end else
-
-		if (c@ 'b' ==)
+		end elseif (c@ 'b' ==)
 			"false" "auto-boot?" NVRAMSetVar
-		end
-
-		end
-
 		end
 
 		LateReset

@@ -171,7 +171,7 @@ end
 
 procedure private BootUIBoot (* -- *)
 	530 BUIBoxW!
-	348 BUIBoxH!
+	360 BUIBoxH!
 
 	BUIBox
 
@@ -208,17 +208,13 @@ procedure private BootUIOptions (* -- *)
 			buf@ Free
 
 			return
-		end
-
-		if (buf@ "2" strcmp)
+		end elseif (buf@ "2" strcmp)
 			BUIConDef
 
 			buf@ Free
 
 			return
-		end
-
-		if (buf@ "3" strcmp)
+		end elseif (buf@ "3" strcmp)
 			auto mod
 			0 mod!
 
@@ -271,9 +267,7 @@ procedure private BootUIOptions (* -- *)
 			end
 
 			buf2@ Free
-		end
-
-		if (buf@ "4" strcmp)
+		end elseif (buf@ "4" strcmp)
 			8 Calloc buf2!
 
 			"Pressing ENTER with an empty line will preserve contents.\n" Printf
@@ -307,9 +301,7 @@ procedure private BootUIOptions (* -- *)
 			end
 
 			buf2@ Free
-		end
-
-		if (buf@ "5" strcmp)
+		end elseif (buf@ "5" strcmp)
 			"boot-dev" NVRAMGetVar bd!
 
 			if (bd@ 0 ~=)
@@ -343,9 +335,7 @@ procedure private BootUIOptions (* -- *)
 			end
 
 			BootUIMore
-		end
-
-		if (buf@ "reset" strcmp)
+		end elseif (buf@ "reset" strcmp)
 			LateReset
 		end
 	end
