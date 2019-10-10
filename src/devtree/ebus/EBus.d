@@ -16,10 +16,7 @@ procedure BuildEBus (* -- *)
 end
 
 (* find first board of id *)
-procedure EBusFindFirstBoard (* id -- slot *)
-	auto id
-	id!
-
+procedure EBusFindFirstBoard { id -- slot }
 	auto i
 	0 i!
 
@@ -29,14 +26,16 @@ procedure EBusFindFirstBoard (* id -- slot *)
 
 		if (bp@@ EBusBoardMagic ==)
 			if (bp@ 4 + @ id@ ==)
-				i@ return
+				i@ slot!
+				return
 			end
 		end
 
-		1 i@ + i!
+		4 i +=
 	end
 
-	ERR return
+	ERR slot!
+	return
 end
 
 procedure EBusSlotInterruptRegister (* handler slot -- *)

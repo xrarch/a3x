@@ -29,13 +29,7 @@ struct AHDB_PTE
 	3 Unused
 endstruct
 
-procedure AHDBDMATransferBlock (* src dest -- *)
-	auto dest
-	dest!
-
-	auto src
-	src!
-
+procedure private AHDBDMATransferBlock { src dest -- }
 	if (AHDBDMANode@ 0 ==)
 		auto ndma
 		"/dma" DevTreeWalk ndma!
@@ -62,10 +56,7 @@ procedure AHDBDMATransferBlock (* src dest -- *)
 	end
 end
 
-procedure AHDBPartitions (* id -- *)
-	auto id
-	id!
-
+procedure AHDBPartitions { id -- }
 	auto vdbuf
 	4096 Malloc vdbuf!
 
@@ -109,10 +100,10 @@ procedure AHDBPartitions (* id -- *)
 
 					ptr@ AHDB_PTE_Blocks + @ offset@ + offset!
 
-					pc@ 1 + pc!
+					1 pc +=
 				end
 
-				i@ 1 + i!
+				1 i +=
 			end
 		end
 	end
@@ -130,7 +121,7 @@ procedure BuildSatsuma (* -- *)
 			auto present
 			auto blocks
 
-			i@ AHDBPoll blocks! present!
+			i@ AHDBPoll present! blocks!
 
 			if (present@ 1 ==)
 				DeviceNew
@@ -156,25 +147,19 @@ procedure BuildSatsuma (* -- *)
 				dn!
 			end
 
-			i@ 1 + i!
+			1 i +=
 		end
 	DeviceExit
 end
 
-procedure AHDBRead (* ptr block -- ok? *)
+procedure AHDBRead { ptr block -- ok }
 	auto rs
 	InterruptDisable rs!
-
-	auto block
-	block!
-
-	auto ptr
-	ptr!
 
 	auto id
 	"id" DGetProperty id!
 
-	if (block@ "blocks" DGetProperty >=) rs@ InterruptRestore ERR return end
+	if (block@ "blocks" DGetProperty >=) rs@ InterruptRestore ERR ok! return end
 
 	"offset" DGetProperty block@ + block!
 
@@ -187,23 +172,17 @@ procedure AHDBRead (* ptr block -- ok? *)
 
 	rs@ InterruptRestore
 
-	1
+	1 ok!
 end
 
-procedure AHDBWrite (* ptr block -- ok? *)
+procedure AHDBWrite { ptr block -- ok }
 	auto rs
 	InterruptDisable rs!
-
-	auto block
-	block!
-
-	auto ptr
-	ptr!
 
 	auto id
 	"id" DGetProperty id!
 
-	if (block@ "blocks" DGetProperty >=) rs@ InterruptRestore ERR return end
+	if (block@ "blocks" DGetProperty >=) rs@ InterruptRestore ERR ok! return end
 
 	"offset" DGetProperty block@ + block!
 
@@ -216,13 +195,10 @@ procedure AHDBWrite (* ptr block -- ok? *)
 
 	rs@ InterruptRestore
 
-	1
+	1 ok!
 end
 
-procedure AHDBPoll (* id -- blocks present? *)
-	auto id
-	id!
-
+procedure AHDBPoll { id -- blocks present }
 	auto rs
 	InterruptDisable rs!
 
@@ -230,27 +206,24 @@ procedure AHDBPoll (* id -- blocks present? *)
 
 	AHDBCmdPoll AHDBCmdPort DCitronCommand
 
-	AHDBPortA DCitronInl
-	AHDBPortB DCitronInl
+	AHDBPortA DCitronInl present!
+	AHDBPortB DCitronInl blocks!
 
 	rs@ InterruptRestore
 end
 
-procedure AHDBInfo (* -- event details *)
+procedure AHDBInfo { -- event details }
 	auto rs
 	InterruptDisable rs!
 
 	AHDBCmdInfo AHDBCmdPort DCitronCommand
-	AHDBPortA DCitronInb
-	AHDBPortB DCitronInb
+	AHDBPortA DCitronInb event!
+	AHDBPortB DCitronInb details!
 
 	rs@ InterruptRestore
 end
 
-procedure AHDBSelect (* drive -- *)
-	auto drive
-	drive!
-
+procedure AHDBSelect { drive -- }
 	auto rs
 	InterruptDisable rs!
 

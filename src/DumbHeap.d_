@@ -1,3 +1,6 @@
+#include "<df>/dragonfruit.h"
+#include "<inc>/a3x.h"
+
 var KHeapTop 0x500000
 
 procedure Malloc
@@ -25,7 +28,7 @@ procedure Calloc (* sz -- ptr *)
 	he@
 end
 
-procedure Free (* -- *) end
+procedure Free (* ptr -- *) drop end
 
 procedure HeapDump
 	KHeapTop@ "%x\n" Printf

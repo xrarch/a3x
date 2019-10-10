@@ -29,50 +29,39 @@ procedure AKeyboardPoll (* -- *)
 
 					pointerof AKeyboardRead "read" DAddMethod
 
-					AKeyboardCount@ 1 + AKeyboardCount!
+					1 AKeyboardCount +=
 				DeviceExit
 			DeviceExit
 		end
 
 		rs@ InterruptRestore
 
-		i@ 1 + i!
+		1 i +=
 	end
 end
 
-procedure AKeyboardPopCode (* id -- code *)
-	auto id
-	id!
-
+procedure AKeyboardPopCode { id -- code }
 	auto rs
 	InterruptDisable rs!
-
-	auto code
 
 	id@ AmanatsuSelectDev
 	1 AmanatsuCommand
 	AmanatsuReadA code!
 
 	rs@ InterruptRestore
-
-	code@
 end
 
-procedure AKeyboardSpecial (* code -- *)
-	auto code
-	code!
-
+procedure AKeyboardSpecial { code -- char }
 	if (code@ 50 ==)
-		'\n' return
+		'\n' char!
+	end elseif (code@ 51 ==)
+		'\b' char!
+	end else
+		ERR char!
 	end
-	if (code@ 51 ==)
-		'\b' return
-	end
-
-	ERR return
 end
 
-procedure AKeyboardRead (* -- c *)
+procedure AKeyboardRead { -- c }
 	auto id
 	"aID" DGetProperty id!
 
@@ -81,37 +70,27 @@ procedure AKeyboardRead (* -- c *)
 	id@ AKeyboardPopCode code!
 
 	if (code@ 0xFFFF ==)
-		ERR return
+		ERR c!
+		return
 	end
-
-	auto c
 
 	if (code@ 0xF0 ==) (* shift *)
-
 		id@ AKeyboardPopCode code!
 
-		if (code@ 50 >=) code@ AKeyboardSpecial return end
+		if (code@ 50 >=) code@ AKeyboardSpecial c! return end
 
 		[code@]AKeyboardLayoutShift@ c!
-
-	end else if (code@ 0xF1 ==) (* ctrl *)
-
+	end elseif (code@ 0xF1 ==) (* ctrl *)
 		id@ AKeyboardPopCode code!
 
-		if (code@ 50 >=) code@ AKeyboardSpecial return end
+		if (code@ 50 >=) code@ AKeyboardSpecial c! return end
 
 		[code@]AKeyboardLayoutCtrl@ c!
-
 	end else
-
-		if (code@ 50 >=) code@ AKeyboardSpecial return end
+		if (code@ 50 >=) code@ AKeyboardSpecial c! return end
 
 		[code@]AKeyboardLayout@ c!
-
 	end
-	end
-
-	c@
 end
 
 procedure AKeyboardInit (* -- *)

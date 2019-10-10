@@ -90,25 +90,7 @@ procedure GConsoleSuppressDraw (* -- *)
 	0 GCNeedsDraw!
 end
 
-procedure GConsoleSetScreen (* fg bg x y w h -- *)
-	auto h
-	h!
-
-	auto w
-	w!
-
-	auto y
-	y!
-
-	auto x
-	x!
-
-	auto bg
-	bg!
-
-	auto fg
-	fg!
-
+procedure GConsoleSetScreen { fg bg x y w h -- }
 	if (x@ -1 ==)
 		GConsoleDefault
 		return
@@ -152,7 +134,7 @@ procedure GConsoleLongestLine (* -- width *)
 			len@ longest!
 		end
 
-		i@ 1 + i!
+		1 i +=
 	end
 
 	longest@
@@ -169,22 +151,7 @@ procedure GConsoleClear (* -- *)
 	1 GConsoleModified!
 end
 
-procedure GConsoleRect (* x y w h color -- *)
-	auto color
-	color!
-
-	auto h
-	h!
-
-	auto w
-	w!
-
-	auto y
-	y!
-
-	auto x
-	x!
-
+procedure GConsoleRect { x y w h color -- }
 	GCScreenNode@ DeviceSelectNode
 		x@ GConsoleX@ +
 		y@ GConsoleY@ +
@@ -194,10 +161,7 @@ procedure GConsoleRect (* x y w h color -- *)
 	DeviceExit
 end
 
-procedure GConsoleScroll (* rows -- *)
-	auto rows
-	rows!
-
+procedure GConsoleScroll { rows -- }
 	GCScreenNode@ DeviceSelectNode
 		GConsoleX@ GConsoleY@
 		GConsoleLongestLine FontWidth *
@@ -221,7 +185,7 @@ procedure GConsoleScroll (* rows -- *)
 
 	while (r@ max@ <)
 		r@ rows@ 4 * + @ r@ !
-		r@ 4 + r!
+		4 r +=
 	end
 
 	GCHeight@ rows@ - 4 * gclb@ + r!
@@ -229,16 +193,13 @@ procedure GConsoleScroll (* rows -- *)
 
 	while (r@ max@ <)
 		0 r@ !
-		r@ 4 + r!
+		4 r +=
 	end
 
 	1 GConsoleModified!
 end
 
-procedure GConsoleDoCur (* color -- *)
-	auto color
-	color!
-
+procedure GConsoleDoCur { color -- }
 	GCCurX@ FontWidth * GCCurY@ FontHeight * FontWidth FontHeight color@ GConsoleRect
 
 	1 GConsoleModified!
@@ -314,10 +275,7 @@ procedure GConsoleSetColor (* -- *)
 	end
 end
 
-procedure GConsoleParseEscape (* c -- *)
-	auto c
-	c!
-
+procedure GConsoleParseEscape { c -- }
 	if (c@ '0' >= c@ '9' <= &&)
 		GCEV@ @ 10 * GCEV@ !
 		GCEV@ @ c@ '0' - + GCEV@ !
@@ -332,10 +290,7 @@ procedure GConsoleParseEscape (* c -- *)
 	0 GCEscape!
 end
 
-procedure GConsolePutChar (* char -- *)
-	auto char
-	char!
-
+procedure GConsolePutChar { char -- }
 	if (char@ 255 >)
 		return
 	end
@@ -357,10 +312,7 @@ procedure GConsolePutChar (* char -- *)
 	GConsoleDrawCur
 end
 
-procedure GConsolePutCharF (* char -- *)
-	auto char
-	char!
-
+procedure GConsolePutCharF { char -- }
 	if (char@ '\n' ==)
 		GConsoleNewline
 		return

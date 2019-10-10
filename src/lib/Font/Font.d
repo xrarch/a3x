@@ -29,22 +29,7 @@ procedure private FontBlitBits (* bpr fg bg bitd bmp x y w h -- *)
 	DeviceExit
 end
 
-procedure FontDrawChar (* x y char bg color -- *)
-	auto color
-	color!
-
-	auto bg
-	bg!
-
-	auto char
-	char!
-
-	auto y
-	y!
-
-	auto x
-	x!
-
+procedure FontDrawChar { x y char bg color -- }
 	(* dont draw spaces *)
 	if (char@ ' ' ==)
 		return
@@ -56,22 +41,7 @@ procedure FontDrawChar (* x y char bg color -- *)
 	FontBytesPerRow color@ bg@ FontBitD bmp@ x@ y@ FontWidth FontHeight FontBlitBits
 end
 
-procedure FontDrawString (* x y string bg color -- *)
-	auto color
-	color!
-
-	auto bg
-	bg!
-
-	auto str
-	str!
-
-	auto y
-	y!
-
-	auto x
-	x!
-
+procedure FontDrawString { x y str bg color -- }
 	auto sx
 	x@ sx!
 
@@ -88,7 +58,7 @@ procedure FontDrawString (* x y string bg color -- *)
 			x@ FontWidth + x!
 		end
 
-		str@ 1 + str!
+		1 str +=
 		str@ gb c!
 	end
 end

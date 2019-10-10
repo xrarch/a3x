@@ -139,7 +139,7 @@ procedure private BootUIAuto (* -- *)
 				'.' Putc
 			end
 
-			i@ 1 + i!
+			1 i +=
 		end
 	end
 

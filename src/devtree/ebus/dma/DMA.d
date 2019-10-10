@@ -22,25 +22,7 @@ procedure DMADoOperation (* -- *)
 	DMARegisterStatus@ 1 | DMARegisterStatus!
 end
 
-procedure DMATransfer (* src dest srcinc destinc count mode -- *)
-	auto mode
-	mode!
-
-	auto count
-	count!
-
-	auto destinc
-	destinc!
-
-	auto srcinc
-	srcinc!
-
-	auto dest
-	dest!
-
-	auto src
-	src!
-
+procedure DMATransfer { src dest srcinc destinc count mode -- }
 	src@ DMARegisterSource!
 	dest@ DMARegisterDest!
 	srcinc@ DMARegisterSInc!

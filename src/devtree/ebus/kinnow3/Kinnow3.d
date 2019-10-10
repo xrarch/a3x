@@ -39,12 +39,9 @@ var KinnowVsyncList 0
 
 var KinnowNeedsInit 1
 
-procedure KinnowCommand (* cmd -- *)
+procedure KinnowCommand { cmd -- }
 	auto pbase
 	KinnowSlotSpace@ KinnowCmdPorts + pbase!
-
-	auto cmd
-	cmd!
 
 	cmd@ pbase@ sb
 
@@ -75,31 +72,19 @@ procedure KinnowOutPortC (* v -- *)
 	KinnowSlotSpace@ KinnowCmdPorts + KinnowGPUPortC + !
 end
 
-procedure KinnowInfo (* -- h w *)
+procedure KinnowInfo { -- h w }
 	auto rs
 	InterruptDisable rs!
 
 	KinnowGPUInfo KinnowCommand
 	
-	KinnowPortB
-	KinnowPortA
+	KinnowPortB h!
+	KinnowPortA w!
 
 	rs@ InterruptRestore
 end
 
-procedure KinnowSetPixelRead (* x y w h -- *)
-	auto h
-	h!
-
-	auto w
-	w!
-
-	auto y
-	y!
-
-	auto x
-	x!
-
+procedure KinnowSetPixelRead { x y w h -- }
 	auto rs
 	InterruptDisable rs!
 
@@ -117,31 +102,7 @@ procedure KinnowSetPixelRead (* x y w h -- *)
 	rs@ InterruptRestore
 end
 
-procedure KinnowSetPixelWriteRaw (* x y w h fg bg bitd writetype -- *)
-	auto writetype
-	writetype!
-
-	auto bitd
-	bitd!
-
-	auto bg
-	bg!
-
-	auto fg
-	fg!
-
-	auto h
-	h!
-
-	auto w
-	w!
-
-	auto y
-	y!
-
-	auto x
-	x!
-
+procedure KinnowSetPixelWriteRaw { x y w h fg bg bitd writetype -- }
 	auto rs
 	InterruptDisable rs!
 
@@ -171,11 +132,11 @@ procedure KinnowSetPixelWrite (* x y w h -- *)
 	0 0 0 0 KinnowSetPixelWriteRaw
 end
 
-procedure KinnowSetPixelIgnore (* color -- *)
+procedure KinnowSetPixelIgnore { color -- }
 	auto rs
 	InterruptDisable rs!
 
-	KinnowOutPortA
+	color@ KinnowOutPortA
 
 	KinnowGPUSetPPI KinnowCommand
 
@@ -231,35 +192,11 @@ procedure BuildKinnow3 (* -- *)
 	KinnowVsyncOn
 end
 
-procedure KinnowBlitS2S (* x1 y1 x2 y2 w h -- *)
-	auto h
-	h!
-
-	auto w
-	w!
-
-	auto y2
-	y2!
-
-	auto x2
-	x2!
-
-	auto y1
-	y1!
-
-	auto x1
-	x1!
-
+procedure KinnowBlitS2S { x1 y1 x2 y2 w h -- }
 	(* todo *)
 end
 
-procedure KinnowPipeRead (* to count -- *)
-	auto count
-	count!
-
-	auto to
-	to!
-
+procedure KinnowPipeRead { to count -- }
 	if (KinnowDMANode@ 0 ==)
 		auto ndma
 		"/dma" DevTreeWalk ndma!
@@ -287,19 +224,13 @@ procedure KinnowPipeRead (* to count -- *)
 		while (i@ count@ <)
 			KinnowPipeStart@ gb to@ sb
 
-			to@ 1 + to!
-			i@ 1 + i!
+			1 to +=
+			1 i +=
 		end
 	end
 end
 
-procedure KinnowPipeWrite (* from count -- *)
-	auto count
-	count!
-
-	auto from
-	from!
-
+procedure KinnowPipeWrite { from count -- }
 	if (KinnowDMANode@ 0 ==)
 		auto ndma
 		"/dma" DevTreeWalk ndma!
@@ -327,86 +258,26 @@ procedure KinnowPipeWrite (* from count -- *)
 		while (i@ count@ <)
 			from@ gb KinnowPipeStart@ sb
 
-			from@ 1 + from!
-			i@ 1 + i!
+			1 from +=
+			1 i +=
 		end
 	end
 end
 
-procedure KinnowBlitBack (* x y w h bitmap -- *)
-	auto ptr
-	ptr!
-
-	auto h
-	h!
-
-	auto w
-	w!
-
-	auto y
-	y!
-
-	auto x
-	x!
-
+procedure KinnowBlitBack { x y w h ptr -- }
 	x@ y@ w@ h@ KinnowSetPixelRead
 
 	ptr@ w@ h@ * KinnowPipeRead
 end
 
-procedure KinnowBlit (* x y w h ignore bitmap -- *)
-	auto ptr
-	ptr!
-
-	auto ignore
-	ignore!
-
-	auto h
-	h!
-
-	auto w
-	w!
-
-	auto y
-	y!
-
-	auto x
-	x!
-
+procedure KinnowBlit { x y w h ignore ptr -- }
 	ignore@ KinnowSetPixelIgnore
 	x@ y@ w@ h@ KinnowSetPixelWrite
 
 	ptr@ w@ h@ * KinnowPipeWrite
 end
 
-procedure KinnowBlitBits (* bpr fg bg bitd bmp x y w h -- *)
-	auto h
-	h!
-
-	auto w
-	w!
-
-	auto y
-	y!
-
-	auto x
-	x!
-	
-	auto ptr
-	ptr!
-
-	auto bitd
-	bitd!
-
-	auto bg
-	bg!
-
-	auto fg
-	fg!
-
-	auto bpr
-	bpr!
-
+procedure KinnowBlitBits { bpr fg bg bitd ptr x y w h -- }
 	x@ y@ w@ h@ fg@ bg@ bitd@ KinnowSetPixelWriteBits
 
 	ptr@ bpr@ h@ * KinnowPipeWrite
@@ -458,27 +329,9 @@ procedure KinnowVsyncOn (* -- *)
 	rs@ InterruptRestore
 end
 
-procedure KinnowScroll (* x y w h color rows -- *)
+procedure KinnowScroll { x y w h color rows -- }
 	auto rs
 	InterruptDisable rs!
-
-	auto rows
-	rows!
-
-	auto color
-	color!
-
-	auto h
-	h!
-
-	auto w
-	w!
-
-	auto y
-	y!
-
-	auto x
-	x!
 
 	auto cxy
 	x@ 16 << y@ | cxy!
@@ -498,24 +351,9 @@ procedure KinnowScroll (* x y w h color rows -- *)
 	rs@ InterruptRestore
 end
 
-procedure KinnowRectangle (* x y w h color -- *)
+procedure KinnowRectangle { x y w h color -- }
 	auto rs
 	InterruptDisable rs!
-
-	auto color
-	color!
-
-	auto h
-	h!
-
-	auto w
-	w!
-
-	auto y
-	y!
-
-	auto x
-	x!
 
 	auto cxy
 	x@ 16 << y@ | cxy!

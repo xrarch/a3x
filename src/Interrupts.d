@@ -25,16 +25,13 @@ procedure InterruptsInit (* -- *)
 	InterruptEnable
 end
 
-procedure FaultsCopy (* oivt -- *)
-	auto oivt
-	oivt!
-
+procedure FaultsCopy { oivt -- }
 	auto i
 	0 i!
 	while (i@ 10 <)
 		oivt@ @ i@ InterruptRegister
-		i@ 1 + i!
-		oivt@ 4 + oivt!
+		1 i +=
+		4 oivt +=
 	end
 end
 
@@ -43,7 +40,7 @@ procedure FaultsRegister (* -- *)
 	0 i!
 	while (i@ 10 <)
 		pointerof FaultsHandlerASM i@ InterruptRegister
-		i@ 1 + i!
+		1 i +=
 	end
 end
 
@@ -61,15 +58,9 @@ table FaultsNames
 endtable
 public FaultsNames
 
-procedure FaultsHandler (* num loc -- *)
+procedure FaultsHandler { num loc -- }
 	auto rs
 	InterruptDisable rs!
-
-	auto loc
-	loc!
-
-	auto num
-	num!
 
 	"verbose-fault?" NVRAMGetVar dup if (0 ==)
 		drop "false" "verbose-fault?" NVRAMSetVar

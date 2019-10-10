@@ -38,8 +38,8 @@ procedure AmanatsuReadMID (* -- mid *)
 	AmaPortMID DCitronInl
 end
 
-procedure AmanatsuCommand (* cmd -- *)
-	AmaPortCMD DCitronOutl
+procedure AmanatsuCommand { cmd -- }
+	cmd@ AmaPortCMD DCitronOutl
 
 	while (AmaPortCMD DCitronInl 0 ~=) end
 end
@@ -68,13 +68,7 @@ procedure AmanatsuDevFromInt (* int -- dev *)
 	AmaInterruptMap + gb
 end
 
-procedure AmanatsuSetInterrupt (* handler dev -- *)
-	auto dev
-	dev!
-
-	auto handler
-	handler!
-
+procedure AmanatsuSetInterrupt { handler dev -- }
 	handler@ AmaLastInterrupt@ PBInterruptRegister
 	AmaLastInterrupt@ dev@ 1 AmanatsuSpecialCMD
 
@@ -83,16 +77,7 @@ procedure AmanatsuSetInterrupt (* handler dev -- *)
 	AmaLastInterrupt@ 1 + AmaLastInterrupt!
 end
 
-procedure AmanatsuSpecialCMD (* a b cmd -- *)
-	auto cmd
-	cmd!
-
-	auto b
-	b!
-
-	auto a
-	a!
-
+procedure AmanatsuSpecialCMD { a b cmd -- }
 	0 AmanatsuSelectDev
 	a@ AmanatsuWriteA
 	b@ AmanatsuWriteB

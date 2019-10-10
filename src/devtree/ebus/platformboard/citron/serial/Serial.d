@@ -16,29 +16,26 @@ procedure BuildCSerial (* -- *)
 	DeviceExit
 end
 
-procedure SerialWrite (* c -- *)
+procedure SerialWrite { c -- }
 	auto rs
 	InterruptDisable rs!
 
-	SerialDataPort DCitronOutb
+	c@ SerialDataPort DCitronOutb
 	SerialCmdWrite SerialCmdPort DCitronCommand
 
 	rs@ InterruptRestore
 end
 
-procedure SerialRead (* -- c *)
+procedure SerialRead { -- c }
 	auto rs
 	InterruptDisable rs!
 
-	auto c
 	SerialCmdRead SerialCmdPort DCitronCommand
 	SerialDataPort DCitronIni c!
 
 	rs@ InterruptRestore
 
 	if (c@ 0xFFFF ==)
-		ERR return
+		ERR c! return
 	end
-
-	c@
 end

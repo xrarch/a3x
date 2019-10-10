@@ -27,10 +27,7 @@ procedure ClockInt (* -- *)
 	ClockInterval@ ClockUptimeMS@ + ClockUptimeMS!
 end
 
-procedure ClockWait (* ms -- *)
-	auto ms
-	ms!
-
+procedure ClockWait { ms -- }
 	auto wu
 	ClockUptimeMS@ ms@ + wu!
 
@@ -41,10 +38,7 @@ procedure ClockUptime (* -- ms *)
 	ClockUptimeMS@
 end
 
-procedure ClockSetInterval (* ms -- *)
-	auto ms
-	ms!
-
+procedure ClockSetInterval { ms -- }
 	ms@ ClockInterval!
 
 	auto rs

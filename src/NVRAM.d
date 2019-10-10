@@ -13,21 +13,19 @@ procedure NVRAMFormat (* -- *)
 	0 i!
 	while (i@ NVRAMSize <)
 		0 i@ NVRAMOffset !
-		i@ 4 + i!
+		4 i +=
 	end
 
 	NVRAMMagic NVRAMHeader_Magic NVRAMOffset !
 end
 
-procedure NVRAMOffset (* loc -- nvaddr *)
-	auto loc
-	loc!
-
+procedure NVRAMOffset { loc -- nvaddr }
 	if (loc@ NVRAMSize >=)
-		0 return
+		0 nvaddr!
+		return
 	end
 
-	loc@ NVRAMBase +
+	loc@ NVRAMBase + nvaddr!
 end
 
 procedure NVRAMFindFree (* -- free or 0 *)
@@ -42,28 +40,22 @@ procedure NVRAMFindFree (* -- free or 0 *)
 		end
 
 		sp@ NVRAMVariable_SIZEOF + sp!
-		i@ 1 + i!
+		1 i +=
 	end
 
 	0 return
 end
 
-procedure NVRAMDeleteVar (* name -- *)
+procedure NVRAMDeleteVar { name -- }
 	auto vl
-	NVRAMGetVar vl!
+	name@ NVRAMGetVar vl!
 
 	if (vl@ 0 ==) return end
 
 	0 vl@ NVRAMVariable_Contents - sb
 end
 
-procedure NVRAMSetVar (* str name -- *)
-	auto name
-	name!
-
-	auto str
-	str!
-
+procedure NVRAMSetVar { str name -- }
 	auto vl
 	name@ NVRAMGetVar vl!
 
@@ -81,13 +73,7 @@ procedure NVRAMSetVar (* str name -- *)
 	end
 end
 
-procedure NVRAMSetVarNum (* num name -- *)
-	auto name
-	name!
-
-	auto num
-	num!
-
+procedure NVRAMSetVarNum { num name -- }
 	auto buf
 	15 Calloc buf!
 
@@ -97,10 +83,7 @@ procedure NVRAMSetVarNum (* num name -- *)
 	buf@ Free
 end
 
-procedure NVRAMGetVar (* name -- ptr or 0 *)
-	auto name
-	name!
-
+procedure NVRAMGetVar { name -- ptr }
 	auto i
 	0 i!
 
@@ -108,14 +91,16 @@ procedure NVRAMGetVar (* name -- ptr or 0 *)
 	NVRAMHeader_SIZEOF sp!
 	while (i@ NVRAMVarCount <)
 		if (sp@ NVRAMOffset name@ strcmp)
-			sp@ NVRAMVariable_Contents + NVRAMOffset return
+			sp@ NVRAMVariable_Contents + NVRAMOffset ptr!
+			return
 		end
 
 		sp@ NVRAMVariable_SIZEOF + sp!
-		i@ 1 + i!
+		1 i +=
 	end
 
-	0 return
+	0 ptr!
+	return
 end
 
 procedure NVRAMGetVarNum (* var -- n *)

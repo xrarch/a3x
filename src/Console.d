@@ -13,11 +13,8 @@ public ConsoleOutMethod
 var ConsoleInMethod 0
 public ConsoleInMethod
 
-procedure ConsoleSetIn (* devnode -- *)
-	dup ConsoleIn!
-
-	auto dn
-	dn!
+procedure ConsoleSetIn { dn -- }
+	dn@ ConsoleIn!
 
 	if (dn@ 0 ==)
 		0 ConsoleIn!
@@ -30,11 +27,8 @@ procedure ConsoleSetIn (* devnode -- *)
 	DeviceExit
 end
 
-procedure ConsoleSetOut (* devnode -- *)
-	dup ConsoleOut!
-
-	auto dn
-	dn!
+procedure ConsoleSetOut { dn -- }
+	dn@ ConsoleOut!
 
 	if (dn@ 0 ==)
 		0 ConsoleOut!
@@ -47,29 +41,17 @@ procedure ConsoleSetOut (* devnode -- *)
 	DeviceExit
 end
 
-procedure Putc (* c -- *)
-	if (ConsoleOutMethod@ 0 ==)
-
-		asm "
-
-		popv r5, r0
-		.db 0xF1
-
-		"
-
-		return
-	end
-
+procedure Putc { c -- }
 	ConsoleOut@ DeviceSelectNode
-		ConsoleOutMethod@ Call
+		c@ ConsoleOutMethod@ Call
 	DeviceExit
 end
 
-procedure Getc (* -- c *)
+procedure Getc { -- c }
 	if (ConsoleInMethod@ 0 ==) ERR return end
 
 	ConsoleIn@ DeviceSelectNode
-		ConsoleInMethod@ Call
+		ConsoleInMethod@ Call c!
 	DeviceExit
 end
 

@@ -69,16 +69,6 @@ procedure MonitorCommandsInit (* -- *)
 	"_ds"
 	MonitorAddCommand
 
-	"Write nvram-rc."
-	pointerof MonitorCommandNvramrc
-	"nvramrc"
-	MonitorAddCommand
-
-	"Print nvram-rc."
-	pointerof MonitorCommandPrintnvramrc
-	"printnvramrc"
-	MonitorAddCommand
-
 	"[ptr] Print string."
 	pointerof MonitorCommandPuts
 	"puts"
@@ -252,60 +242,6 @@ procedure _SF (* -- *)
 	"c;\n" Printf
 end
 
-procedure MonitorCommandPrintnvramrc (* -- *)
-	"nvramrc" NVRAMGetVar dup if (0 ==) drop return end
-	"%s\n" Printf
-end
-
-procedure MonitorCommandNvramrc (* -- *)
-	" finish by typing a single ';' on a blank line, restart by typing '#'.\n" Printf
-
-	auto editing
-	1 editing!
-
-	auto bigbuf
-	240 Calloc bigbuf!
-
-	auto linebuf
-	240 Calloc linebuf!
-
-	auto len
-	0 len!
-
-	while (editing@)
-		len@ " %d/239\t%% " Printf
-		linebuf@ 239 Gets
-
-		if (linebuf@ ";" strcmp)
-			break
-		end elseif (linebuf@ "#" strcmp)
-			0 len!
-			bigbuf@ strzero
-		end else
-			bigbuf@ len@ + linebuf@ strcpy
-			len@ linebuf@ strlen + len!
-			'\n' bigbuf@ len@ + sb
-			len@ 1 + len!
-		end
-	end
-
-	if (len@ 240 >=)
-		" script too long!\n"
-	end else
-		bigbuf@ "nvramrc" NVRAMSetVar
-
-		" enable nvramrc? [true/false] " Printf
-		auto lilbuf
-		10 Calloc lilbuf!
-
-		lilbuf@ 9 Gets
-		lilbuf@ "nvramrc?" NVRAMSetVar
-	end
-
-	bigbuf@ Free
-	linebuf@ Free
-end
-
 procedure MonitorCommandListenv (* -- *)
 	auto i
 	0 i!
@@ -322,7 +258,7 @@ procedure MonitorCommandListenv (* -- *)
 		end
 
 		sp@ NVRAMVariable_SIZEOF + sp!
-		i@ 1 + i!
+		1 i +=
 	end
 end
 

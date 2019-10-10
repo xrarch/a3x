@@ -24,11 +24,7 @@ end
 
 (* TODO: find out why when this is used as a call, the path string is
    occasionally corrupted with a zero *)
-procedure DevTreeWalk (* path -- node or 0 *)
-	auto path
-	path!
-
-	auto cnode
+procedure DevTreeWalk { path -- cnode }
 	DevTree@ TreeRoot cnode!
 
 	auto pcomp
@@ -38,7 +34,9 @@ procedure DevTreeWalk (* path -- node or 0 *)
 		path@ pcomp@ '/' 255 strntok path!
 
 		if (pcomp@ strlen 0 ==)
-			pcomp@ Free cnode@ return
+			pcomp@ Free
+
+			return
 		end
 
 		auto tnc
@@ -63,15 +61,15 @@ procedure DevTreeWalk (* path -- node or 0 *)
 
 		if (nnode@ 0 ==)
 			pcomp@ Free
-			0 return
+			0 cnode!
+
+			return
 		end
 
 		nnode@ cnode!
 	end
 
 	pcomp@ Free
-
-	cnode@
 end
 
 procedure DeviceParent (* -- *)
@@ -84,40 +82,25 @@ procedure DeviceSelectNode (* node -- *)
 	DevCurrent!
 end
 
-procedure DeviceSelect (* path -- *)
-	auto path
-	path!
-
+procedure DeviceSelect { path -- }
 	DevCurrent@ DevStackPUSH
 
 	path@ DevTreeWalk dup if (0 ~=) DevCurrent! end else drop end
 end
 
-procedure DeviceNNew (* -- node *)
-	auto dnode
-	DeviceNode_SIZEOF Calloc
-	dnode!
+procedure DeviceNNew { -- dnode }
+	DeviceNode_SIZEOF Calloc dnode!
 
 	ListCreate dnode@ DeviceNode_Methods + !
 	ListCreate dnode@ DeviceNode_Properties + !
-
-	dnode@
 end
 
-procedure DeviceNNewOMP (* methodslist propertieslist -- node *)
-	auto pl
-	pl!
-	auto ml
-	ml!
-
-	auto dnode
+procedure DeviceNNewOMP { ml pl -- dnode }
 	DeviceNode_SIZEOF Calloc
 	dnode!
 
 	ml@ dnode@ DeviceNode_Methods + !
 	pl@ dnode@ DeviceNode_Properties + !
-
-	dnode@
 end
 
 (* creates a new unnamed device node, adds it to the
@@ -129,11 +112,8 @@ procedure DeviceNew (* -- *)
 	DeviceNNew DevCurrent@ DevTree@ TreeInsertChild DevCurrent!
 end
 
-procedure DeviceClone (* node -- *)
+procedure DeviceClone { node -- }
 	DevCurrent@ DevStackPUSH
-
-	auto node
-	node!
 
 	auto ml
 	node@ TreeNodeValue DeviceNode_Methods + @ ml!
@@ -157,13 +137,7 @@ procedure DSetName (* name -- *)
 	DevCurrent@ TreeNodeValue DeviceNode_Name + !
 end
 
-procedure DAddMethod (* method name -- *)
-	auto name
-	name!
-
-	auto method
-	method!
-
+procedure DAddMethod { method name -- }
 	auto mnode
 	DeviceMethod_SIZEOF Calloc mnode!
 
@@ -173,26 +147,47 @@ procedure DAddMethod (* method name -- *)
 	mnode@ DGetMethods ListInsert
 end
 
-procedure DAddProperty (* string name -- *)
-	auto name
-	name!
+procedure DSetProperty { prop name -- }
+	auto plist
+	DGetProperties plist!
+
+	auto n
+	plist@ ListHead n!
 
 	auto prop
-	prop!
+	-1 prop!
 
-	auto mnode
-	DeviceProperty_SIZEOF Calloc mnode!
+	while (n@ 0 ~=)
+		auto pnode
+		n@ ListNodeValue
+		pnode!
 
-	name@ mnode@ DeviceProperty_Name + !
-	prop@ mnode@ DeviceProperty_Value + !
+		if (pnode@ DeviceProperty_Name + @ name@ strcmp)
+			pnode@ prop!
+			break
+		end
 
-	mnode@ DGetProperties ListInsert 
+		n@ ListNodeNext n!
+	end
+
+	if (prop@ -1 ==)
+		auto mnode
+		DeviceProperty_SIZEOF Calloc mnode!
+
+		name@ mnode@ DeviceProperty_Name + !
+		prop@ mnode@ DeviceProperty_Value + !
+
+		mnode@ DGetProperties ListInsert
+	end else
+		prop@ mnode@ DeviceProperty_Value + !
+	end
 end
 
-procedure DGetProperty (* name -- string or 0 *)
-	auto name
-	name!
+procedure DAddProperty (* prop name -- *)
+	DSetProperty
+end
 
+procedure DGetProperty { name -- string }
 	auto plist
 	DGetProperties plist!
 
@@ -205,19 +200,17 @@ procedure DGetProperty (* name -- string or 0 *)
 		pnode!
 
 		if (pnode@ DeviceProperty_Name + @ name@ strcmp)
-			pnode@ DeviceProperty_Value + @ return
+			pnode@ DeviceProperty_Value + @ string!
+			return
 		end
 
 		n@ ListNodeNext n!
 	end
 
-	0 return
+	0 string!
 end
 
-procedure DGetMethod (* name -- ptr or 0 *)
-	auto name
-	name!
-
+procedure DGetMethod { name -- ptr }
 	auto plist
 	DGetMethods plist!
 
@@ -230,14 +223,14 @@ procedure DGetMethod (* name -- ptr or 0 *)
 		pnode!
 
 		if (pnode@ DeviceMethod_Name + @ name@ strcmp)
-			auto out
-			pnode@ DeviceMethod_Func + @ return
+			pnode@ DeviceMethod_Func + @ ptr!
+			return
 		end
 
 		n@ ListNodeNext n!
 	end
 
-	0
+	0 ptr!
 end
 
 procedure DCallMethod (* ... name -- ... ok? *)

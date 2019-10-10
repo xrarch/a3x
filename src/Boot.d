@@ -15,14 +15,11 @@ table BootErrors
 endtable
 public BootErrors
 
-procedure DevBootable (* dnode -- bootable? *)
+procedure DevBootable (* devnode -- bootable? *)
 	DevBootableR swap drop
 end
 
-procedure DevBootableR (* dnode -- brecord bootable? *)
-	auto devnode
-	devnode!
-
+procedure DevBootableR { devnode } (* -- brecord bootable? *)
 	if (devnode@ 0 ==)
 		7 return
 	end
@@ -78,13 +75,7 @@ procedure AutoBoot (* -- ok? *)
 	BootNode
 end
 
-procedure BootNode (* devnode args -- ok? *)
-	auto args
-	args!
-
-	auto devnode
-	devnode!
-
+procedure BootNode { devnode args } (* -- ok? *)
 	args@ devnode@ "bootnode:\n\tnode: %x\n\targs: %s\n\n" Printf
 
 	auto brecord
@@ -139,8 +130,8 @@ procedure BootNode (* devnode args -- ok? *)
 
 			'.' Putc
 
-			bblock@ 1 + bblock!
-			i@ 1 + i!
+			1 bblock +=
+			1 i +=
 			ptr@ 4096 + ptr!
 		end
 

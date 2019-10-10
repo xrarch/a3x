@@ -17,7 +17,7 @@ procedure BuildMemory (* -- *)
 		while (i@ max@ <)
 			sz@ i@ RAM256SlotSize + sz!
 
-			i@ 1 + i!
+			1 i +=
 		end
 
 		sz@ "totalRAM" DAddProperty

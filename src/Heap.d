@@ -72,7 +72,7 @@ procedure HeapDump (* -- *)
 
 		stotal@ size@ + stotal!
 		ept@ size@ + ept!
-		i@ 1 + i!
+		1 i +=
 	end
 
 	tfree@ talloc@ stotal@ "heap size: 0x%x bytes.\n%d bytes taken, %d bytes free.\n" Printf
@@ -80,18 +80,9 @@ end
 
 (* first-fit *)
 
-procedure private Malloc1 (* max last sz -- *)
+procedure private Malloc1 { max last sz } (* -- ptr *)
 	auto rs
 	InterruptDisable rs!
-
-	auto sz
-	sz!
-
-	auto last
-	last!
-
-	auto max
-	max!
 
 	if (sz@ 0 ==)
 		ERR rs@ InterruptRestore return
@@ -127,7 +118,7 @@ procedure private Malloc1 (* max last sz -- *)
 				*)
 
 				if (big@ 1 + size@ ==) (* just the right size *)
-					ept@ KHeapHeader_allocated + 1 sb
+					1 ept@ KHeapHeader_allocated + sb
 					ept@ KHeapHeader_SIZEOF +
 
 					ept@ KHeapLast!
@@ -167,7 +158,7 @@ procedure private Malloc1 (* max last sz -- *)
 			end
 		end
 
-		ept@ size@ + ept!
+		size@ ept +=
 	end
 
 	rs@ InterruptRestore
@@ -175,51 +166,36 @@ procedure private Malloc1 (* max last sz -- *)
 	ERR return (* no space big enough *)
 end
 
-procedure Malloc (* sz -- ptr *)
-	auto sz
-	sz!
+procedure Malloc { sz -- ptr }
+	0 KHeapLast@ sz@ Malloc1 ptr!
 
-	auto r
-	0 KHeapLast@ sz@ Malloc1 r!
-
-	if (r@ ERR ~=)
-		r@ return
+	if (ptr@ ERR ~=)
+		return
 	end
 
-	KHeapLast@ 0 sz@ Malloc1 r!
+	KHeapLast@ 0 sz@ Malloc1 ptr!
 
-	if (r@ ERR ~=)
-		r@ return
+	if (ptr@ ERR ~=)
+		return
 	end
 
-	ERR return
+	ERR ptr! return
 end
 
-procedure Calloc (* sz -- ptr *)
-	auto sz
-	sz!
+procedure Calloc { sz -- ptr }
+	sz@ Malloc ptr!
 
-	auto he
-
-	sz@ Malloc he!
-
-	if (he@ ERR ==)
-		ERR return
+	if (ptr@ ERR ==)
+		ERR ptr!
+		return
 	end
 
-	he@ sz@ 0 memset
-
-	he@
+	ptr@ sz@ 0 memset
 end
 
-procedure private HeapMerge (* ptr msize -- *)
+procedure private HeapMerge { ptr msize -- }
 	auto rs
 	InterruptDisable rs!
-
-	auto msize
-	msize!
-	auto ptr
-	ptr!
 
 	auto last
 	auto next
@@ -279,12 +255,9 @@ procedure private HeapMerge (* ptr msize -- *)
 	rs@ InterruptRestore
 end
 
-procedure Free (* ptr -- *)
+procedure Free { ptr -- }
 	auto rs
 	InterruptDisable rs!
-
-	auto ptr
-	ptr!
 
 	if (ptr@ 0 == ptr@ ERR == ||)
 		ptr@ "tried to free 0x%x!\n" Printf
@@ -303,21 +276,3 @@ procedure Free (* ptr -- *)
 
 	rs@ InterruptRestore
 end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
