@@ -14,7 +14,7 @@ procedure Main (* -- *)
 	end else
 		BootUI
 	end
-
+	
 	"auto-boot?" NVRAMGetVar dup if (0 ==)
 		drop "true" "auto-boot?" NVRAMSetVar
 		"true"

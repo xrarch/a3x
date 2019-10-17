@@ -29,6 +29,8 @@ procedure AKeyboardPoll (* -- *)
 
 					pointerof AKeyboardRead "read" DAddMethod
 
+					pointerof AKeyboardIsDown "isDown" DAddMethod
+
 					1 AKeyboardCount +=
 				DeviceExit
 			DeviceExit
@@ -59,6 +61,16 @@ procedure AKeyboardSpecial { code -- char }
 	end else
 		ERR char!
 	end
+end
+
+procedure AKeyboardIsDown { scancode -- down }
+	auto id
+	"aID" DGetProperty id!
+
+	id@ AmanatsuSelectDev
+	scancode@ AmanatsuWriteA
+	3 AmanatsuCommand
+	AmanatsuReadA down!
 end
 
 procedure AKeyboardRead { -- c }

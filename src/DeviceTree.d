@@ -147,7 +147,7 @@ procedure DAddMethod { method name -- }
 	mnode@ DGetMethods ListInsert
 end
 
-procedure DSetProperty { prop name -- }
+procedure DSetProperty { value name -- }
 	auto plist
 	DGetProperties plist!
 
@@ -175,11 +175,11 @@ procedure DSetProperty { prop name -- }
 		DeviceProperty_SIZEOF Calloc mnode!
 
 		name@ mnode@ DeviceProperty_Name + !
-		prop@ mnode@ DeviceProperty_Value + !
+		value@ mnode@ DeviceProperty_Value + !
 
 		mnode@ DGetProperties ListInsert
 	end else
-		prop@ mnode@ DeviceProperty_Value + !
+		value@ mnode@ DeviceProperty_Value + !
 	end
 end
 

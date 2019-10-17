@@ -41,7 +41,9 @@ extern DSetName (* name -- *)
 
 extern DAddMethod (* method name -- *)
 
-extern DAddProperty (* string name -- *)
+extern DAddProperty (* value name -- *)
+
+extern DSetProperty (* value name -- *)
 
 extern DGetProperty (* name -- string or 0 *)
 
