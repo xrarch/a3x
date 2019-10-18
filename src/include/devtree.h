@@ -8,6 +8,8 @@ endstruct
 struct DeviceMethod
 	4 Name
 	4 Func
+	4 PEC
+	4 Board
 endstruct
 
 struct DeviceProperty
@@ -39,6 +41,8 @@ extern DeviceCloneWalk (* path -- *)
 
 extern DSetName (* name -- *)
 
+extern DAddMethodFull (* method pec name -- *)
+
 extern DAddMethod (* method name -- *)
 
 extern DAddProperty (* value name -- *)
@@ -50,6 +54,8 @@ extern DGetProperty (* name -- string or 0 *)
 extern DGetMethod (* name -- ptr or 0 *)
 
 extern DCallMethod (* ... name -- ... ok? *)
+
+extern DCallMethodPtr (* ... ptr -- ... *)
 
 extern DeviceExit (* -- *)
 

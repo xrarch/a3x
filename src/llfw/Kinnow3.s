@@ -162,6 +162,19 @@ LLFWK2Fill:
 	pop r2
 	ret
 
+;r0 - slotspace base
+LLFWK2ColorMode:
+.global LLFWK2ColorMode
+	push r1
+	li r1, 0x1
+	push r0
+	call LLFWK2WPortA
+	pop r0
+	li r1, 0x9
+	call LLFWK2Command
+	pop r1
+	ret
+
 ;r0 - width
 ;r1 - height
 ;r2 - ptr

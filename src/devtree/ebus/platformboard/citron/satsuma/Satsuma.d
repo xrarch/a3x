@@ -49,7 +49,7 @@ procedure private AHDBDMATransferBlock { src dest -- }
 			4 4
 			1024
 			2
-			AHDBDMATransfer@ Call
+			AHDBDMATransfer@ DCallMethodPtr
 		DeviceExit
 	end else
 		dest@ src@ 4096 memcpy

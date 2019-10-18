@@ -6,6 +6,7 @@
 .extern LLFWK2Find
 .extern LLFWK2Fill
 .extern LLFWK2BlitIcon
+.extern LLFWK2ColorMode
 
 .extern Reset
 
@@ -76,6 +77,11 @@ LLFWErrorGraphical:
 	call LLFWK2Find
 	cmpi r0, 0
 	be .out
+
+	push r0
+	call LLFWK2ColorMode
+	pop r0
+
 	mov r2, r0
 
 	li r1, 78

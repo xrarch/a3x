@@ -1,6 +1,8 @@
 #include "<inc>/console.h"
 #include "<inc>/devtree.h"
 #include "<inc>/font.h"
+#include "<inc>/aixo.h"
+#include "<inc>/pec.h"
 #include "<inc>/nvram.h"
 #include "<inc>/boot.h"
 #include "<inc>/interrupt.h"

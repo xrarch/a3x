@@ -28,6 +28,7 @@ const KinnowGPUSetPPR 0x5
 const KinnowGPUSetPPW 0x6
 const KinnowGPUSetPPI 0x7
 const KinnowGPUS2S 0x8
+const KinnowGPUSetMode 0x9
 
 var KinnowDMANode 0
 var KinnowDMATransfer 0
@@ -70,6 +71,17 @@ end
 
 procedure KinnowOutPortC (* v -- *)
 	KinnowSlotSpace@ KinnowCmdPorts + KinnowGPUPortC + !
+end
+
+procedure KinnowSetMode { mode -- }
+	auto rs
+	InterruptDisable rs!
+
+	mode@ KinnowOutPortA
+
+	KinnowGPUSetMode KinnowCommand
+
+	rs@ InterruptRestore
 end
 
 procedure KinnowInfo { -- h w }
@@ -182,6 +194,7 @@ procedure BuildKinnow3 (* -- *)
 		pointerof KinnowBlitS2S "blitS2S" DAddMethod
 		pointerof KinnowBlitBits "blitBits" DAddMethod
 		pointerof KinnowInit "init" DAddMethod
+		pointerof KinnowSetMode "kinnow3,setMode" DAddMethod
 	DeviceExit
 
 	w@ KinnowWidth!
@@ -190,6 +203,8 @@ procedure BuildKinnow3 (* -- *)
 	ListCreate KinnowVsyncList!
 
 	KinnowVsyncOn
+
+	1 KinnowSetMode
 end
 
 procedure KinnowBlitS2S { x1 y1 x2 y2 w h -- }
@@ -216,7 +231,7 @@ procedure KinnowPipeRead { to count -- }
 			0 1
 			count@
 			0
-			KinnowDMATransfer@ Call
+			KinnowDMATransfer@ DCallMethodPtr
 		DeviceExit
 	end else
 		auto i
@@ -250,7 +265,7 @@ procedure KinnowPipeWrite { from count -- }
 			1 0
 			count@
 			0
-			KinnowDMATransfer@ Call
+			KinnowDMATransfer@ DCallMethodPtr
 		DeviceExit
 	end else
 		auto i

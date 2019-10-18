@@ -157,7 +157,7 @@ procedure GConsoleRect { x y w h color -- }
 		y@ GConsoleY@ +
 		w@ h@
 		color@
-		GCRectP@ Call
+		GCRectP@ DCallMethodPtr
 	DeviceExit
 end
 
@@ -168,7 +168,7 @@ procedure GConsoleScroll { rows -- }
 		FontHeight GCHeight@ * 1 +
 		GCColorBG@
 		rows@ FontHeight *
-		GCScrollP@ Call
+		GCScrollP@ DCallMethodPtr
 	DeviceExit
 
 	auto k

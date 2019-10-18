@@ -20,7 +20,7 @@ extern Monitor
 
 procedure private BUIRect (* x y w h color -- *)
 	BUIScreenNode@ DeviceSelectNode
-		BUIRectP@ Call
+		BUIRectP@ DCallMethodPtr
 	DeviceExit
 end
 

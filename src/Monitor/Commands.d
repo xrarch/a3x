@@ -109,10 +109,23 @@ procedure MonitorCommandsInit (* -- *)
 	"wait"
 	MonitorAddCommand
 
+	"test"
+	pointerof Test
+	"test"
+	MonitorAddCommand
+
 	0
 	pointerof _SF
 	"sf"
 	MonitorAddCommand
+end
+
+extern PECEvaluate
+
+externconst PECErrors
+
+procedure private Test (* -- *)
+	[0xC0000000 0xC0005000 PECEvaluate]PECErrors@ "%s\n" Printf
 end
 
 procedure MonitorCommandWait (* -- *)

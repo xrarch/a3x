@@ -7,6 +7,7 @@ extern DeviceInit
 extern ConsoleInit
 extern FaultsRegister
 extern FontInit
+extern PECInit
 
 extern Main
 
@@ -18,6 +19,7 @@ procedure AntecedentEntry (* -- *)
 
 	HeapInit
 	InterruptsInit
+	PECInit
 	DeviceInit
 	ConsoleInit
 

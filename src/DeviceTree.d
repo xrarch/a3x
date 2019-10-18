@@ -88,14 +88,14 @@ procedure DeviceSelect { path -- }
 	path@ DevTreeWalk dup if (0 ~=) DevCurrent! end else drop end
 end
 
-procedure DeviceNNew { -- dnode }
+procedure private DeviceNNew { -- dnode }
 	DeviceNode_SIZEOF Calloc dnode!
 
 	ListCreate dnode@ DeviceNode_Methods + !
 	ListCreate dnode@ DeviceNode_Properties + !
 end
 
-procedure DeviceNNewOMP { ml pl -- dnode }
+procedure private DeviceNNewOMP { ml pl -- dnode }
 	DeviceNode_SIZEOF Calloc
 	dnode!
 
@@ -137,14 +137,20 @@ procedure DSetName (* name -- *)
 	DevCurrent@ TreeNodeValue DeviceNode_Name + !
 end
 
-procedure DAddMethod { method name -- }
+procedure DAddMethodFull { board method pec name -- }
 	auto mnode
 	DeviceMethod_SIZEOF Calloc mnode!
 
 	name@ mnode@ DeviceMethod_Name + !
 	method@ mnode@ DeviceMethod_Func + !
+	pec@ mnode@ DeviceMethod_PEC + !
+	board@ mnode@ DeviceMethod_Board + !
 
 	mnode@ DGetMethods ListInsert
+end
+
+procedure DAddMethod { method name -- }
+	0 method@ 0 name@ DAddMethodFull
 end
 
 procedure DSetProperty { value name -- }
@@ -223,7 +229,7 @@ procedure DGetMethod { name -- ptr }
 		pnode!
 
 		if (pnode@ DeviceMethod_Name + @ name@ strcmp)
-			pnode@ DeviceMethod_Func + @ ptr!
+			pnode@ ptr!
 			return
 		end
 
@@ -231,6 +237,25 @@ procedure DGetMethod { name -- ptr }
 	end
 
 	0 ptr!
+end
+
+procedure DCallMethodPtr (* ... ptr -- *)
+	auto pnode
+	pnode!
+
+	if (pnode@ DeviceMethod_PEC + @ 0 ==)
+		pnode@ DeviceMethod_Func + @ Call return
+	end else
+		auto ok
+		pnode@ DeviceMethod_Board + @
+		pnode@ DeviceMethod_Func + @
+		pnode@ DeviceMethod_PEC + @
+		PECEvaluateFunc ok!
+		if (ok@ 1 ~=)
+			[ok@]PECErrors@ "couldn't execute PEC method %s: %s\n" Printf
+		end
+		return
+	end
 end
 
 procedure DCallMethod (* ... name -- ... ok? *)
@@ -249,7 +274,21 @@ procedure DCallMethod (* ... name -- ... ok? *)
 		pnode!
 
 		if (pnode@ DeviceMethod_Name + @ name@ strcmp)
-			pnode@ DeviceMethod_Func + @ Call 1 return
+			if (pnode@ DeviceMethod_PEC + @ 0 ==)
+				pnode@ DeviceMethod_Func + @ Call 1 return
+			end else
+				auto ok
+				pnode@ DeviceMethod_Board + @
+				pnode@ DeviceMethod_Func + @
+				pnode@ DeviceMethod_PEC + @
+				PECEvaluateFunc ok!
+				if (ok@ 1 ~=)
+					[ok@]PECErrors@ "couldn't execute PEC method %s: %s\n" Printf
+					0 return
+				end
+
+				1 return
+			end
 		end
 
 		n@ ListNodeNext n!

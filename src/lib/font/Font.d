@@ -25,7 +25,7 @@ end
 
 procedure private FontBlitBits (* bpr fg bg bitd bmp x y w h -- *)
 	FontScreenNode@ DeviceSelectNode
-		FontBBP@ Call
+		FontBBP@ DCallMethodPtr
 	DeviceExit
 end
 

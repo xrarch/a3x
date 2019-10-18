@@ -43,7 +43,7 @@ end
 
 procedure Putc { c -- }
 	ConsoleOut@ DeviceSelectNode
-		c@ ConsoleOutMethod@ Call
+		c@ ConsoleOutMethod@ DCallMethodPtr
 	DeviceExit
 end
 
@@ -51,7 +51,7 @@ procedure Getc { -- c }
 	if (ConsoleInMethod@ 0 ==) ERR return end
 
 	ConsoleIn@ DeviceSelectNode
-		ConsoleInMethod@ Call c!
+		ConsoleInMethod@ DCallMethodPtr c!
 	DeviceExit
 end
 
