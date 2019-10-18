@@ -20,6 +20,7 @@ table API
 	pointerof DCallMethod
 	pointerof DeviceExit
 	pointerof DSetProperty
+	pointerof DCallMethodPtr
 endtable
 public API
 
