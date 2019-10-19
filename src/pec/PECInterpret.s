@@ -83,12 +83,6 @@ OpPUSH:
 	addi r1, r1, 4
 	ret
 
-OpPUSHD:
-	subi r1, r1, 4
-	lrr.l r4, r1
-	pushv r5, r4
-	ret
-
 .extern PECNativeCall
 OpNCALL:
 	lrr.l r4, r0
@@ -104,18 +98,6 @@ OpNCALL:
 
 .invalid:
 	li r0, StatusBadNC
-	call FastReturn
-
-OpRET:
-	cmp r2, r6
-	be .finished
-
-	subi r2, r2, 4
-	lrr.l r0, r2
-	ret
-
-.finished:
-	li r0, 1
 	call FastReturn
 
 OpBASE:
@@ -134,39 +116,362 @@ OpSLOT:
 	addi r1, r1, 4
 	ret
 
+OpADD:
+	subi r1, r1, 4
+	lrr.l r4, r1
+	subi r1, r1, 4
+	lrr.l r10, r1
+	add r4, r10, r4
+	srr.l r1, r4
+	addi r1, r1, 4
+	ret
+
+OpSUB:
+	subi r1, r1, 4
+	lrr.l r4, r1
+	subi r1, r1, 4
+	lrr.l r10, r1
+	sub r4, r10, r4
+	srr.l r1, r4
+	addi r1, r1, 4
+	ret
+
+OpMUL:
+	subi r1, r1, 4
+	lrr.l r4, r1
+	subi r1, r1, 4
+	lrr.l r10, r1
+	mul r4, r10, r4
+	srr.l r1, r4
+	addi r1, r1, 4
+	ret
+
+OpDIV:
+	subi r1, r1, 4
+	lrr.l r4, r1
+	subi r1, r1, 4
+	lrr.l r10, r1
+	div r4, r10, r4
+	srr.l r1, r4
+	addi r1, r1, 4
+	ret
+
+OpMOD:
+	subi r1, r1, 4
+	lrr.l r4, r1
+	subi r1, r1, 4
+	lrr.l r10, r1
+	mod r4, r10, r4
+	srr.l r1, r4
+	addi r1, r1, 4
+	ret
+
+OpDROP:
+	subi r1, r1, 4
+	ret
+
+OpEQ:
+	subi r1, r1, 4
+	lrr.l r4, r1
+	subi r1, r1, 4
+	lrr.l r10, r1
+	cmp r10, r4
+	be .eq
+	sri.l r1, 0
+	addi r1, r1, 4
+	ret
+
+.eq:
+	sri.l r1, 1
+	addi r1, r1, 4
+	ret
+
+OpNEQ:
+	subi r1, r1, 4
+	lrr.l r4, r1
+	subi r1, r1, 4
+	lrr.l r10, r1
+	cmp r10, r4
+	bne .neq
+	sri.l r1, 0
+	addi r1, r1, 4
+	ret
+
+.neq:
+	sri.l r1, 1
+	addi r1, r1, 4
+	ret
+
+OpGT:
+	subi r1, r1, 4
+	lrr.l r4, r1
+	subi r1, r1, 4
+	lrr.l r10, r1
+	cmp r10, r4
+	bg .gt
+	sri.l r1, 0
+	addi r1, r1, 4
+	ret
+
+.gt:
+	sri.l r1, 1
+	addi r1, r1, 4
+	ret
+
+OpLT:
+	subi r1, r1, 4
+	lrr.l r4, r1
+	subi r1, r1, 4
+	lrr.l r10, r1
+	cmp r10, r4
+	bl .lt
+	sri.l r1, 0
+	addi r1, r1, 4
+	ret
+
+.lt:
+	sri.l r1, 1
+	addi r1, r1, 4
+	ret
+
+OpB:
+	subi r1, r1, 4
+	lrr.l r0, r1
+	add r0, r0, r7
+	ret
+
+OpBT:
+	subi r1, r1, 4
+	lrr.l r4, r1
+	subi r1, r1, 4
+	lrr.l r10, r1
+	cmpi r10, 1
+	be .j
+	ret
+
+.j:
+	mov r0, r4
+	add r0, r0, r7
+	ret
+
+OpBF:
+	subi r1, r1, 4
+	lrr.l r4, r1
+	subi r1, r1, 4
+	lrr.l r10, r1
+	cmpi r10, 0
+	be .j
+	ret
+
+.j:
+	mov r0, r4
+	add r0, r0, r7
+	ret
+
+OpLOAD:
+	subi r1, r1, 4
+	lrr.l r4, r1
+	lrr.l r4, r4
+	srr.l r1, r4
+	addi r1, r1, 4
+	ret
+
+OpSTORE:
+	subi r1, r1, 4
+	lrr.l r4, r1
+	subi r1, r1, 4
+	lrr.l r10, r1
+	srr.l r10, r4
+	ret
+
+OpSWAP:
+	subi r1, r1, 4
+	lrr.l r4, r1
+	subi r1, r1, 4
+	lrr.l r10, r1
+	srr.l r1, r4
+	addi r1, r1, 4
+	srr.l r1, r10
+	addi r1, r1, 4
+	ret
+
+OpCALL:
+	srr.l r2, r0
+	addi r2, r2, 4
+	subi r1, r1, 4
+	lrr.l r0, r1
+	add r0, r0, r7
+	ret
+
+OpCALLT:
+	subi r1, r1, 4
+	lrr.l r4, r1
+	subi r1, r1, 4
+	lrr.l r10, r1
+	cmpi r10, 1
+	be .j
+	ret
+
+.j:
+	srr.l r2, r0
+	addi r2, r2, 4
+	mov r0, r4
+	add r0, r0, r7
+	ret
+
+OpCALLF:
+	subi r1, r1, 4
+	lrr.l r4, r1
+	subi r1, r1, 4
+	lrr.l r10, r1
+	cmpi r10, 0
+	be .j
+	ret
+
+.j:
+	srr.l r2, r0
+	addi r2, r2, 4
+	mov r0, r4
+	add r0, r0, r7
+	ret
+
+OpRET:
+	cmp r2, r6
+	be .finished
+
+	subi r2, r2, 4
+	lrr.l r0, r2
+	ret
+
+.finished:
+	li r0, 1
+	call FastReturn
+
+OpRETT:
+	subi r1, r1, 4
+	lrr.l r4, r1
+	cmpi r4, 1
+	be .ret
+	ret
+
+.ret:
+	cmp r2, r6
+	be .finished
+
+	subi r2, r2, 4
+	lrr.l r0, r2
+	ret
+
+.finished:
+	li r0, 1
+	call FastReturn
+
+OpRETF:
+	subi r1, r1, 4
+	lrr.l r4, r1
+	cmpi r4, 0
+	be .ret
+	ret
+
+.ret:
+	cmp r2, r6
+	be .finished
+
+	subi r2, r2, 4
+	lrr.l r0, r2
+	ret
+
+.finished:
+	li r0, 1
+	call FastReturn
+
+OpPUSHD:
+	subi r1, r1, 4
+	lrr.l r4, r1
+	pushv r5, r4
+	ret
+
+OpPOPD:
+	popv r5, r4
+	srr.l r1, r4
+	addi r1, r1, 4
+	ret
+
+OpXOR:
+	subi r1, r1, 4
+	lrr.l r4, r1
+	subi r1, r1, 4
+	lrr.l r10, r1
+	eor r4, r10, r4
+	srr.l r1, r4
+	addi r1, r1, 4
+	ret
+
+OpOR:
+	subi r1, r1, 4
+	lrr.l r4, r1
+	subi r1, r1, 4
+	lrr.l r10, r1
+	ior r4, r10, r4
+	srr.l r1, r4
+	addi r1, r1, 4
+	ret
+
+OpNOT:
+	subi r1, r1, 4
+	lrr.l r4, r1
+	not r4, r4
+	srr.l r1, r4
+	addi r1, r1, 4
+	ret
+
+OpAND:
+	subi r1, r1, 4
+	lrr.l r4, r1
+	subi r1, r1, 4
+	lrr.l r10, r1
+	and r4, r10, r4
+	srr.l r1, r4
+	addi r1, r1, 4
+	ret
+
 Unimplemented:
 	ret
 
 
-PECBiggestOp === 0x1C
+PECBiggestOp === 0x20
 
 PECOpTable:
 	.dl OpNOP ;0
 	.dl OpPUSH ;1
-	.dl Unimplemented ;2
-	.dl Unimplemented ;3
-	.dl Unimplemented ;4
-	.dl Unimplemented ;5
-	.dl Unimplemented ;6
-	.dl Unimplemented ;7
-	.dl Unimplemented ;8
-	.dl Unimplemented ;9
-	.dl Unimplemented ;A
-	.dl Unimplemented ;B
-	.dl Unimplemented ;C
-	.dl Unimplemented ;D
-	.dl Unimplemented ;E
-	.dl Unimplemented ;F
-	.dl Unimplemented ;10
-	.dl Unimplemented ;11
-	.dl Unimplemented ;12
-	.dl Unimplemented ;13
-	.dl Unimplemented ;14
+	.dl OpADD ;2
+	.dl OpSUB ;3
+	.dl OpMUL ;4
+	.dl OpDIV ;5
+	.dl OpMOD ;6
+	.dl OpDROP ;7
+	.dl OpEQ ;8
+	.dl OpNEQ ;9
+	.dl OpGT ;A
+	.dl OpLT ;B
+	.dl OpB ;C
+	.dl OpBT ;D
+	.dl OpBF ;E
+	.dl OpLOAD ;F
+	.dl OpSTORE ;10
+	.dl OpSWAP ;11
+	.dl OpCALL ;12
+	.dl OpCALLT ;13
+	.dl OpCALLF ;14
 	.dl OpRET ;15
-	.dl Unimplemented ;16
-	.dl Unimplemented ;17
-	.dl Unimplemented ;18
+	.dl OpRETT ;16
+	.dl OpRETF ;17
+	.dl OpPOPD ;18
 	.dl OpPUSHD ;19
 	.dl OpNCALL ;1A
 	.dl OpBASE ;1B
 	.dl OpSLOT ;1C
+	.dl OpXOR ;1D
+	.dl OpOR ;1E
+	.dl OpNOT ;1F
+	.dl OpAND ;20
