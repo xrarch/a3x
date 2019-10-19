@@ -114,6 +114,11 @@ procedure MonitorCommandsInit (* -- *)
 	"test"
 	MonitorAddCommand
 
+	"test2"
+	pointerof Test2
+	"test2"
+	MonitorAddCommand
+
 	0
 	pointerof _SF
 	"sf"
@@ -126,6 +131,12 @@ externconst PECErrors
 
 procedure private Test (* -- *)
 	[0xC0000000 0xC0005000 PECEvaluate]PECErrors@ "%s\n" Printf
+end
+
+procedure private Test2 (* -- *)
+	"/" DeviceSelect
+		"testMethod" DCallMethod drop
+	DeviceExit
 end
 
 procedure MonitorCommandWait (* -- *)

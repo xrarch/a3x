@@ -4,7 +4,7 @@
 (* ported from AISIX *)
 
 var KHeapStart 0x22000
-var KHeapSize 0xDDFFF
+var KHeapSize 0x1DFFF
 var KHeapLast 0x22000
 
 struct KHeapHeader

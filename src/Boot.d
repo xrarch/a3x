@@ -86,7 +86,7 @@ procedure BootNode { devnode args } (* -- ok? *)
 	if (ok@ 1 ~=)
 		ok@ return
 	end
-
+	
 	brecord!
 
 	auto bblock

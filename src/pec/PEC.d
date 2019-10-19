@@ -27,6 +27,7 @@ table PECErrors
 	"ok"
 	"Invalid nativecall"
 	"Invalid PEC ROM"
+	"Missing PECInit symbol"
 endtable
 public PECErrors
 
@@ -58,10 +59,23 @@ procedure PECEvaluate { slotspace pec -- ok }
 		return
 	end
 
-	auto pip
-	"PECInit" pec@ AIXOSymbolByName pip!
+	auto imgsize
+	pec@ AIXOSize imgsize!
 
-	slotspace@ pip@ pec@ PECEvaluateFunc ok!
+	auto newloc
+	imgsize@ Malloc newloc!
+
+	newloc@ pec@ imgsize@ memcpy
+
+	auto pip
+	"PECInit" newloc@ AIXOSymbolByName pip!
+
+	if (pip@ -1 ==)
+		4 ok!
+		return
+	end
+
+	slotspace@ pip@ newloc@ AIXOCode + newloc@ PECEvaluateFunc ok!
 end
 
 procedure PECAddMethod { ptr name -- }
@@ -75,5 +89,5 @@ procedure PECEvaluateFunc { slotspace func pec -- ok }
 
 	pec@ AIXOCode PECBase!
 
-	slotspace@ func@ PECBase@ + PECBase@ PECInterpret ok!
+	slotspace@ func@ PECBase@ PECInterpret ok!
 end

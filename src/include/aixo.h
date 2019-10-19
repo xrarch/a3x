@@ -30,3 +30,5 @@ extern AIXOSymbolByName (* name aixo -- value *)
 extern AIXOCode (* aixo -- codeoff *)
 
 extern AIXOCodeType (* aixo -- codetype *)
+
+extern AIXOSize (* aixo -- size *)

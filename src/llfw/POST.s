@@ -12,7 +12,7 @@ LLFWPOST:
 	call LLFWSerialPuts
 	pop r0
 
-	cmpi r0, 0x100000 ;if not at least 1MB of RAM,
+	cmpi r0, 0x40000 ;if not at least 256KB of RAM,
 	bl .noRAM ;error
 
 	lri.l r0, 0xF8000800 ;check platformboard version
@@ -77,7 +77,7 @@ LLFWPOSTPassed:
 	.db 0xA, 0x0
 
 LLFWPOSTNoRAM:
-	.ds Insufficient RAM to run this firmware, at least 1024KB must be
+	.ds Insufficient RAM to run this firmware, at least 256KB must be
 	.db 0xA
 	.ds installed in slot 0.
 	.db 0xA, 0x0

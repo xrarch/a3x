@@ -9,7 +9,7 @@ endstruct
 const BootMagic 0x45544E41
 const BootRM 0x24
 
-const BootBottom 0x100000
+const BootBottom 0x40000
 
 externconst BootErrors (* table *)
 

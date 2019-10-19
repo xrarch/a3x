@@ -239,12 +239,12 @@ procedure DGetMethod { name -- ptr }
 	0 ptr!
 end
 
-procedure DCallMethodPtr (* ... ptr -- *)
+procedure DCallMethodCommon (* ... ptr -- ... ok? *)
 	auto pnode
 	pnode!
 
 	if (pnode@ DeviceMethod_PEC + @ 0 ==)
-		pnode@ DeviceMethod_Func + @ Call return
+		pnode@ DeviceMethod_Func + @ Call 1 return
 	end else
 		auto ok
 		pnode@ DeviceMethod_Board + @
@@ -253,9 +253,15 @@ procedure DCallMethodPtr (* ... ptr -- *)
 		PECEvaluateFunc ok!
 		if (ok@ 1 ~=)
 			[ok@]PECErrors@ "couldn't execute PEC method %s: %s\n" Printf
+			0 return
 		end
-		return
+
+		1 return
 	end
+end
+
+procedure DCallMethodPtr (* ... ptr -- ... *)
+	DCallMethodCommon drop
 end
 
 procedure DCallMethod (* ... name -- ... ok? *)
@@ -274,21 +280,7 @@ procedure DCallMethod (* ... name -- ... ok? *)
 		pnode!
 
 		if (pnode@ DeviceMethod_Name + @ name@ strcmp)
-			if (pnode@ DeviceMethod_PEC + @ 0 ==)
-				pnode@ DeviceMethod_Func + @ Call 1 return
-			end else
-				auto ok
-				pnode@ DeviceMethod_Board + @
-				pnode@ DeviceMethod_Func + @
-				pnode@ DeviceMethod_PEC + @
-				PECEvaluateFunc ok!
-				if (ok@ 1 ~=)
-					[ok@]PECErrors@ "couldn't execute PEC method %s: %s\n" Printf
-					0 return
-				end
-
-				1 return
-			end
+			pnode@ DCallMethodCommon return
 		end
 
 		n@ ListNodeNext n!

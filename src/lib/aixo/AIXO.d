@@ -47,3 +47,7 @@ end
 procedure AIXOCodeType { aixo -- codetype }
 	aixo@ AIXOHeader_CodeType + gb codetype!
 end
+
+procedure AIXOSize { aixo -- size }
+	aixo@ AIXOHeader_CodeOffset + @ aixo@ AIXOHeader_CodeSize + @ + size!
+end
