@@ -13,6 +13,8 @@ procedure BuildCSerial (* -- *)
 
 		pointerof SerialWrite "write" DAddMethod
 		pointerof SerialRead "read" DAddMethod
+
+		"serial" "type" DAddProperty
 	DeviceExit
 end
 

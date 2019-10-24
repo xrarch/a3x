@@ -22,8 +22,6 @@ procedure private DevStackPOP (* -- v *)
 	DevStack@ + @
 end
 
-(* TODO: find out why when this is used as a call, the path string is
-   occasionally corrupted with a zero *)
 procedure DevTreeWalk { path -- cnode }
 	DevTree@ TreeRoot cnode!
 

@@ -5,14 +5,12 @@ extern Monitor
 
 procedure Main (* -- *)
 	"verbose?" NVRAMGetVar dup if (0 ==)
-		drop "false" "verbose?" NVRAMSetVar
-		"false"
+		drop "true" "verbose?" NVRAMSetVar
+		"true"
 	end
 
 	if ("true" strcmp)
 		ConsoleUserOut
-	end else
-		BootUI
 	end
 	
 	"auto-boot?" NVRAMGetVar dup if (0 ==)
@@ -40,7 +38,7 @@ procedure Main (* -- *)
 
 			ConsoleUserOut
 		end
-		[r@]BootErrors@ " boot: %s\n" Printf
+		[r@]BootErrors@ "boot: %s\n" Printf
 	end
 
 	Monitor

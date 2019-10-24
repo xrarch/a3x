@@ -1,10 +1,10 @@
-const FontWidth 6
-const FontWidthA 5
+const FontWidth 8
+const FontWidthA 7
 
 const FontBytesPerRow 1
-const FontHeight 12
+const FontHeight 16
 
-const FontBitD 0
+const FontBitD 1
 
 extern FontDrawChar (* x y char bg color -- *)
 

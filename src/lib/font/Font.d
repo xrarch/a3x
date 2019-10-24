@@ -8,7 +8,7 @@ var FontBBP 0
 asm "
 
 Font:
-	.static font-haiku.bmp
+	.static cp881-16.bmp
 
 "
 

@@ -61,7 +61,7 @@ procedure MonitorParseDevPath (* -- dev or 0 *)
 	word@ DevTreeWalk dev!
 
 	if (dev@ 0 ==)
-		word@ " bad device path %s.\n" Printf
+		word@ "bad device path %s.\n" Printf
 	end
 
 	word@ Free
@@ -70,7 +70,7 @@ end
 
 procedure MonitorPrompt (* -- *)
 	MonitorLine@ MonitorLinePoint!
-	"  > " Printf
+	"> " Printf
 	MonitorLine@ 255 Gets
 end
 
@@ -80,7 +80,7 @@ procedure MonitorDoLine (* -- *)
 
 	if (word@ strlen 0 ~=)
 		if (word@ MonitorDoCommand ~~)
-			word@ " %s is not a recognized command.\n" Printf
+			word@ "%s is not a recognized command.\n" Printf
 		end else return end
 	end
 

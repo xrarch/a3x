@@ -55,7 +55,7 @@ procedure DevBootableR { devnode } (* -- brecord bootable? *)
 end
 
 procedure AutoBoot (* -- ok? *)
-	"autoboot: /bootdisk\n\n" Printf
+	"autoboot: /bootdisk\n" Printf
 
 	auto bootnode
 
@@ -71,6 +71,8 @@ procedure AutoBoot (* -- ok? *)
 		drop "" "boot-args" NVRAMSetVar
 		""
 	end
+
+	CR
 
 	BootNode
 end

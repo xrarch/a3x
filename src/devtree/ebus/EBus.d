@@ -31,7 +31,7 @@ procedure EBusFindFirstBoard { id -- slot }
 			end
 		end
 
-		4 i +=
+		1 i +=
 	end
 
 	ERR slot!

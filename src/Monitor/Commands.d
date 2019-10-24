@@ -109,34 +109,50 @@ procedure MonitorCommandsInit (* -- *)
 	"wait"
 	MonitorAddCommand
 
-	"test"
-	pointerof Test
-	"test"
-	MonitorAddCommand
-
-	"test2"
-	pointerof Test2
-	"test2"
-	MonitorAddCommand
-
 	0
 	pointerof _SF
 	"sf"
 	MonitorAddCommand
 end
 
-extern PECEvaluate
+const ConsoleAssumedHeight 24
 
-externconst PECErrors
+var UsedLines 0
+var AllLines 0
 
-procedure private Test (* -- *)
-	[0xC0000000 0xC0005000 PECEvaluate]PECErrors@ "%s\n" Printf
+procedure private ResetLines (* -- *)
+	0 UsedLines!
+	0 AllLines!
 end
 
-procedure private Test2 (* -- *)
-	"/" DeviceSelect
-		"testMethod" DCallMethod drop
-	DeviceExit
+procedure private WaitNext { -- result }
+	1 result!
+
+	if (AllLines@)
+		return
+	end
+
+	if (UsedLines@ ConsoleAssumedHeight >)
+		"\[[7m(any) for more, (a) for all, (p) for a page, (q) to quit\[[0m" Printf
+		auto c
+		-1 c!
+
+		while (c@ -1 ==)
+			Getc c!
+		end
+
+		if (c@ 'q' ==)
+			0 result!
+		end elseif (c@ 'p' ==)
+			0 UsedLines!
+		end elseif (c@ 'a' ==)
+			1 AllLines!
+		end
+
+		"\[[2K\r" Puts
+	end
+
+	1 UsedLines +=
 end
 
 procedure MonitorCommandWait (* -- *)
@@ -144,7 +160,7 @@ procedure MonitorCommandWait (* -- *)
 	"/clock" DevTreeWalk clock!
 
 	if (clock@ 0 ==)
-		" no clock!\n" Printf
+		"no clock!\n" Printf
 		return
 	end
 
@@ -163,12 +179,12 @@ procedure MonitorCommandUptime (* -- *)
 	"/clock" DevTreeWalk clock!
 
 	if (clock@ 0 ==)
-		" no clock!\n" Printf
+		"no clock!\n" Printf
 		return
 	end
 
 	clock@ DeviceSelectNode
-		"uptime" DCallMethod drop " uptime (ms): %d\n" Printf
+		"uptime" DCallMethod drop "uptime (ms): %d\n" Printf
 	DeviceExit
 end
 
@@ -185,7 +201,7 @@ procedure MonitorCommandClear (* -- *)
 end
 
 procedure MonitorCommandAutoboot (* -- *)
-	[AutoBoot]BootErrors@ " boot: %s\n" Printf
+	[AutoBoot]BootErrors@ "boot: %s\n" Printf
 end
 
 procedure MonitorCommandBoot (* -- *)
@@ -199,7 +215,7 @@ procedure MonitorCommandBoot (* -- *)
 		MonitorLinePoint@ 1 + arg!
 	end
 
-	[dev@ arg@ BootNode]BootErrors@ " boot: %s\n" Printf
+	[dev@ arg@ BootNode]BootErrors@ "boot: %s\n" Printf
 end
 
 procedure MonitorCommandExit (* -- *)
@@ -224,8 +240,10 @@ procedure MonitorCommandDinfo (* -- *)
 	MonitorParseDevPath dev!
 	if (dev@ 0 ==) return end
 
+	ResetLines
+
 	dev@ DeviceSelectNode
-		DGetName "\n info for %s:\n\n To print property strings, use puts.\n Properties:\n" Printf
+		DGetName "\ninfo for %s:\n\nProperties:\n" Printf
 
 		auto plist
 		DGetProperties plist!
@@ -234,6 +252,10 @@ procedure MonitorCommandDinfo (* -- *)
 		plist@ ListHead n!
 
 		while (n@ 0 ~=)
+			if (WaitNext ~~)
+				return
+			end
+
 			auto pnode
 			n@ ListNodeValue pnode!
 
@@ -242,7 +264,7 @@ procedure MonitorCommandDinfo (* -- *)
 			n@ ListNode_Next + @ n!
 		end
 
-		"\n Supported methods:\n" Printf
+		"\nSupported methods:\n" Printf
 
 		auto mlist
 		DGetMethods mlist!
@@ -250,13 +272,16 @@ procedure MonitorCommandDinfo (* -- *)
 		mlist@ ListHead n!
 
 		while (n@ 0 ~=)
+			if (WaitNext ~~)
+				return
+			end
+
 			n@ ListNodeValue pnode!
 
 			pnode@ DeviceMethod_Func + @ pnode@ DeviceProperty_Name + @ pnode@ "\t%x\t%s\t%x\n" Printf
 
 			n@ ListNode_Next + @ n!
 		end
-
 	DeviceExit
 
 	'\n' Putc
@@ -270,18 +295,20 @@ procedure MonitorCommandListenv (* -- *)
 	auto i
 	0 i!
 
+	ResetLines
+
 	auto sp
 	NVRAMHeader_SIZEOF sp!
 	while (i@ NVRAMVarCount <)
 		if (sp@ NVRAMOffset gb 0 ~=)
-			if (sp@ NVRAMOffset "nvramrc" strcmp)
-				" nvramrc\t=\t[type printnvramrc]\n" Printf
-			end else
-				sp@ NVRAMVariable_Contents + NVRAMOffset sp@ NVRAMOffset " %s\t=\t\"%s\"\n" Printf
+			if (WaitNext ~~)
+				return
 			end
+
+			sp@ NVRAMVariable_Contents + NVRAMOffset sp@ NVRAMOffset " %s\t=\t\"%s\"\n" Printf
 		end
 
-		sp@ NVRAMVariable_SIZEOF + sp!
+		NVRAMVariable_SIZEOF sp +=
 		1 i +=
 	end
 end
@@ -304,7 +331,7 @@ procedure MonitorCommandSetenv (* -- *)
 
 	new@ name@ NVRAMSetVar
 
-	new@ name@ " set %s = \"%s\"\n" Printf
+	new@ name@ "set %s = \"%s\"\n" Printf
 
 	name@ Free
 end
@@ -314,21 +341,15 @@ procedure MonitorCommandPrintenv (* -- *)
 	MonitorParseWord word!
 
 	word@ NVRAMGetVar dup if (0 ~=)
-		word@ " %s = \"%s\"\n" Printf
+		word@ "%s = \"%s\"\n" Printf
 	end else
-		drop word@ " %s is not a variable.\n" Printf
+		drop word@ "%s is not a variable.\n" Printf
 	end
 
 	word@ Free
 end
 
-procedure MonitorLsH (* tabs dev -- *)
-	auto dev
-	dev!
-
-	auto tabs
-	tabs!
-
+procedure MonitorLsH { tabs dev } (* -- continue *)
 	auto tnc
 	dev@ TreeNodeChildren tnc!
 
@@ -336,10 +357,14 @@ procedure MonitorLsH (* tabs dev -- *)
 	tnc@ ListHead n!
 
 	while (n@ 0 ~=)
+		if (WaitNext ~~)
+			0 return
+		end
+
 		auto pnode
 		n@ ListNodeValue pnode!
 
-		pnode@ "\t%x:" Printf
+		pnode@ " %x:" Printf 
 
 		auto i
 		0 i!
@@ -350,10 +375,14 @@ procedure MonitorLsH (* tabs dev -- *)
 
 		pnode@ TreeNodeValue DeviceNode_Name + @ "/%s\n" Printf
 
-		tabs@ 1 + pnode@ MonitorLsH
+		if (tabs@ 1 + pnode@ MonitorLsH ~~)
+			0 return
+		end
 
 		n@ ListNode_Next + @ n!
 	end
+
+	1
 end
 
 procedure MonitorCommandLs (* -- *)
@@ -361,11 +390,13 @@ procedure MonitorCommandLs (* -- *)
 	MonitorParseDevPath dev!
 	if (dev@ 0 ==) return end
 
+	ResetLines
+
 	dev@ DeviceSelectNode
-		DGetName " %s:\n" Printf
+		DGetName "%s:\n" Printf
 	DeviceExit
 
-	1 dev@ MonitorLsH
+	1 dev@ MonitorLsH drop
 end
 
 procedure MonitorCommandDumpHeap (* -- *)
@@ -379,42 +410,26 @@ procedure MonitorCommandHelp (* -- *)
 	auto n
 	plist@ List_Head + @ n!
 
+	ResetLines
+
 	while (n@ 0 ~=)
 		auto pnode
 		n@ ListNodeValue
 		pnode!
 
 		pnode@ MonitorCommand_HelpText + @ dup if (0 ~=)
-			pnode@ MonitorCommand_Name + @ " %s\t-\t%s\n" Printf
+			if (WaitNext ~~)
+				0 return
+			end
+		
+			pnode@ MonitorCommand_Name + @ "%s\t-\t%s\n" Printf
 		end else drop end
 
 		n@ ListNodeNext n!
 	end
 end
 
-procedure BannerPrint (* ... -- *)
-	'\t' dup Putc Putc
-	Printf
-end
-
 procedure MonitorCommandBanner (* -- *)
-	'\n' dup Putc Putc
-
-	"/" DeviceSelect
-		"boot firmware up\n" BannerPrint
-		"author" DGetProperty "version" DGetProperty DGetName "Implementation details: %s %s written by %s\n" BannerPrint
-		"platform" DGetProperty "Platform: %s\n" BannerPrint
-		"buildDate" DGetProperty "build" DGetProperty "Build %s, built on %s\n" BannerPrint
-	DeviceExit
-
-	"/cpu" DeviceSelect
-		"type" DGetProperty "CPU type: %s\n" BannerPrint
-	DeviceExit
-
-	"/memory" DeviceSelect
-		"totalRAM" DGetProperty 1024 / "RAM: %dkb\n" BannerPrint
-	DeviceExit
-
 	'\n' Putc
-	" Type 'help' for commands, or 'exit' to return from the monitor.\n" Printf
+	"Type 'help' for commands, or 'exit' to return from the monitor.\n" Printf
 end

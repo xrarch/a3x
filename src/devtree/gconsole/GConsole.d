@@ -4,11 +4,11 @@
 var GCGWidth 0
 var GCGHeight 0
 
-var GCColorBG 0x56
+var GCColorBG 0x00
 var GCColorFG 0x00
 
-var GCColorOBG 0x56
-var GCColorOFG 0x00
+var GCColorDefBG 0x00
+var GCColorDefFG 0x00
 
 var GCCurX 0
 var GCCurY 0
@@ -34,20 +34,56 @@ var GConsoleY 0
 
 var GConsoleModified 0
 
+var GCInverted 0
+
+table ColorIndex
+	0
+	4
+	72
+	44
+	1
+	36
+	52
+	28
+endtable
+
+table ColorIndex2
+	20
+	89
+	74
+	92
+	102
+	60
+	100
+	15
+endtable
+
 procedure GConsoleDefault (* -- *)
 	GCScreenNode@ DeviceSelectNode
 		"width" DGetProperty GCGWidth!
 		"height" DGetProperty GCGHeight!
 	DeviceExit
 
-	"screen-bg" NVRAMGetVarNum dup GCColorBG! GCColorOBG!
-	"screen-fg" NVRAMGetVarNum dup GCColorFG! GCColorOFG!
+	"screen-bg" NVRAMGetVarNum dup GCColorDefBG! GCColorBG!
+	"screen-fg" NVRAMGetVarNum dup GCColorDefFG! GCColorFG!
 
-	GCGWidth@ FontWidth / GCWidth!
-	GCGHeight@ FontHeight / GCHeight!
+	if ("console-rows" NVRAMGetVar 0 ==)
+		34 "console-rows" NVRAMSetVarNum
+	end
+	if ("console-cols" NVRAMGetVar 0 ==)
+		80 "console-cols" NVRAMSetVarNum
+	end
 
-	0 GConsoleX!
-	0 GConsoleY!
+	auto crows
+	"console-rows" NVRAMGetVarNum crows!
+	auto ccols
+	"console-cols" NVRAMGetVarNum ccols!
+
+	GCGWidth@ FontWidth / ccols@ min GCWidth!
+	GCGHeight@ FontHeight / crows@ min GCHeight!
+
+	GCGWidth@ 2 / GCWidth@ FontWidth * 2 / - GConsoleX!
+	GCGHeight@ 2 / GCHeight@ FontHeight * 2 / - GConsoleY!
 
 	0 GCCurX!
 	0 GCCurY!
@@ -74,10 +110,10 @@ procedure BuildGConsole (* -- *)
 	DeviceNew
 		"gconsole" DSetName
 
-		pointerof GConsolePutChar "write" DAddMethod
 		pointerof GConsoleModifiedF "chkModified" DAddMethod
 		pointerof GConsoleSetScreen "setScreen" DAddMethod
 		pointerof GConsoleSuppressDraw "suppressDraw" DAddMethod
+		pointerof GConsolePutChar "write" DAddMethod
 
 		FontWidth "fontWidth" DAddProperty
 		FontHeight "fontHeight" DAddProperty
@@ -105,8 +141,8 @@ procedure GConsoleSetScreen { fg bg x y w h -- }
 	w@ dup FontWidth / GCWidth! GCGWidth!
 	h@ dup FontHeight / GCHeight! GCGHeight!
 
-	fg@ dup GCColorFG! GCColorOFG!
-	bg@ dup GCColorBG! GCColorOBG!
+	fg@ dup GCColorFG! GCColorDefFG!
+	bg@ dup GCColorBG! GCColorDefBG!
 
 	GCLineLenBuf@ GCHeight@ 4 * 0 memset
 
@@ -165,7 +201,7 @@ procedure GConsoleScroll { rows -- }
 	GCScreenNode@ DeviceSelectNode
 		GConsoleX@ GConsoleY@
 		GConsoleLongestLine FontWidth *
-		FontHeight GCHeight@ * 1 +
+		FontHeight GCHeight@ *
 		GCColorBG@
 		rows@ FontHeight *
 		GCScrollP@ DCallMethodPtr
@@ -254,38 +290,100 @@ procedure GConsoleTab (* -- *)
 	end
 end
 
-var GCEV0 0
-var GCEV1 0
+table GCEVT
+	0
+	0
+	0
+	0
+endtable
+
+const GCEVC 4
 
 var GCEV 0
 
 procedure GConsoleSetColor (* -- *)
-	if (GCEV0@ 256 <)
-		GCColorFG@ GCColorOFG!
-		GCEV0@ GCColorFG!
+	if ([0]GCEVT@ 0 ==)
+		GCColorDefFG@ GCColorFG!
+		GCColorDefBG@ GCColorBG!
+
+		0 GCInverted!
+
 		return
-	end elseif (GCEV0@ 512 <)
-		GCColorBG@ GCColorOBG!
-		GCEV0@ 256 - GCColorBG!
+	end elseif ([0]GCEVT@ 7 ==)
+		if (GCInverted@ ~~)
+			GCColorFG@ GCColorBG@ GCColorFG! GCColorBG!
+
+			1 GCInverted!
+		end
+
 		return
-	end elseif (GCEV0@ 1024 ==)
-		GCColorOBG@ GCColorBG!
-		GCColorOFG@ GCColorFG!
-		return
+	end elseif ([0]GCEVT@ 39 ==)
+		GCColorDefFG@ GCColorFG!
+	end elseif ([0]GCEVT@ 49 ==)
+		GCColorDefBG@ GCColorBG!
+	end elseif ([0]GCEVT@ 30 >= [0]GCEVT@ 37 <= &&) (* foreground, first 8 *)
+		auto color
+
+		[0]GCEVT@ 30 - color!
+
+		[color@]ColorIndex@ GCColorFG!
+	end elseif ([0]GCEVT@ 40 >= [0]GCEVT@ 47 <= &&) (* background, first 8 *)
+		[0]GCEVT@ 40 - color!
+
+		[color@]ColorIndex@ GCColorBG!
+	end elseif ([0]GCEVT@ 90 >= [0]GCEVT@ 97 <= &&) (* foreground, second 8 *)
+		[0]GCEVT@ 90 - color!
+
+		[color@]ColorIndex2@ GCColorFG!
+	end elseif ([0]GCEVT@ 100 >= [0]GCEVT@ 107 <= &&) (* background, second 8 *)
+		[0]GCEVT@ 100 - color!
+
+		[color@]ColorIndex2@ GCColorBG!
+	end elseif ([1]GCEVT@ 5 ==)
+		if ([0]GCEVT@ 38 ==)
+			[2]GCEVT@ GCColorFG!
+		end elseif ([0]GCEVT@ 48 ==)
+			[2]GCEVT@ GCColorBG!
+		end
 	end
+end
+
+procedure GConsoleClearLine (* -- *)
+	auto ox
+	GCCurX@ ox!
+
+	while (GCCurX@ 0 >)
+		'\b' GConsolePutChar
+	end
+
+	ox@ GCCurX!
+end
+
+procedure GConsoleReset (* -- *)
+	GCColorDefFG@ GCColorFG!
+	GCColorDefBG@ GCColorBG!
+
+	0 GCInverted!
+
+	GConsoleClear
 end
 
 procedure GConsoleParseEscape { c -- }
 	if (c@ '0' >= c@ '9' <= &&)
-		GCEV@ @ 10 * GCEV@ !
-		GCEV@ @ c@ '0' - + GCEV@ !
+		auto np
+		GCEV@ 4 * GCEVT + np!
+
+		10 np@ *=
+		c@ '0' - np@ +=
+
 		return
 	end
 
 	if (c@ '[' ==) return end
-	elseif (c@ ';' ==) pointerof GCEV1 GCEV! return end
+	elseif (c@ ';' ==) GCEV@ 1 + GCEVC % GCEV! return end
 	elseif (c@ 'm' ==) GConsoleSetColor end
-	elseif (c@ 'c' ==) GConsoleClear end
+	elseif (c@ 'c' ==) GConsoleReset end
+	elseif (c@ 'K' ==) GConsoleClearLine end
 
 	0 GCEscape!
 end
@@ -298,10 +396,9 @@ procedure GConsolePutChar { char -- }
 	if (GCEscape@) char@ GConsoleParseEscape return end
 
 	if (char@ 0x1b ==)
-		pointerof GCEV0 GCEV!
-		0 GCEV0!
-		0 GCEV1!
+		0 GCEV!
 		1 GCEscape!
+		GCEVT GCEVC 4 * 0 memset
 		return
 	end
 
@@ -321,6 +418,9 @@ procedure GConsolePutCharF { char -- }
 		return
 	end elseif (char@ '\t' ==)
 		GConsoleTab
+		return
+	end elseif (char@ '\r' ==)
+		0 GCCurX!
 		return
 	end
 
