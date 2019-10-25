@@ -7,19 +7,21 @@ var SKbdNode 0
 
 procedure GKbdDefault { -- dn }
 	"kbd-dev" NVRAMGetVar dup if (0 ==)
-		drop "/ebus/platformboard/citron/amanatsu/kbd/0" "kbd-dev" NVRAMSetVar
-		"/ebus/platformboard/citron/amanatsu/kbd/0"
+		drop PlatformKeyboardPath@ "kbd-dev" NVRAMSetVar
+		PlatformKeyboardPath@
 	end
 
 	DevTreeWalk dn!
 
 	if (dn@ 0 ==)
-		"/ebus/platformboard/citron/amanatsu/kbd/0" "kbd-dev" NVRAMSetVar
-		"/ebus/platformboard/citron/amanatsu/kbd/0" DevTreeWalk dn!
+		"kbd-dev is phony, trying platform default\n" Printf
+
+		PlatformKeyboardPath@ "kbd-dev" NVRAMSetVar
+		PlatformKeyboardPath@ DevTreeWalk dn!
 	end
 end
 
-procedure BuildKeyboard (* -- *)
+procedure BuildGKeyboard (* -- *)
 	GKbdDefault SKbdNode!
 
 	if (SKbdNode@ 0 ~=)

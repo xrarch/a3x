@@ -13,28 +13,29 @@ public MonitorLine
 var MonitorLinePoint 0
 public MonitorLinePoint
 
-var MonitorNvramrc 0
-var MonitorOldCI 0
-var MonitorOldCIM 0
-var MonitorNvramrcBuf 0
-var MonitorNvramrcLen 0
-var MonitorNvramrcPtr 0
-var MonitorPastNvramrc 0
-
 #include "monitor.h"
 
 extern MonitorCommandsInit
 
 extern MonitorCommandBanner
 
+
+
 procedure Monitor (* -- *)
 	if (MonitorCommandList@ 0 ==)
 		MonitorCommandsInit
 	end
 
-	1 MonitorRunning!
+	auto saverunning
+	MonitorRunning@ saverunning!
 
-	if (MonitorLine@) MonitorLine@ Free end
+	auto saveline
+	MonitorLine@ saveline!
+
+	auto savepoint
+	MonitorLinePoint@ savepoint!
+
+	1 MonitorRunning!
 
 	256 Calloc MonitorLine!
 
@@ -46,6 +47,10 @@ procedure Monitor (* -- *)
 	end
 
 	MonitorExit
+
+	savepoint@ MonitorLinePoint!
+	saveline@ MonitorLine!
+	saverunning@ MonitorRunning!
 end
 
 (* should be called before any command leaves the monitor, for instance 'boot' *)

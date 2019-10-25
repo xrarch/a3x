@@ -58,38 +58,48 @@ table FaultsNames
 endtable
 public FaultsNames
 
+const Breakpoint 5
+
 procedure FaultsHandler { num loc -- }
 	auto rs
 	InterruptDisable rs!
 
-	"verbose-fault?" NVRAMGetVar dup if (0 ==)
-		drop "false" "verbose-fault?" NVRAMSetVar
-		"false"
-	end
+	ConsoleUserOut
 
-	if ("true" strcmp)
-		ConsoleUserOut
-	end
+
 
 	if (ConsoleInMethod@ 0 ~=)
-		loc@ [num@]FaultsNames@ "\n!!!FAULT!!! %s at %x, resetting on console input.\n\t'c' to clear NVRAM.\n\t'v' to clear NVRAM and set 'verbose?'='true'.\n\t'b' to only set 'auto-boot?'='false'.\n\tany other key to reset normally.\n" Printf
+		if (num@ Breakpoint ==)
+			"!!! BREAKPOINT !!!\n" Printf
+			Monitor
+			return
+		end else
+			loc@ [num@]FaultsNames@ "\n!!!FAULT!!! %s at %x, resetting on console input.
+\t'c' to clear NVRAM.
+\t'v' to clear NVRAM and set 'verbose?'='true'.
+\t'b' to only set 'auto-boot?'='false'.
+\t'm' to enter the monitor.
+\tany other key to reset normally.\n" Printf
 
-		auto c
-		ERR c!
-		while (c@ ERR ==)
-			Getc c!
+			auto c
+			ERR c!
+			while (c@ ERR ==)
+				Getc c!
+			end
+
+			if (c@ 'c' ==)
+				NVRAMFormat
+			end elseif (c@ 'v' ==)
+				NVRAMFormat
+				"true" "verbose?" NVRAMSetVar
+			end elseif (c@ 'b' ==)
+				"false" "auto-boot?" NVRAMSetVar
+			end elseif (c@ 'm' ==)
+				Monitor return
+			end
+
+			LateReset
 		end
-
-		if (c@ 'c' ==)
-			NVRAMFormat
-		end elseif (c@ 'v' ==)
-			NVRAMFormat
-			"true" "verbose?" NVRAMSetVar
-		end elseif (c@ 'b' ==)
-			"false" "auto-boot?" NVRAMSetVar
-		end
-
-		LateReset
 	end else
 		loc@ [num@]FaultsNames@ "\n!!!FAULT!!! %s at %x, resetting.\n" Printf
 
@@ -100,20 +110,25 @@ end
 asm "
 
 FaultsHandlerASM:
-	pop r1
-	pop r1
-	pop r1
+	pop k3 ;rs
+	pop k2 ;r0
+	pop k1 ;pc
 
-	li sp, 0x2000 ;put stack in known location
-	li r5, 0x1000 ;this too
+	push k1
+	push k2
+	push k3
+
+	pusha
 
 	pushv r5, r0
 
-	mov r0, r1
-	pushv r5, r0
+	pushv r5, k1
 
 	call FaultsHandler
 
+	popa
+
+	iret
 "
 
 procedure InterruptRegister (* handler num -- *)

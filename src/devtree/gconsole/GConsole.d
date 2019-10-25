@@ -39,7 +39,7 @@ var GCInverted 0
 table ColorIndex
 	0
 	4
-	72
+	120
 	44
 	1
 	36

@@ -1,8 +1,6 @@
 #include "<df>/dragonfruit.h"
 #include "<inc>/a3x.h"
 
-extern Monitor
-
 procedure Main (* -- *)
 	"verbose?" NVRAMGetVar dup if (0 ==)
 		drop "true" "verbose?" NVRAMSetVar
@@ -40,6 +38,8 @@ procedure Main (* -- *)
 		end
 		[r@]BootErrors@ "boot: %s\n" Printf
 	end
+
+	CR
 
 	Monitor
 

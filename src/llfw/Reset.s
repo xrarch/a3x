@@ -80,7 +80,7 @@ LLFWShadow:
 
 LLFWHLRString:
 	.ds Jumping to high-level firmware!
-	.db 0xA, 0x0
+	.db 0xA, 0xA, 0x0
 
 LLFWShadowString:
 	.ds Shadowing ROM...

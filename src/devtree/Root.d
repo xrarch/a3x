@@ -4,12 +4,12 @@
 extern BuildTree
 
 procedure DevRootBuild (* -- *)
-	"antecedent-ebus" DSetName
-	"3.1" "version" DAddProperty
-	"Will" "author" DAddProperty
-	"LIMNstation,1" "platform" DAddProperty
-	pointerof ANTEBNS "build" DAddProperty
+	"antecedent" DSetName
+
 	pointerof ANTEBDS "buildDate" DAddProperty
+	"3.1.6" "version" DAddProperty
+	"Will" "author" DAddProperty
+	pointerof ANTEBNS "build" DAddProperty
 
 	BuildTree
 end

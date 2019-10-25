@@ -7,19 +7,21 @@ var SSerialNode 0
 
 procedure GSerialDefault { -- defaultnode }
 	"serial-dev" NVRAMGetVar dup if (0 ==)
-		drop "/ebus/platformboard/citron/serial" "serial-dev" NVRAMSetVar
-		"/ebus/platformboard/citron/serial"
+		drop PlatformSerialPath@ "serial-dev" NVRAMSetVar
+		PlatformSerialPath@
 	end
 
 	DevTreeWalk defaultnode!
 
 	if (defaultnode@ 0 ==)
-		"/ebus/platformboard/citron/serial" "serial-dev" NVRAMSetVar
-		"/ebus/platformboard/citron/serial" DevTreeWalk defaultnode!
+		"serial-dev is phony, trying platform default\n" Printf
+
+		PlatformSerialPath@ "serial-dev" NVRAMSetVar
+		PlatformSerialPath@ DevTreeWalk defaultnode!
 	end
 end
 
-procedure BuildSerial (* -- *)
+procedure BuildGSerial (* -- *)
 	GSerialDefault SSerialNode!
 
 	if (SSerialNode@ 0 ~=)

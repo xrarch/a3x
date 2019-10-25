@@ -9,6 +9,21 @@ extern HeapDump
 procedure MonitorCommandsInit (* -- *)
 	ListCreate MonitorCommandList!
 
+	"Boot with default parameters."
+	pointerof MonitorCommandAutoboot
+	"autoboot"
+	MonitorAddCommand
+
+	"Dump firmware heap."
+	pointerof MonitorCommandDumpHeap
+	"dumpheap"
+	MonitorAddCommand
+
+	"[name] Print environment variable."
+	pointerof MonitorCommandPrintenv
+	"printenv"
+	MonitorAddCommand
+
 	"Display help."
 	pointerof MonitorCommandHelp
 	"help"
@@ -24,11 +39,6 @@ procedure MonitorCommandsInit (* -- *)
 	"banner"
 	MonitorAddCommand
 
-	"Dump firmware heap."
-	pointerof MonitorCommandDumpHeap
-	"dumpheap"
-	MonitorAddCommand
-
 	"[dev] List children of device."
 	pointerof MonitorCommandLs
 	"ls"
@@ -37,11 +47,6 @@ procedure MonitorCommandsInit (* -- *)
 	"[dev] List properties of device."
 	pointerof MonitorCommandDinfo
 	"dinfo"
-	MonitorAddCommand
-
-	"[name] Print environment variable."
-	pointerof MonitorCommandPrintenv
-	"printenv"
 	MonitorAddCommand
 
 	"[name] [new] Set environment variable."
@@ -82,11 +87,6 @@ procedure MonitorCommandsInit (* -- *)
 	"Exit monitor."
 	pointerof MonitorCommandExit
 	"exit"
-	MonitorAddCommand
-
-	"Boot with default parameters."
-	pointerof MonitorCommandAutoboot
-	"autoboot"
 	MonitorAddCommand
 
 	"[dev] [args ...] Boot from device."
@@ -243,7 +243,9 @@ procedure MonitorCommandDinfo (* -- *)
 	ResetLines
 
 	dev@ DeviceSelectNode
-		DGetName "\ninfo for %s:\n\nProperties:\n" Printf
+		CR
+
+		"\[[32m[properties]\[[0m\n" Printf
 
 		auto plist
 		DGetProperties plist!
@@ -259,12 +261,14 @@ procedure MonitorCommandDinfo (* -- *)
 			auto pnode
 			n@ ListNodeValue pnode!
 
-			pnode@ DeviceProperty_Value + @ pnode@ DeviceProperty_Name + @ pnode@ "\t%x\t%s\t%d\n" Printf
+			pnode@ DeviceProperty_Value + @ pnode@ DeviceProperty_Name + @ " \[[34m%s\[[0m\t\t%d\n" Printf
 
 			n@ ListNode_Next + @ n!
 		end
 
-		"\nSupported methods:\n" Printf
+		CR
+
+		"\[[32m[methods]\[[0m\n" Printf
 
 		auto mlist
 		DGetMethods mlist!
@@ -278,13 +282,13 @@ procedure MonitorCommandDinfo (* -- *)
 
 			n@ ListNodeValue pnode!
 
-			pnode@ DeviceMethod_Func + @ pnode@ DeviceProperty_Name + @ pnode@ "\t%x\t%s\t%x\n" Printf
+			pnode@ DeviceMethod_Func + @ pnode@ DeviceProperty_Name + @ " \[[34m%s\[[0m\t\t%x\n" Printf
 
 			n@ ListNode_Next + @ n!
 		end
-	DeviceExit
 
-	'\n' Putc
+		CR
+	DeviceExit
 end
 
 procedure _SF (* -- *)
@@ -305,7 +309,7 @@ procedure MonitorCommandListenv (* -- *)
 				return
 			end
 
-			sp@ NVRAMVariable_Contents + NVRAMOffset sp@ NVRAMOffset " %s\t=\t\"%s\"\n" Printf
+			sp@ NVRAMVariable_Contents + NVRAMOffset sp@ NVRAMOffset " \[[34m%s\[[0m\t\t\[[32m%s\[[0m\n" Printf
 		end
 
 		NVRAMVariable_SIZEOF sp +=
@@ -364,7 +368,7 @@ procedure MonitorLsH { tabs dev } (* -- continue *)
 		auto pnode
 		n@ ListNodeValue pnode!
 
-		pnode@ " %x:" Printf 
+		pnode@ " \[[34m%x\[[0m" Printf 
 
 		auto i
 		0 i!
@@ -393,7 +397,7 @@ procedure MonitorCommandLs (* -- *)
 	ResetLines
 
 	dev@ DeviceSelectNode
-		DGetName "%s:\n" Printf
+		DGetName "\[[34m[%s]:\[[0m\n" Printf
 	DeviceExit
 
 	1 dev@ MonitorLsH drop
@@ -422,7 +426,7 @@ procedure MonitorCommandHelp (* -- *)
 				0 return
 			end
 		
-			pnode@ MonitorCommand_Name + @ "%s\t-\t%s\n" Printf
+			pnode@ MonitorCommand_Name + @ "\[[34m%s\[[0m\t\t%s\n" Printf
 		end else drop end
 
 		n@ ListNodeNext n!
@@ -430,6 +434,5 @@ procedure MonitorCommandHelp (* -- *)
 end
 
 procedure MonitorCommandBanner (* -- *)
-	'\n' Putc
 	"Type 'help' for commands, or 'exit' to return from the monitor.\n" Printf
 end

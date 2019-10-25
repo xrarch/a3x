@@ -1,25 +1,27 @@
 #include "<df>/dragonfruit.h"
 #include "<inc>/a3x.h"
 
-(* platform independent keyboard interface, antecedent standard *)
+(* platform independent mouse interface, antecedent standard *)
 
 var SMouseNode 0
 
 procedure GMouseDefault { -- dn }
 	"mouse-dev" NVRAMGetVar dup if (0 ==)
-		drop "/ebus/platformboard/citron/amanatsu/mouse/0" "mouse-dev" NVRAMSetVar
-		"/ebus/platformboard/citron/amanatsu/mouse/0"
+		drop PlatformMousePath@ "mouse-dev" NVRAMSetVar
+		PlatformMousePath@
 	end
 
 	DevTreeWalk dn!
 
 	if (dn@ 0 ==)
-		"/ebus/platformboard/citron/amanatsu/mouse/0" "mouse-dev" NVRAMSetVar
-		"/ebus/platformboard/citron/amanatsu/mouse/0" DevTreeWalk dn!
+		"mouse-dev is phony, trying platform default\n" Printf
+
+		PlatformMousePath@ "mouse-dev" NVRAMSetVar
+		PlatformMousePath@ DevTreeWalk dn!
 	end
 end
 
-procedure BuildMouse (* -- *)
+procedure BuildGMouse (* -- *)
 	GMouseDefault SMouseNode!
 
 	if (SMouseNode@ 0 ~=)

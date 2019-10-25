@@ -1,22 +1,24 @@
 #include "<df>/dragonfruit.h"
 #include "<inc>/a3x.h"
 
-(* platform independent keyboard interface, antecedent standard *)
+(* platform independent dma interface, antecedent standard *)
 
 var SDMANode 0
 
 procedure GDMADefault (* -- defaultnode *)
 	"dma-dev" NVRAMGetVar dup if (0 ==)
-		drop "/ebus/dma" "dma-dev" NVRAMSetVar
-		"/ebus/dma"
+		drop PlatformDMAPath@ "dma-dev" NVRAMSetVar
+		PlatformDMAPath@
 	end
 
 	auto dn
 	DevTreeWalk dn!
 
 	if (dn@ 0 ==)
-		"/ebus/dma" "dma-dev" NVRAMSetVar
-		"/ebus/dma" DevTreeWalk dn!
+		"dma-dev is phony, trying platform default\n" Printf
+
+		PlatformDMAPath@ "dma-dev" NVRAMSetVar
+		PlatformDMAPath@ DevTreeWalk dn!
 	end
 
 	dn@

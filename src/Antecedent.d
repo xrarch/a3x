@@ -9,6 +9,7 @@ extern ConsoleInit
 extern FaultsRegister
 extern FontInit
 extern PECInit
+extern PlatformInit
 
 extern Main
 
@@ -24,6 +25,8 @@ procedure AntecedentEntry (* -- *)
 		"nvram corrupted! formatting\n" Printf
 		NVRAMFormat
 	end
+
+	PlatformInit
 
 	InterruptsInit
 	PECInit
@@ -64,8 +67,11 @@ procedure FirmwareBanner (* -- *)
 	"/" DeviceSelect
 		"boot firmware up\n" BannerPrint
 		"author" DGetProperty "version" DGetProperty DGetName "Implementation details: %s %s written by %s\n" BannerPrint
-		"platform" DGetProperty "Platform: %s\n" BannerPrint
 		"buildDate" DGetProperty "build" DGetProperty "Build %s, built on %s\n" BannerPrint
+	DeviceExit
+
+	"/platform" DeviceSelect
+		"platform" DGetProperty "Platform: %s\n" BannerPrint
 	DeviceExit
 
 	"/cpu" DeviceSelect

@@ -7,8 +7,8 @@ var SBootDiskNode 0
 
 procedure GBootDiskDefault (* -- defaultnode *)
 	"boot-dev" NVRAMGetVar dup if (0 ==)
-		drop "/ebus/platformboard/citron/dks/0/a" "boot-dev" NVRAMSetVar
-		"/ebus/platformboard/citron/dks/0/a"
+		drop "/disks/0/a" "boot-dev" NVRAMSetVar
+		"/disks/0/a"
 	end
 
 	auto dn
@@ -17,7 +17,7 @@ procedure GBootDiskDefault (* -- defaultnode *)
 	dn@
 end
 
-procedure BuildBootDisk (* -- *)
+procedure BuildGBootDisk (* -- *)
 	GBootDiskDefault SBootDiskNode!
 
 	if (SBootDiskNode@ 0 ~=)
@@ -26,5 +26,7 @@ procedure BuildBootDisk (* -- *)
 
 			SBootDiskNode@ "bootAlias" DAddProperty
 		DeviceExit
+	end else
+		"boot-dev phony or not found, 'bootdisk' node will be absent\n" Printf
 	end
 end

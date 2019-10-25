@@ -1,35 +1,33 @@
 #include "<df>/dragonfruit.h"
 #include "<inc>/a3x.h"
 
-extern BuildEBus
-extern BuildMemory
+extern BuildPlatform
 
-extern BuildDMA
-extern BuildSerial
-extern BuildScreen
+extern BuildGDMA
+extern BuildGSerial
+extern BuildGScreen
 extern BuildGConsole
-extern BuildKeyboard
-extern BuildMouse
-extern BuildBootDisk
-extern BuildClock
+extern BuildGKeyboard
+extern BuildGMouse
+extern BuildGBootDisk
+extern BuildGClock
+extern BuildGDisk
+extern BuildGCPU
+extern BuildGMemory
 
 procedure BuildTree (* -- *)
-	DeviceNew
-		"cpu" DSetName
-		"limn1k" "type" DAddProperty
-	DeviceExit
-
-	BuildEBus
-
-	BuildMemory
+	BuildPlatform
 
 	(* platform independent pseudo-devices *)
-	BuildDMA
-	BuildSerial
-	BuildScreen
+	BuildGCPU
+	BuildGMemory
+	BuildGDMA
+	BuildGSerial
+	BuildGScreen
 	BuildGConsole
-	BuildKeyboard
-	BuildMouse
-	BuildBootDisk
-	BuildClock
+	BuildGKeyboard
+	BuildGMouse
+	BuildGDisk
+	BuildGBootDisk
+	BuildGClock
 end

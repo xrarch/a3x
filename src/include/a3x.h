@@ -11,6 +11,9 @@
 #include "<inc>/dma.h"
 #include "<inc>/amanatsu.h"
 #include "<inc>/citron.h"
+#include "<inc>/platform.h"
 
 extern Reset
 extern LateReset
+
+extern Monitor

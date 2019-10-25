@@ -7,19 +7,21 @@ var SScreenNode 0
 
 procedure GScreenDefault { -- dn }
 	"screen-dev" NVRAMGetVar dup if (0 ==)
-		drop "/ebus/kinnow3" "screen-dev" NVRAMSetVar
-		"/ebus/kinnow3"
+		drop PlatformScreenPath@ "screen-dev" NVRAMSetVar
+		PlatformScreenPath@
 	end
 
 	DevTreeWalk dn!
 
 	if (dn@ 0 ==)
-		"/ebus/kinnow3" "screen-dev" NVRAMSetVar
-		"/ebus/kinnow3" DevTreeWalk dn!
+		"screen-dev is phony, trying platform default\n" Printf
+
+		PlatformScreenPath@ "screen-dev" NVRAMSetVar
+		PlatformScreenPath@ DevTreeWalk dn!
 	end
 end
 
-procedure BuildScreen (* -- *)
+procedure BuildGScreen (* -- *)
 	GScreenDefault SScreenNode!
 
 	if (SScreenNode@ 0 ~=)
@@ -28,10 +30,10 @@ procedure BuildScreen (* -- *)
 		DeviceExit
 
 		if ("screen-bg" NVRAMGetVar 0 ==)
-			(* 78 *) 0xF "screen-bg" NVRAMSetVarNum
+			PlatformDefaultScreenBG@ "screen-bg" NVRAMSetVar
 		end
 		if ("screen-fg" NVRAMGetVar 0 ==)
-			0xFF "screen-fg" NVRAMSetVarNum
+			PlatformDefaultScreenFG@ "screen-fg" NVRAMSetVar
 		end
 	end
 end

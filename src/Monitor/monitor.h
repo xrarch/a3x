@@ -11,6 +11,12 @@ struct MonitorCommand
 	4 HelpText
 endstruct
 
+struct MonitorI
+	4 Running
+	4 Line
+	4 LinePoint
+endstruct
+
 (* should be called before any command leaves the monitor, for instance 'boot' *)
 extern MonitorExit (* -- *)
 

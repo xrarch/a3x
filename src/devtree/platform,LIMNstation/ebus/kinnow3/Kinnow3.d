@@ -186,15 +186,15 @@ procedure BuildKinnow3 (* -- *)
 		h@ "height" DAddProperty
 		8 "depth" DAddProperty
 
-		pointerof KinnowRectangle "rectangle" DAddMethod
-		pointerof KinnowScroll "scroll" DAddMethod
-		pointerof KinnowVsyncAdd "vsyncAdd" DAddMethod
-		pointerof KinnowBlit "blit" DAddMethod
-		pointerof KinnowBlitBack "blitBack" DAddMethod
-		pointerof KinnowBlitS2S "blitS2S" DAddMethod
-		pointerof KinnowBlitBits "blitBits" DAddMethod
-		pointerof KinnowInit "init" DAddMethod
 		pointerof KinnowSetMode "kinnow3,setMode" DAddMethod
+		pointerof KinnowRectangle "rectangle" DAddMethod
+		pointerof KinnowVsyncAdd "vsyncAdd" DAddMethod
+		pointerof KinnowBlitBack "blitBack" DAddMethod
+		pointerof KinnowBlitBits "blitBits" DAddMethod
+		pointerof KinnowScroll "scroll" DAddMethod
+		pointerof KinnowBlit "blit" DAddMethod
+		pointerof KinnowBlitS2S "blitS2S" DAddMethod
+		pointerof KinnowInit "init" DAddMethod
 	DeviceExit
 
 	w@ KinnowWidth!

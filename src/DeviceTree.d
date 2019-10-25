@@ -119,7 +119,14 @@ procedure DeviceClone { node -- }
 	auto pl
 	node@ TreeNodeValue DeviceNode_Properties + @ pl!
 
-	ml@ pl@ DeviceNNewOMP DevCurrent@ DevTree@ TreeInsertChild DevCurrent!
+	auto tnode
+
+	ml@ pl@ DeviceNNewOMP DevCurrent@ DevTree@ TreeInsertChild tnode!
+
+	tnode@ TreeNode_Children + @ Free
+	node@ TreeNode_Children + @ tnode@ TreeNode_Children + !
+
+	tnode@ DevCurrent!
 end
 
 procedure DeviceCloneWalk (* path -- *)
@@ -183,7 +190,7 @@ procedure DSetProperty { value name -- }
 
 		mnode@ DGetProperties ListInsert
 	end else
-		value@ mnode@ DeviceProperty_Value + !
+		value@ prop@ DeviceProperty_Value + !
 	end
 end
 
