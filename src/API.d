@@ -21,6 +21,12 @@ table API
 	pointerof DeviceExit
 	pointerof DSetProperty
 	pointerof DCallMethodPtr
+
+	pointerof NVRAMDeleteVar
+	pointerof NVRAMSetVar
+	pointerof NVRAMSetVarNum
+	pointerof NVRAMGetVar
+	pointerof NVRAMGetVarNum
 endtable
 public API
 
