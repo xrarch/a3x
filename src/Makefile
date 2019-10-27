@@ -1,5 +1,5 @@
-DFILES := $(shell find . -type f -name '*.d')
-OBJ    := $(DFILES:.d=.o)
+DFILES := $(shell find . -type f -name '*.df')
+OBJ    := $(DFILES:.df=.o)
 
 LLFW   := llfw/llfw.bin
 
@@ -24,7 +24,7 @@ firmware.bin: $(OBJ) pec/PECInterpret.o
 pec/PECInterpret.o: pec/PECInterpret.s
 	$(AS) pec/PECInterpret.s pec/PECInterpret.o
 
-%.o: %.d
+%.o: %.df
 	$(DC) incdir=./include/ $< $@
 
 cleanup:
