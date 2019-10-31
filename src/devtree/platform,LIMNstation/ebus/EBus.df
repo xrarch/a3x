@@ -10,7 +10,9 @@ procedure BuildEBus (* -- *)
 		"ebus" DSetName
 
 		BuildDMA
+
 		BuildPBoard
+
 		BuildKinnow3
 	DeviceExit
 end

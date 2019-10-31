@@ -260,8 +260,7 @@ procedure Free { ptr -- }
 	InterruptDisable rs!
 
 	if (ptr@ 0 == ptr@ ERR == ||)
-		ptr@ "tried to free 0x%x!\n" Printf
-		while (1) end
+		ptr@ "tried to free 0x%x!\n" Problem
 	end
 
 	auto nptr

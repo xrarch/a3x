@@ -115,7 +115,7 @@ procedure MonitorCommandsInit (* -- *)
 	MonitorAddCommand
 end
 
-const ConsoleAssumedHeight 24
+const ConsoleAssumedHeight 22
 
 var UsedLines 0
 var AllLines 0

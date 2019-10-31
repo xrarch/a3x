@@ -11,6 +11,7 @@ var AMouseCallbacks 0
 procedure AMouseInit (* -- *)
 	DeviceNew
 		"mouse" DSetName
+
 		DevCurrent@ AMouseDev!
 	DeviceExit
 
@@ -58,7 +59,9 @@ procedure AMousePoll (* -- *)
 		1 i +=
 	end
 
-	AMouseReset
+	if (AMouseCDev@ 0 ~=)
+		AMouseReset
+	end
 end
 
 procedure AMouseAddCallback (* handler -- *)

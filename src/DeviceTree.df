@@ -22,6 +22,12 @@ procedure private DevStackPOP (* -- v *)
 	DevStack@ + @
 end
 
+procedure private DevTreeCheck { opname -- }
+	if (DevCurrent@ 0 == DevCurrent@ -1 == ||)
+		opname@ "no valid device tree node selected for operation %s\n" Problem
+	end
+end
+
 procedure DevTreeWalk { path -- cnode }
 	DevTree@ TreeRoot cnode!
 
@@ -71,19 +77,32 @@ procedure DevTreeWalk { path -- cnode }
 end
 
 procedure DeviceParent (* -- *)
+	"DeviceParent" DevTreeCheck
+
 	DevCurrent@ DevStackPUSH
 	DevCurrent@ TreeNodeParent DevCurrent!
 end
 
-procedure DeviceSelectNode (* node -- *)
+procedure DeviceSelectNode { node -- }
+	if (node@ 0 == node@ -1 == ||)
+		node@ "tried to DeviceSelectNode null or invalid node\n" Problem
+	end
+
 	DevCurrent@ DevStackPUSH
-	DevCurrent!
+	node@ DevCurrent!
 end
 
 procedure DeviceSelect { path -- }
 	DevCurrent@ DevStackPUSH
 
-	path@ DevTreeWalk dup if (0 ~=) DevCurrent! end else drop end
+	auto node
+	path@ DevTreeWalk node!
+
+	if (node@ 0 ~=)
+		node@ DevCurrent!
+	end else
+		path@ "couldn't DeviceSelect '%s'" Problem
+	end
 end
 
 procedure private DeviceNNew { -- dnode }
@@ -105,6 +124,8 @@ end
 device tree as a child of the current device, sets
 itself as the new current device *)
 procedure DeviceNew (* -- *)
+	"DeviceNew" DevTreeCheck
+
 	DevCurrent@ DevStackPUSH
 
 	DeviceNNew DevCurrent@ DevTree@ TreeInsertChild DevCurrent!
@@ -139,10 +160,14 @@ procedure DeviceCloneWalk (* path -- *)
 end
 
 procedure DSetName (* name -- *)
+	"DSetName" DevTreeCheck
+
 	DevCurrent@ TreeNodeValue DeviceNode_Name + !
 end
 
 procedure DAddMethodFull { board method pec name -- }
+	"DAddMethodFull" DevTreeCheck
+
 	auto mnode
 	DeviceMethod_SIZEOF Calloc mnode!
 
@@ -155,10 +180,14 @@ procedure DAddMethodFull { board method pec name -- }
 end
 
 procedure DAddMethod { method name -- }
+	"DAddMethod" DevTreeCheck
+
 	0 method@ 0 name@ DAddMethodFull
 end
 
 procedure DSetProperty { value name -- }
+	"DSetProperty" DevTreeCheck
+
 	auto plist
 	DGetProperties plist!
 
@@ -195,10 +224,14 @@ procedure DSetProperty { value name -- }
 end
 
 procedure DAddProperty (* prop name -- *)
+	"DAddProperty" DevTreeCheck
+
 	DSetProperty
 end
 
 procedure DGetProperty { name -- string }
+	"DGetProperty" DevTreeCheck
+
 	auto plist
 	DGetProperties plist!
 
@@ -222,6 +255,8 @@ procedure DGetProperty { name -- string }
 end
 
 procedure DGetMethod { name -- ptr }
+	"DGetMethod" DevTreeCheck
+
 	auto plist
 	DGetMethods plist!
 
@@ -266,10 +301,14 @@ procedure DCallMethodCommon (* ... ptr -- ... ok? *)
 end
 
 procedure DCallMethodPtr (* ... ptr -- ... *)
+	"DCallMethodPtr" DevTreeCheck
+
 	DCallMethodCommon drop
 end
 
 procedure DCallMethod (* ... name -- ... ok? *)
+	"DCallMethod" DevTreeCheck
+
 	auto name
 	name!
 
@@ -299,14 +338,20 @@ procedure DeviceExit (* -- *)
 end
 
 procedure DGetName (* -- name *)
+	"DGetName" DevTreeCheck
+
 	DevCurrent@ TreeNodeValue DeviceNode_Name + @
 end
 
 procedure DGetMethods (* -- methods *)
+	"DGetMethods" DevTreeCheck
+
 	DevCurrent@ TreeNodeValue DeviceNode_Methods + @
 end
 
 procedure DGetProperties (* -- properties *)
+	"DGetProperties" DevTreeCheck
+
 	DevCurrent@ TreeNodeValue DeviceNode_Properties + @
 end
 

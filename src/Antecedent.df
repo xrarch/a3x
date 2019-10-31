@@ -29,7 +29,9 @@ procedure AntecedentEntry (* -- *)
 	PlatformInit
 
 	InterruptsInit
+
 	PECInit
+
 	DeviceInit
 
 	FirmwareBanner

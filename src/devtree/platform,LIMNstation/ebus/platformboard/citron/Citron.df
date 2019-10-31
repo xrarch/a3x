@@ -14,8 +14,11 @@ procedure BuildCitron (* -- *)
 		"citron" DSetName
 
 		BuildSatsuma
+
 		BuildCClock
+
 		BuildCSerial
+
 		BuildAmanatsu
 	DeviceExit
 end

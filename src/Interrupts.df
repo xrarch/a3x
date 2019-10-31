@@ -60,21 +60,19 @@ public FaultsNames
 
 const Breakpoint 5
 
-procedure FaultsHandler { num loc -- }
+procedure FaultsHandler { num loc fa -- }
 	auto rs
 	InterruptDisable rs!
 
 	ConsoleUserOut
 
-
-
 	if (ConsoleInMethod@ 0 ~=)
 		if (num@ Breakpoint ==)
-			"!!! BREAKPOINT !!!\n" Printf
+			loc@ "\[[7mA3X: breakpoint at 0x%x, entering monitor\[[0m\n" Printf
 			Monitor
 			return
 		end else
-			loc@ [num@]FaultsNames@ "\n!!!FAULT!!! %s at %x, resetting on console input.
+			fa@ [num@]FaultsNames@ "\n\[[7m!!!FAULT!!! %s at 0x%x, resetting on console input.\[[0m
 \t'c' to clear NVRAM.
 \t'v' to clear NVRAM and set 'verbose?'='true'.
 \t'b' to only set 'auto-boot?'='false'.
@@ -123,6 +121,8 @@ FaultsHandlerASM:
 	pushv r5, r0
 
 	pushv r5, k1
+
+	pushv r5, fa
 
 	call FaultsHandler
 
