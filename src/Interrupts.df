@@ -72,31 +72,7 @@ procedure FaultsHandler { num loc fa -- }
 			Monitor
 			return
 		end else
-			fa@ [num@]FaultsNames@ "\n\[[7m!!!FAULT!!! %s at 0x%x, resetting on console input.\[[0m
-\t'c' to clear NVRAM.
-\t'v' to clear NVRAM and set 'verbose?'='true'.
-\t'b' to only set 'auto-boot?'='false'.
-\t'm' to enter the monitor.
-\tany other key to reset normally.\n" Printf
-
-			auto c
-			ERR c!
-			while (c@ ERR ==)
-				Getc c!
-			end
-
-			if (c@ 'c' ==)
-				NVRAMFormat
-			end elseif (c@ 'v' ==)
-				NVRAMFormat
-				"true" "verbose?" NVRAMSetVar
-			end elseif (c@ 'b' ==)
-				"false" "auto-boot?" NVRAMSetVar
-			end elseif (c@ 'm' ==)
-				Monitor return
-			end
-
-			LateReset
+			fa@ [num@]FaultsNames@ "%s at 0x%x.\n" Problem
 		end
 	end else
 		loc@ [num@]FaultsNames@ "\n!!!FAULT!!! %s at %x, resetting.\n" Printf

@@ -236,6 +236,12 @@ procedure MonitorCommandPuts (* -- *)
 end
 
 procedure MonitorCommandDinfo (* -- *)
+	asm "
+
+	.db 0x80
+
+	"
+
 	auto dev
 	MonitorParseDevPath dev!
 	if (dev@ 0 ==) return end

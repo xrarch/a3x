@@ -67,7 +67,6 @@ procedure FirmwareBanner (* -- *)
 	CR
 
 	"/" DeviceSelect
-		"boot firmware up\n" BannerPrint
 		"author" DGetProperty "version" DGetProperty DGetName "Implementation details: %s %s written by %s\n" BannerPrint
 		"buildDate" DGetProperty "build" DGetProperty "Build %s, built on %s\n" BannerPrint
 	DeviceExit

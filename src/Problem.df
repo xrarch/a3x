@@ -10,5 +10,31 @@ procedure Problem (* ... fmt -- *)
 
 	"\[[0m" Puts
 
-	while (1) end
+"It is highly recommended to press 'r' to restart the computer. OR,
+\t'v' to enable verbose mode,
+\t'c' to clear NVRAM,
+\t'm' to enter the firmware command prompt.\n\n" Printf
+
+	while (1)
+		"option? " Puts
+
+		auto c
+		ERR c!
+		while (c@ ERR ==)
+			Getc c!
+		end
+
+		if (c@ 'c' ==)
+			NVRAMFormat
+			"nvram cleared.\n" Printf
+		end elseif (c@ 'v' ==)
+			"true" "verbose?" NVRAMSetVar
+			"verbose mode enabled.\n" Printf
+		end elseif (c@ 'm' ==)
+			Monitor
+		end elseif (c@ 'r' ==)
+			"resetting.\n" Printf
+			LateReset
+		end
+	end
 end

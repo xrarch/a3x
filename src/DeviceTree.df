@@ -101,7 +101,7 @@ procedure DeviceSelect { path -- }
 	if (node@ 0 ~=)
 		node@ DevCurrent!
 	end else
-		path@ "couldn't DeviceSelect '%s'" Problem
+		path@ "couldn't DeviceSelect '%s'\n" Problem
 	end
 end
 
