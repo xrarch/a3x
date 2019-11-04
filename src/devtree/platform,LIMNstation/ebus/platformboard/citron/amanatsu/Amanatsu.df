@@ -11,6 +11,10 @@ procedure BuildAmanatsu (* -- *)
 	DeviceNew
 		"amanatsu" DSetName
 
+		"bus" "deviceType" DAddProperty
+
+		"AISA,amanatsu" "model" DAddProperty
+
 		AKeyboardInit
 		AKeyboardPoll
 		

@@ -292,7 +292,7 @@ procedure DCallMethodCommon (* ... ptr -- ... ok? *)
 		pnode@ DeviceMethod_PEC + @
 		PECEvaluateFunc ok!
 		if (ok@ 1 ~=)
-			[ok@]PECErrors@ "couldn't execute PEC method %s: %s\n" Printf
+			[ok@]PECErrors@ "couldn't execute PEC method '%s': %s\n" Problem
 			0 return
 		end
 

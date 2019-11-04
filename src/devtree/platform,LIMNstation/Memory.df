@@ -5,6 +5,10 @@ procedure BuildMemory (* -- *)
 	DeviceNew
 		"memory" DSetName
 
+		"memory" "deviceType" DAddProperty
+
+		"AISA,memory" "model" DAddProperty
+
 		auto max
 		RAM256Slots max!
 

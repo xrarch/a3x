@@ -25,11 +25,15 @@ procedure AKeyboardPoll (* -- *)
 
 					hmm@ DSetName
 
-					i@ "aID" DAddProperty
+					i@ "amanatsu,unit" DAddProperty
 
 					pointerof AKeyboardRead "read" DAddMethod
 
 					pointerof AKeyboardIsDown "isDown" DAddMethod
+
+					"keyboard" "deviceType" DAddMethod
+
+					"AISA,keyboard" "model" DAddMethod
 
 					1 AKeyboardCount +=
 				DeviceExit
@@ -65,7 +69,7 @@ end
 
 procedure AKeyboardIsDown { scancode -- down }
 	auto id
-	"aID" DGetProperty id!
+	"amanatsu,unit" DGetProperty id!
 
 	id@ AmanatsuSelectDev
 	scancode@ AmanatsuWriteA
@@ -75,7 +79,7 @@ end
 
 procedure AKeyboardRead { -- c }
 	auto id
-	"aID" DGetProperty id!
+	"amanatsu,unit" DGetProperty id!
 
 	auto code
 

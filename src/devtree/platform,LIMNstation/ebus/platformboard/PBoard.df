@@ -13,6 +13,8 @@ procedure BuildPBoard (* -- *)
 	DeviceNew
 		"platformboard" DSetName
 
+		"AISA,platformboard" "model" DAddProperty
+
 		PBInfo@ "version" DAddProperty
 
 		BuildCitron

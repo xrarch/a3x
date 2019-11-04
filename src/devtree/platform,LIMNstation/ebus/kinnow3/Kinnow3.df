@@ -186,6 +186,10 @@ procedure BuildKinnow3 (* -- *)
 		h@ "height" DAddProperty
 		8 "depth" DAddProperty
 
+		"display" "deviceType" DAddProperty
+
+		"AISA,kinnow3" "model" DAddProperty
+
 		pointerof KinnowSetMode "kinnow3,setMode" DAddMethod
 		pointerof KinnowRectangle "rectangle" DAddMethod
 		pointerof KinnowVsyncAdd "vsyncAdd" DAddMethod
@@ -211,6 +215,8 @@ procedure KinnowBlitS2S { x1 y1 x2 y2 w h -- }
 	(* todo *)
 end
 
+var KinnowDMAEmulate 0
+
 procedure KinnowPipeRead { to count -- }
 	if (KinnowDMANode@ 0 ==)
 		auto ndma
@@ -234,13 +240,22 @@ procedure KinnowPipeRead { to count -- }
 			KinnowDMATransfer@ DCallMethodPtr
 		DeviceExit
 	end else
-		auto i
-		0 i!
-		while (i@ count@ <)
-			KinnowPipeStart@ gb to@ sb
+		(* emulate dma, can't afford to error here because if the console is verbose it'll endlessly loop
+		   trying to print the error message *)
 
-			1 to +=
-			1 i +=
+		if (KinnowDMAEmulate@ PlatformInited@ ~~ ||)
+			auto i
+			0 i!
+			while (i@ count@ <)
+				KinnowPipeStart@ gb to@ sb
+
+				1 to +=
+				1 i +=
+			end
+		end else
+			1 KinnowDMAEmulate!
+
+			"kinnow3: where's /dma? using emulation (SLOW)\n" Problem
 		end
 	end
 end
@@ -268,13 +283,22 @@ procedure KinnowPipeWrite { from count -- }
 			KinnowDMATransfer@ DCallMethodPtr
 		DeviceExit
 	end else
-		auto i
-		0 i!
-		while (i@ count@ <)
-			from@ gb KinnowPipeStart@ sb
+		(* emulate dma, can't afford to error here because if the console is verbose it'll endlessly loop
+		   trying to print the error message *)
 
-			1 from +=
-			1 i +=
+		if (KinnowDMAEmulate@ PlatformInited@ ~~ ||)
+			auto i
+			0 i!
+			while (i@ count@ <)
+				from@ gb KinnowPipeStart@ sb
+
+				1 from +=
+				1 i +=
+			end
+		end else
+			1 KinnowDMAEmulate!
+
+			"kinnow3: where's /dma? using emulation (SLOW)\n" Problem
 		end
 	end
 end

@@ -117,6 +117,10 @@ procedure BuildGConsole (* -- *)
 
 		FontWidth "fontWidth" DAddProperty
 		FontHeight "fontHeight" DAddProperty
+
+		"serial" "deviceType" DAddProperty
+
+		"a3x,gconsole" "model" DAddProperty
 	DeviceExit
 
 	GConsoleDefault

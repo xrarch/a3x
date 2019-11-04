@@ -6,6 +6,10 @@ procedure BuildLimn1k
 		"limn1k" DSetName
 		"limn1k" "type" DAddProperty
 
+		"cpu" "deviceType" DAddProperty
+
+		"AISA,limn1k" "model" DAddProperty
+
 		pointerof Limn1kReset "reset" DAddMethod
 	DeviceExit
 end

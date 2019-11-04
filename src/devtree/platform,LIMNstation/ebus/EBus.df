@@ -9,6 +9,10 @@ procedure BuildEBus (* -- *)
 	DeviceNew
 		"ebus" DSetName
 
+		"bus" "deviceType" DAddProperty
+
+		"AISA,ebus" "model" DAddProperty
+
 		BuildDMA
 
 		BuildPBoard

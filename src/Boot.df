@@ -144,7 +144,7 @@ procedure BootNode { devnode args } (* -- ok? *)
 		6 return
 	end
 
-	BootBottom 4 + @ args@ devnode@ API "passing control to boot blocks\n with:\tAPI: %x\n\tnode: %x\n\targs: %s\n\tentrypoint: 0x%x\n\n" Printf
+	BootBottom 4 + @ args@ devnode@ API "passing control to bootloader\n with:\tAPI: %x\n\tnode: %x\n\targs: %s\n\tentrypoint: 0x%x\n\n" Printf
 
 	API devnode@ args@ BootBottom 4 + @ asm "
 
@@ -180,6 +180,6 @@ procedure BootNode { devnode args } (* -- ok? *)
 	if (retv@ 0 ==)
 		1 (* ok *) return
 	end else
-		9 return
+		9 (* system software error *) return
 	end
 end

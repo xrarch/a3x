@@ -14,7 +14,9 @@ procedure BuildCSerial (* -- *)
 		pointerof SerialWrite "write" DAddMethod
 		pointerof SerialRead "read" DAddMethod
 
-		"serial" "type" DAddProperty
+		"serial" "deviceType" DAddProperty
+
+		"AISA,serial-port" "model" DAddProperty
 	DeviceExit
 end
 

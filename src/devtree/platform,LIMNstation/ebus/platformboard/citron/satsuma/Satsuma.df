@@ -16,6 +16,8 @@ const AHDBBuffer 0xF8020000
 var AHDBDMANode 0
 var AHDBDMATransfer 0
 
+var AHDBDMAEmulation 0
+
 struct AHDB_VDB
 	16 Label
 	128 PartitionTable
@@ -52,7 +54,14 @@ procedure private AHDBDMATransferBlock { src dest -- }
 			AHDBDMATransfer@ DCallMethodPtr
 		DeviceExit
 	end else
-		dest@ src@ 4096 memcpy
+		if (AHDBDMAEmulation@ PlatformInited@ ~~ ||)
+			(* just copy in software if early *)
+			dest@ src@ 4096 memcpy
+		end else
+			1 AHDBDMAEmulation!
+
+			"dks: where is /dma? using emulation (SLOW)\n" Problem
+		end
 	end
 end
 
@@ -115,6 +124,10 @@ procedure BuildSatsuma (* -- *)
 	DeviceNew
 		"dks" DSetName
 
+		"disk-bus" "deviceType" DAddProperty
+
+		"AISA,satsuma" "model" DAddProperty
+
 		auto i
 		0 i!
 		while (i@ 8 <)
@@ -130,11 +143,15 @@ procedure BuildSatsuma (* -- *)
 					i@ lilbuf@ itoa
 					lilbuf@ DSetName
 
-					i@ "id" DAddProperty
+					i@ "satsuma,id" DAddProperty
 					blocks@ "blocks" DAddProperty
 					0 "offset" DAddProperty
 
 					"disk" "type" DAddProperty
+
+					"disk" "deviceType" DAddProperty
+
+					"AISA,satsuma-disk" "model" DAddProperty
 
 					pointerof AHDBRead "readBlock" DAddMethod
 					pointerof AHDBWrite "writeBlock" DAddMethod
@@ -157,7 +174,7 @@ procedure AHDBRead { ptr block -- ok }
 	InterruptDisable rs!
 
 	auto id
-	"id" DGetProperty id!
+	"satsuma,id" DGetProperty id!
 
 	if (block@ "blocks" DGetProperty >=) rs@ InterruptRestore ERR ok! return end
 
@@ -180,7 +197,7 @@ procedure AHDBWrite { ptr block -- ok }
 	InterruptDisable rs!
 
 	auto id
-	"id" DGetProperty id!
+	"satsuma,id" DGetProperty id!
 
 	if (block@ "blocks" DGetProperty >=) rs@ InterruptRestore ERR ok! return end
 

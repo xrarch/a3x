@@ -19,3 +19,5 @@ extern LateReset
 extern Monitor
 
 extern Problem
+
+externconst PlatformInited

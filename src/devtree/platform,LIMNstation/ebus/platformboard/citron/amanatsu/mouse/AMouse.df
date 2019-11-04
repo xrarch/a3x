@@ -38,7 +38,7 @@ procedure AMousePoll (* -- *)
 
 					hmm@ DSetName
 
-					i@ "aID" DAddProperty
+					i@ "amanatsu,unit" DAddProperty
 
 					if (AMouseCount@ 0 ==)
 						DevCurrent@ AMouseCDev!
@@ -48,6 +48,10 @@ procedure AMousePoll (* -- *)
 						pointerof AMouseEvent "getEvent" DAddMethod
 						pointerof AMouseReset "reset" DAddMethod
 					end
+
+					"mouse" "deviceType" DAddMethod
+
+					"AISA,mouse" "model" DAddMethod
 
 					1 AMouseCount +=
 				DeviceExit
@@ -70,7 +74,7 @@ end
 
 procedure AMouseEvent { -- detail event }
 	auto id
-	"aID" DGetProperty id!
+	"amanatsu,unit" DGetProperty id!
 
 	auto rs
 	InterruptDisable rs!
@@ -86,7 +90,7 @@ end
 procedure AMouseReset (* -- *)
 	auto id
 	AMouseCDev@ DeviceSelectNode
-		"aID" DGetProperty id!
+		"amanatsu,unit" DGetProperty id!
 	DeviceExit
 
 	auto rs
@@ -101,7 +105,7 @@ end
 procedure AMouseInterrupt (* -- *)
 	auto id
 	AMouseCDev@ DeviceSelectNode
-		"aID" DGetProperty id!
+		"amanatsu,unit" DGetProperty id!
 	DeviceExit
 
 	id@ AmanatsuSelectDev

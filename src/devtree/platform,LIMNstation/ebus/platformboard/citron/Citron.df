@@ -13,6 +13,10 @@ procedure BuildCitron (* -- *)
 	DeviceNew
 		"citron" DSetName
 
+		"bus" "deviceType" DAddProperty
+
+		"AISA,citron" "model" DAddProperty
+
 		BuildSatsuma
 
 		BuildCClock

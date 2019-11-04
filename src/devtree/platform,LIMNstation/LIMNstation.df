@@ -9,7 +9,9 @@ procedure BuildPlatform (* -- *)
 	DeviceNew
 		"platform" DSetName
 	
-		"LIMNstation,1" "platform" DAddProperty
+		"LIMNstation,1" "model" DAddProperty
+
+		"platform" "deviceType" DAddProperty
 
 		BuildLimn1k
 
