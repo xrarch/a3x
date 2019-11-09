@@ -1,0 +1,14 @@
+#include "<df>/dragonfruit.h"
+#include "<inc>/a3x.h"
+
+(* this isn't an alias to a platform-specific node because it relates back to inherently platform-specific bits of a3x *)
+
+procedure BuildInterrupts (* -- *)
+	DeviceNew
+		"interrupts" DSetName
+
+		"interrupts" "deviceType" DAddProperty
+
+		pointerof InterruptRegister "setInterrupt" DAddMethod
+	DeviceExit
+end

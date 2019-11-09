@@ -18,6 +18,8 @@ procedure BuildCClock (* -- *)
 		"rtc" "deviceType" DAddProperty
 
 		"AISA,clock" "model" DAddProperty
+
+		0x22 "interrupt#" DAddProperty
 	DeviceExit
 
 	ClockEpoch ClockStartMS! ClockStartSec!

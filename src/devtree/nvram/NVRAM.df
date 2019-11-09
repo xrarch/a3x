@@ -1,0 +1,18 @@
+#include "<df>/dragonfruit.h"
+#include "<inc>/a3x.h"
+
+(* this isn't an alias to a platform-specific node because it relates back to inherently platform-specific bits of a3x *)
+
+procedure BuildNVRAM (* -- *)
+	DeviceNew
+		"nvram" DSetName
+
+		"nvram" "deviceType" DAddProperty
+
+		pointerof NVRAMDeleteVar "deleteVar" DAddMethod
+		pointerof NVRAMSetVar "setVar" DAddMethod
+		pointerof NVRAMSetVarNum "setVarNum" DAddMethod
+		pointerof NVRAMGetVar "getVar" DAddMethod
+		pointerof NVRAMGetVarNum "getVarNum" DAddMethod
+	DeviceExit
+end

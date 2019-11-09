@@ -57,6 +57,10 @@ extern DCallMethod (* ... name -- ... ok? *)
 
 extern DCallMethodPtr (* ... ptr -- ... *)
 
+extern DevIteratorInit (* -- iter *)
+
+extern DevIterate (* iterin -- iterout *)
+
 extern DeviceExit (* -- *)
 
 extern DGetName (* -- name *)

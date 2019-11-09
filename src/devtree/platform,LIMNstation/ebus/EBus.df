@@ -13,6 +13,9 @@ procedure BuildEBus (* -- *)
 
 		"AISA,ebus" "model" DAddProperty
 
+		pointerof EBusFindFirstBoard "ebus,findFirstBoard" DAddMethod
+		pointerof EBusSlotInterruptRegister "ebus,slotInterruptRegister" DAddMethod
+
 		BuildDMA
 
 		BuildPBoard

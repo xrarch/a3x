@@ -190,6 +190,8 @@ procedure BuildKinnow3 (* -- *)
 
 		"AISA,kinnow3" "model" DAddProperty
 
+		KinnowSlot@ "ebus,unit" DAddProperty
+
 		pointerof KinnowSetMode "kinnow3,setMode" DAddMethod
 		pointerof KinnowRectangle "rectangle" DAddMethod
 		pointerof KinnowVsyncAdd "vsyncAdd" DAddMethod

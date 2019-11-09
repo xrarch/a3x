@@ -42,16 +42,16 @@ procedure AMousePoll (* -- *)
 
 					if (AMouseCount@ 0 ==)
 						DevCurrent@ AMouseCDev!
-						pointerof AMouseInterrupt i@ AmanatsuSetInterrupt
+						pointerof AMouseInterrupt i@ AmanatsuSetInterrupt "interrupt#" DAddProperty
 
 						pointerof AMouseAddCallback "addCallback" DAddMethod
 						pointerof AMouseEvent "getEvent" DAddMethod
 						pointerof AMouseReset "reset" DAddMethod
 					end
 
-					"mouse" "deviceType" DAddMethod
+					"mouse" "deviceType" DAddProperty
 
-					"AISA,mouse" "model" DAddMethod
+					"AISA,mouse" "model" DAddProperty
 
 					1 AMouseCount +=
 				DeviceExit

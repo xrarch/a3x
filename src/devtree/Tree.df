@@ -17,6 +17,8 @@ extern BuildGClock
 extern BuildGDisk
 extern BuildGCPU
 extern BuildGMemory
+extern BuildInterrupts
+extern BuildNVRAM
 
 procedure BuildTree (* -- *)
 	BuildPlatform
@@ -35,4 +37,6 @@ procedure BuildTree (* -- *)
 	BuildGDisk
 	BuildGBootDisk
 	BuildGClock
+	BuildInterrupts
+	BuildNVRAM
 end

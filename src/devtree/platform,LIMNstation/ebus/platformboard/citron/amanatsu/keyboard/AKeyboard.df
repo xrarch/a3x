@@ -31,9 +31,9 @@ procedure AKeyboardPoll (* -- *)
 
 					pointerof AKeyboardIsDown "isDown" DAddMethod
 
-					"keyboard" "deviceType" DAddMethod
+					"keyboard" "deviceType" DAddProperty
 
-					"AISA,keyboard" "model" DAddMethod
+					"AISA,keyboard" "model" DAddProperty
 
 					1 AKeyboardCount +=
 				DeviceExit

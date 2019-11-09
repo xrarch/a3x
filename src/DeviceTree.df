@@ -60,7 +60,7 @@ procedure DevTreeWalk { path -- cnode }
 				pnode@ nnode! break
 			end
 
-			n@ ListNode_Next + @ n!
+			n@ ListNodeNext n!
 		end
 
 		if (nnode@ 0 ==)
@@ -144,8 +144,8 @@ procedure DeviceClone { node -- }
 
 	ml@ pl@ DeviceNNewOMP DevCurrent@ DevTree@ TreeInsertChild tnode!
 
-	tnode@ TreeNode_Children + @ Free
-	node@ TreeNode_Children + @ tnode@ TreeNode_Children + !
+	tnode@ TreeNodeChildren Free
+	node@ TreeNodeChildren tnode@ TreeNode_Children + !
 
 	tnode@ DevCurrent!
 end
@@ -333,6 +333,18 @@ procedure DCallMethod (* ... name -- ... ok? *)
 	0
 end
 
+procedure DevIteratorInit { -- iter }
+	"DevIteratorInit" DevTreeCheck
+
+	DevCurrent@ TreeNodeChildren ListHead iter!
+end
+
+procedure DevIterate { iterin -- iterout }
+	iterin@ ListNodeValue DeviceSelectNode
+
+	iterin@ ListNodeNext iterout!
+end
+
 procedure DeviceExit (* -- *)
 	DevStackPOP DevCurrent!
 end
@@ -354,7 +366,6 @@ procedure DGetProperties (* -- properties *)
 
 	DevCurrent@ TreeNodeValue DeviceNode_Properties + @
 end
-
 
 procedure private BuildDeviceTree (* -- *)
 	TreeCreate DevTree!

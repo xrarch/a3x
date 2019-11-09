@@ -96,7 +96,7 @@ procedure AHDBPartitions { id -- }
 						ptr@ AHDB_PTE_Blocks + @ "blocks" DAddProperty
 						offset@ "offset" DAddProperty
 
-						"logical" "type" DAddProperty
+						"disk-logical" "deviceType" DAddProperty
 
 						pointerof AHDBRead "readBlock" DAddMethod
 						pointerof AHDBWrite "writeBlock" DAddMethod
@@ -127,6 +127,8 @@ procedure BuildSatsuma (* -- *)
 		"disk-bus" "deviceType" DAddProperty
 
 		"AISA,satsuma" "model" DAddProperty
+
+		0x20 "interrupt#" DAddProperty
 
 		auto i
 		0 i!

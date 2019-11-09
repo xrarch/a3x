@@ -15,6 +15,19 @@ procedure BuildAmanatsu (* -- *)
 
 		"AISA,amanatsu" "model" DAddProperty
 
+		pointerof AmanatsuPoll "amanatsu,poll" DAddMethod
+		pointerof AmanatsuSelectDev "amanatsu,selectDev" DAddMethod
+		pointerof AmanatsuReadMID "amanatsu,readMID" DAddMethod
+		pointerof AmanatsuCommand "amanatsu,command" DAddMethod
+		pointerof AmanatsuCommandAsync "amanatsu,commandAsync" DAddMethod
+		pointerof AmanatsuWriteA "amanatsu,writeA" DAddMethod
+		pointerof AmanatsuWriteB "amanatsu,writeB" DAddMethod
+		pointerof AmanatsuReadA "amanatsu,readA" DAddMethod
+		pointerof AmanatsuReadB "amanatsu,readB" DAddMethod
+		pointerof AmanatsuDevFromInt "amanatsu,devFromInt" DAddMethod
+		pointerof AmanatsuSetInterrupt "amanatsu,setInterrupt" DAddMethod
+		pointerof AmanatsuSpecialCMD "amanatsu,specialCommand" DAddMethod
+
 		AKeyboardInit
 		AKeyboardPoll
 		
@@ -23,8 +36,8 @@ procedure BuildAmanatsu (* -- *)
 	DeviceExit
 end
 
-(* start assigning interrupts at 0x80 *)
-var AmaLastInterrupt 0x80
+(* start assigning interrupts at 0x40 *)
+var AmaLastInterrupt 0x40
 
 buffer AmaInterruptMap 256
 
@@ -72,13 +85,15 @@ procedure AmanatsuDevFromInt (* int -- dev *)
 	AmaInterruptMap + gb
 end
 
-procedure AmanatsuSetInterrupt { handler dev -- }
-	handler@ AmaLastInterrupt@ PBInterruptRegister
+procedure AmanatsuSetInterrupt { handler dev -- num }
+	handler@ AmaLastInterrupt@ InterruptRegister
 	AmaLastInterrupt@ dev@ 1 AmanatsuSpecialCMD
 
 	dev@ AmaLastInterrupt@ AmaInterruptMap + sb
 
-	AmaLastInterrupt@ 1 + AmaLastInterrupt!
+	AmaLastInterrupt@ num!
+
+	1 AmaLastInterrupt +=
 end
 
 procedure AmanatsuSpecialCMD { a b cmd -- }

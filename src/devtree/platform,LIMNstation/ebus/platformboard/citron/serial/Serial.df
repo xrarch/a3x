@@ -17,6 +17,8 @@ procedure BuildCSerial (* -- *)
 		"serial" "deviceType" DAddProperty
 
 		"AISA,serial-port" "model" DAddProperty
+
+		0x21 "interrupt#" DAddProperty
 	DeviceExit
 end
 

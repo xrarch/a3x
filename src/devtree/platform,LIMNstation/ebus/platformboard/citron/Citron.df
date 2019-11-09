@@ -17,6 +17,15 @@ procedure BuildCitron (* -- *)
 
 		"AISA,citron" "model" DAddProperty
 
+		pointerof DCitronInb "citron,inb" DAddMethod
+		pointerof DCitronIni "citron,ini" DAddMethod
+		pointerof DCitronInl "citron,inl" DAddMethod
+		pointerof DCitronOutb "citron,outb" DAddMethod
+		pointerof DCitronOuti "citron,outi" DAddMethod
+		pointerof DCitronOutl "citron,outl" DAddMethod
+		pointerof DCitronCommand "citron,command" DAddMethod
+		pointerof DCitronCommandASync "citron,commandAsync" DAddMethod
+
 		BuildSatsuma
 
 		BuildCClock
