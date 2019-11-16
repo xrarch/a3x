@@ -108,11 +108,6 @@ procedure MonitorCommandsInit (* -- *)
 	pointerof MonitorCommandWait
 	"wait"
 	MonitorAddCommand
-
-	0
-	pointerof _SF
-	"sf"
-	MonitorAddCommand
 end
 
 const ConsoleAssumedHeight 22
@@ -289,10 +284,6 @@ procedure MonitorCommandDinfo (* -- *)
 
 		CR
 	DeviceExit
-end
-
-procedure _SF (* -- *)
-	"c;\n" Printf
 end
 
 procedure MonitorCommandListenv (* -- *)
