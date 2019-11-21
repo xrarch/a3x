@@ -72,7 +72,7 @@ procedure FirmwareBanner (* -- *)
 	DeviceExit
 
 	"/platform" DeviceSelect
-		"platform" DGetProperty "Platform: %s\n" BannerPrint
+		"model" DGetProperty "Platform: %s\n" BannerPrint
 	DeviceExit
 
 	"/cpu" DeviceSelect

@@ -107,8 +107,8 @@ FaultsHandlerASM:
 	iret
 "
 
-procedure InterruptRegister (* handler num -- *)
-	4 * InterruptsVT@ + !
+procedure InterruptRegister { handler num -- }
+	handler@ num@ 4 * InterruptsVT@ + !
 end
 
 procedure InterruptEnable (* -- *)

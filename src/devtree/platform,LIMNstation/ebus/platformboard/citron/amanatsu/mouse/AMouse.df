@@ -42,7 +42,7 @@ procedure AMousePoll (* -- *)
 
 					if (AMouseCount@ 0 ==)
 						DevCurrent@ AMouseCDev!
-						pointerof AMouseInterrupt i@ AmanatsuSetInterrupt "interrupt#" DAddProperty
+						pointerof AMouseInterruptASM i@ AmanatsuSetInterrupt "interrupt#" DAddProperty
 
 						pointerof AMouseAddCallback "addCallback" DAddMethod
 						pointerof AMouseEvent "getEvent" DAddMethod
@@ -101,6 +101,18 @@ procedure AMouseReset (* -- *)
 
 	rs@ InterruptRestore
 end
+
+asm "
+
+AMouseInterruptASM:
+	pusha
+
+	call AMouseInterrupt
+
+	popa
+	iret
+
+"
 
 procedure AMouseInterrupt (* -- *)
 	auto id

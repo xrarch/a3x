@@ -19,3 +19,5 @@ externconst PlatformMemoryPath (* var *)
 externconst PlatformDefaultScreenBG (* var *)
 
 externconst PlatformDefaultScreenFG (* var *)
+
+externconst PlatformBusPath (* var *)

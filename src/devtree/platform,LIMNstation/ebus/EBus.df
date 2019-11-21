@@ -15,6 +15,7 @@ procedure BuildEBus (* -- *)
 
 		pointerof EBusFindFirstBoard "ebus,findFirstBoard" DAddMethod
 		pointerof EBusSlotInterruptRegister "ebus,slotInterruptRegister" DAddMethod
+		pointerof EBusReset "reset" DAddMethod
 
 		BuildDMA
 
@@ -49,4 +50,8 @@ end
 
 procedure EBusSlotInterruptRegister (* handler slot -- *)
 	0x98 + InterruptRegister
+end
+
+procedure EBusReset (* -- *)
+	asm "li rs, 0x80000000"
 end

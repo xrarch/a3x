@@ -54,6 +54,9 @@ public PlatformDefaultScreenBG
 var PlatformDefaultScreenFG 0
 public PlatformDefaultScreenFG
 
+var PlatformBusPath 0
+public PlatformBusPath
+
 procedure PlatformInit (* -- *)
 	"/platform/ebus/platformboard/citron/clock" PlatformClockPath!
 	"/platform/ebus/platformboard/citron/dks" PlatformDiskBusPath!
@@ -64,6 +67,7 @@ procedure PlatformInit (* -- *)
 	"/platform/ebus/platformboard/citron/serial" PlatformSerialPath!
 	"/platform/limn1k" PlatformCPUPath!
 	"/platform/memory" PlatformMemoryPath!
+	"/platform/ebus" PlatformBusPath!
 
 	"15" PlatformDefaultScreenBG!
 	"255" PlatformDefaultScreenFG!

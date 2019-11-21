@@ -28,6 +28,8 @@ procedure BuildAmanatsu (* -- *)
 		pointerof AmanatsuSetInterrupt "amanatsu,setInterrupt" DAddMethod
 		pointerof AmanatsuSpecialCMD "amanatsu,specialCommand" DAddMethod
 
+		pointerof AmanatsuReset "reset" DAddMethod
+
 		AKeyboardInit
 		AKeyboardPoll
 		
@@ -102,6 +104,10 @@ procedure AmanatsuSpecialCMD { a b cmd -- }
 	b@ AmanatsuWriteB
 
 	cmd@ AmanatsuCommand
+end
+
+procedure AmanatsuReset (* -- *)
+	0 0 2 AmanatsuSpecialCMD
 end
 
 

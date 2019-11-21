@@ -17,6 +17,7 @@ extern BuildGClock
 extern BuildGDisk
 extern BuildGCPU
 extern BuildGMemory
+extern BuildGBus
 extern BuildInterrupts
 extern BuildNVRAM
 
@@ -27,6 +28,7 @@ procedure BuildTree (* -- *)
 
 	(* platform independent pseudo-devices *)
 	BuildGCPU
+	BuildGBus
 	BuildGMemory
 	BuildGDMA
 	BuildGSerial

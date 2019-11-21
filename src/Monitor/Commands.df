@@ -108,6 +108,11 @@ procedure MonitorCommandsInit (* -- *)
 	pointerof MonitorCommandWait
 	"wait"
 	MonitorAddCommand
+
+	0
+	pointerof AAA
+	"aaa"
+	MonitorAddCommand
 end
 
 const ConsoleAssumedHeight 22
@@ -148,6 +153,27 @@ procedure private WaitNext { -- result }
 	end
 
 	1 UsedLines +=
+end
+
+procedure AAA (* -- *)
+	ResetLines
+	
+	auto count
+	1 count!
+	while (1)
+		if (WaitNext ~~)
+			return
+		end
+
+	    auto i
+	    0 i!
+	    while (i@ count@ <)
+	        'A' Putc
+	        1 i +=
+	    end
+	    CR
+	    1 count +=
+	end
 end
 
 procedure MonitorCommandWait (* -- *)
