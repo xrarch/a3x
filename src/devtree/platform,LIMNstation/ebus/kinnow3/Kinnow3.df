@@ -201,14 +201,13 @@ procedure BuildKinnow3 (* -- *)
 		pointerof KinnowBlit "blit" DAddMethod
 		pointerof KinnowBlitS2S "blitS2S" DAddMethod
 		pointerof KinnowInit "init" DAddMethod
+		pointerof KinnowVsyncOn "vsyncEnable" DAddMethod
 	DeviceExit
 
 	w@ KinnowWidth!
 	h@ KinnowHeight!
 
 	ListCreate KinnowVsyncList!
-
-	KinnowVsyncOn
 
 	1 KinnowSetMode
 end

@@ -6,6 +6,10 @@
 extern _DumpStack
 extern HeapDump
 
+extern MonitorCommandDumpstate
+extern MonitorCommandPrintreg
+extern MonitorCommandSavereg
+
 procedure MonitorCommandsInit (* -- *)
 	ListCreate MonitorCommandList!
 
@@ -109,6 +113,31 @@ procedure MonitorCommandsInit (* -- *)
 	"wait"
 	MonitorAddCommand
 
+	"Dump stored state."
+	pointerof MonitorCommandDumpstate
+	"dumpstate"
+	MonitorAddCommand
+
+	"[register] Print saved value of a register."
+	pointerof MonitorCommandPrintreg
+	"printreg"
+	MonitorAddCommand
+
+	"[register] [value] Set saved value of a register."
+	pointerof MonitorCommandSavereg
+	"savereg"
+	MonitorAddCommand
+
+	"[addr] [value] Set addr to value."
+	pointerof MonitorCommandPoke
+	"poke"
+	MonitorAddCommand
+
+	"[addr] Get value of addr."
+	pointerof MonitorCommandPeek
+	"peek"
+	MonitorAddCommand
+
 	0
 	pointerof AAA
 	"aaa"
@@ -120,12 +149,12 @@ const ConsoleAssumedHeight 22
 var UsedLines 0
 var AllLines 0
 
-procedure private ResetLines (* -- *)
+procedure ResetLines (* -- *)
 	0 UsedLines!
 	0 AllLines!
 end
 
-procedure private WaitNext { -- result }
+procedure WaitNext { -- result }
 	1 result!
 
 	if (AllLines@)
@@ -174,6 +203,30 @@ procedure AAA (* -- *)
 	    CR
 	    1 count +=
 	end
+end
+
+procedure MonitorCommandPoke (* -- *)
+	auto addr
+	MonitorParseWord addr!
+
+	auto val
+	MonitorParseWord val!
+
+	val@ atoi addr@ atoi !
+
+	val@ atoi addr@ atoi "%x = %x\n" Printf
+
+	val@ Free
+	addr@ Free
+end
+
+procedure MonitorCommandPeek (* -- *)
+	auto addr
+	MonitorParseWord addr!
+
+	addr@ atoi @ addr@ atoi "%x = %x\n" Printf
+
+	addr@ Free
 end
 
 procedure MonitorCommandWait (* -- *)

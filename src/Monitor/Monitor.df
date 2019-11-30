@@ -13,18 +13,22 @@ public MonitorLine
 var MonitorLinePoint 0
 public MonitorLinePoint
 
+var MonitorState 0
+public MonitorState
+
 #include "monitor.h"
 
 extern MonitorCommandsInit
 
 extern MonitorCommandBanner
 
-
-
-procedure Monitor (* -- *)
+procedure DebugMonitor { state -- }
 	if (MonitorCommandList@ 0 ==)
 		MonitorCommandsInit
 	end
+
+	auto savestate
+	MonitorState@ savestate!
 
 	auto saverunning
 	MonitorRunning@ saverunning!
@@ -34,6 +38,8 @@ procedure Monitor (* -- *)
 
 	auto savepoint
 	MonitorLinePoint@ savepoint!
+
+	state@ MonitorState!
 
 	1 MonitorRunning!
 
@@ -51,6 +57,11 @@ procedure Monitor (* -- *)
 	savepoint@ MonitorLinePoint!
 	saveline@ MonitorLine!
 	saverunning@ MonitorRunning!
+	savestate@ MonitorState!
+end
+
+procedure Monitor (* -- *)
+	0 DebugMonitor
 end
 
 (* should be called before any command leaves the monitor, for instance 'boot' *)

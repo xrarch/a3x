@@ -22,8 +22,6 @@ extern AmanatsuReadA (* -- long *)
 
 extern AmanatsuReadB (* -- long *)
 
-extern AmanatsuDevFromInt (* int -- dev *)
-
 extern AmanatsuSetInterrupt (* handler dev -- *)
 
 extern AmanatsuSpecialCMD (* a b cmd -- *)

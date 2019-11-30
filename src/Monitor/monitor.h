@@ -5,6 +5,8 @@ externconst MonitorCommandList (* var *)
 externconst MonitorLine (* var *)
 externconst MonitorLinePoint (* var *)
 
+externconst MonitorState (* var *)
+
 struct MonitorCommand
 	4 Name
 	4 Callback
@@ -31,3 +33,7 @@ extern MonitorParseWord (* -- word *)
 extern MonitorDoCommand (* command -- ok? *)
 
 extern MonitorAddCommand (* helptext callback name -- *)
+
+extern ResetLines (* -- *)
+
+extern WaitNext (* -- result *)

@@ -24,7 +24,6 @@ procedure BuildAmanatsu (* -- *)
 		pointerof AmanatsuWriteB "amanatsu,writeB" DAddMethod
 		pointerof AmanatsuReadA "amanatsu,readA" DAddMethod
 		pointerof AmanatsuReadB "amanatsu,readB" DAddMethod
-		pointerof AmanatsuDevFromInt "amanatsu,devFromInt" DAddMethod
 		pointerof AmanatsuSetInterrupt "amanatsu,setInterrupt" DAddMethod
 		pointerof AmanatsuSpecialCMD "amanatsu,specialCommand" DAddMethod
 
@@ -40,8 +39,6 @@ end
 
 (* start assigning interrupts at 0x40 *)
 var AmaLastInterrupt 0x40
-
-buffer AmaInterruptMap 256
 
 (* disabling and restoring interrupts is up to the user of these functions *)
 
@@ -83,15 +80,9 @@ procedure AmanatsuReadB (* -- long *)
 	AmaPortB DCitronInl
 end
 
-procedure AmanatsuDevFromInt (* int -- dev *)
-	AmaInterruptMap + gb
-end
-
 procedure AmanatsuSetInterrupt { handler dev -- num }
 	handler@ AmaLastInterrupt@ InterruptRegister
 	AmaLastInterrupt@ dev@ 1 AmanatsuSpecialCMD
-
-	dev@ AmaLastInterrupt@ AmaInterruptMap + sb
 
 	AmaLastInterrupt@ num!
 

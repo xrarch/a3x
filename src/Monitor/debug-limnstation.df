@@ -1,0 +1,143 @@
+#include "<df>/dragonfruit.h"
+#include "<inc>/a3x.h"
+
+#include "monitor.h"
+
+struct TrapFrame
+	4 rf
+	4 r30	4 r29
+	4 r28	4 r27
+	4 r26	4 r25
+	4 r24	4 r23
+	4 r22	4 r21
+	4 r20	4 r19
+	4 r18	4 r17
+	4 r16	4 r15
+	4 r14	4 r13
+	4 r12	4 r11
+	4 r10	4 r9
+	4 r8	4 r7
+	4 r6	4 r5
+	4 r4	4 r3
+	4 r2	4 r1
+	4 icause
+	4 rs
+	4 r0
+	4 pc
+endstruct
+
+table TrapFrame_Names
+	"rf"
+	"r30"	"r29"
+	"r28"	"r27"
+	"r26"	"r25"
+	"r24"	"r23"
+	"r22"	"r21"
+	"r20"	"r19"
+	"r18"	"r17"
+	"r16"	"r15"
+	"r14"	"r13"
+	"r12"	"r11"
+	"r10"	"r9"
+	"r8"	"r7"
+	"r6"	"r5"
+	"r4"	"r3"
+	"r2"	"r1"
+	"icause"
+	"rs"
+	"r0"
+	"pc"
+endtable
+
+const TrapFrameNElem 35
+
+procedure private NameToOffset { name -- reg }
+	auto i
+	0 i!
+
+	-1 reg!
+
+	while (i@ TrapFrameNElem <)
+		if ([i@]TrapFrame_Names@ name@ strcmp)
+			i@ 4 * reg! return
+		end
+
+		1 i +=
+	end
+end
+
+
+procedure MonitorCommandDumpstate (* -- *)
+	if (MonitorState@ 0 ==)
+		"no state saved\n" Printf
+		return
+	end
+
+	ResetLines
+
+	auto i
+	0 i!
+	while (i@ TrapFrameNElem <)
+		if (WaitNext ~~)
+			return
+		end
+
+		i@ 4 * MonitorState@ + @ dup
+		[i@]TrapFrame_Names@ "\[[34m%s\[[0m\t\t\[[32m0x%x / %d\[[0m\n" Printf
+
+		1 i +=
+	end
+end
+
+procedure MonitorCommandPrintreg (* -- *)
+	if (MonitorState@ 0 ==)
+		"no state saved\n" Printf
+		return
+	end
+
+	auto reg
+	MonitorParseWord reg!
+
+	auto off
+	reg@ NameToOffset off!
+
+	if (off@ -1 ==)
+		reg@ "%s?\n" Printf
+		return
+	end
+
+	off@ MonitorState@ + @ dup
+	reg@ "\[[34m%s\[[0m\t\[[32m0x%x / %d\[[0m\n" Printf
+
+	reg@ Free
+end
+
+procedure MonitorCommandSavereg (* -- *)
+	if (MonitorState@ 0 ==)
+		"no state saved\n" Printf
+		return
+	end
+
+	auto reg
+	MonitorParseWord reg!
+
+	auto off
+	reg@ NameToOffset off!
+
+	if (off@ -1 ==)
+		reg@ "%s?\n" Printf
+		return
+	end
+
+	auto val
+	MonitorParseWord val!
+
+	val@ atoi off@ MonitorState@ + !
+
+	val@ atoi dup
+	reg@ "set \[[34m%s\[[0m\t\[[32m0x%x / %d\[[0m\n" Printf
+
+	val@ Free
+
+	reg@ Free
+end

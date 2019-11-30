@@ -17,6 +17,7 @@ extern Reset
 extern LateReset
 
 extern Monitor
+extern DebugMonitor
 
 extern Problem
 

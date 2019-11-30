@@ -60,7 +60,10 @@ public FaultsNames
 
 const Breakpoint 5
 
-procedure FaultsHandler { num loc fa -- }
+var SavedState 0
+public SavedState
+
+procedure FaultsHandler { state num loc fa -- }
 	auto rs
 	InterruptDisable rs!
 
@@ -69,9 +72,10 @@ procedure FaultsHandler { num loc fa -- }
 	if (ConsoleInMethod@ 0 ~=)
 		if (num@ Breakpoint ==)
 			loc@ "\[[7mA3X: breakpoint at 0x%x, entering monitor\[[0m\n" Printf
-			Monitor
+			state@ DebugMonitor
 			return
 		end else
+			state@ SavedState!
 			fa@ [num@]FaultsNames@ "%s at 0x%x.\n" Problem
 		end
 	end else
@@ -93,6 +97,8 @@ FaultsHandlerASM:
 	push k3
 
 	pusha
+
+	pushv r5, sp
 
 	pushv r5, r0
 
