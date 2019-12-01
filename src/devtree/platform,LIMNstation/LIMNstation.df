@@ -69,6 +69,6 @@ procedure PlatformInit (* -- *)
 	"/platform/memory" PlatformMemoryPath!
 	"/platform/ebus" PlatformBusPath!
 
-	"15" PlatformDefaultScreenBG!
-	"255" PlatformDefaultScreenFG!
+	"124" PlatformDefaultScreenBG!
+	"15" PlatformDefaultScreenFG!
 end

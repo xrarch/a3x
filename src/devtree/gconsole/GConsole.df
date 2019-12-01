@@ -16,6 +16,9 @@ var GCCurY 0
 var GCWidth 0
 var GCHeight 0
 
+const GConsoleBG 154
+const GConsoleFG 15
+
 var GCScreenNode 0
 
 var GCNeedsDraw 1
@@ -64,8 +67,8 @@ procedure GConsoleDefault (* -- *)
 		"height" DGetProperty GCGHeight!
 	DeviceExit
 
-	"screen-bg" NVRAMGetVarNum dup GCColorDefBG! GCColorBG!
-	"screen-fg" NVRAMGetVarNum dup GCColorDefFG! GCColorFG!
+	(* "screen-bg" NVRAMGetVarNum dup *) GConsoleBG dup GCColorDefBG! GCColorBG!
+	(* "screen-fg" NVRAMGetVarNum dup *) GConsoleFG dup GCColorDefFG! GCColorFG!
 
 	if ("console-rows" NVRAMGetVar 0 ==)
 		34 "console-rows" NVRAMSetVarNum
@@ -191,6 +194,12 @@ procedure GConsoleClear (* -- *)
 	1 GConsoleModified!
 end
 
+procedure GConsoleRRect (* x y w h color -- *)
+	GCScreenNode@ DeviceSelectNode
+		GCRectP@ DCallMethodPtr
+	DeviceExit
+end
+
 procedure GConsoleRect { x y w h color -- }
 	GCScreenNode@ DeviceSelectNode
 		x@ GConsoleX@ +
@@ -278,11 +287,53 @@ procedure GConsoleBack (* -- *)
 	GCCurX@ 1 - GCCurX!
 end
 
+procedure GConsoleUIBox { title x y w h -- }
+	x@ y@ w@ h@ 0x0F GConsoleRRect
+	x@ 1 + y@ 1 + w@ h@ 25 GConsoleRRect
+	x@ 1 + y@ 1 + w@ 1 - h@ 1 - 29 GConsoleRRect
+	x@ 10 + y@ 20 + w@ 18 - h@ 28 - 0x0F GConsoleRRect
+	x@ 10 + y@ 20 + w@ 19 - h@ 29 - 25 GConsoleRRect
+	x@ 11 + y@ 21 + w@ 21 - h@ 31 - 0x0F GConsoleRRect
+	x@ 12 + y@ 22 + w@ 22 - h@ 32 - 29 GConsoleRRect
+
+	auto tw
+	title@ strlen FontWidth * tw!
+
+	x@ w@ 2 / tw@ 2 / - +
+	y@ 5 +
+	title@
+	-1
+	0
+	FontDrawString
+end
+
+procedure VConsoleDraw (* -- *)
+	if (GConsoleX@ 80 >= GConsoleY@ 80 >= &&) (* there is at least GConsoleMargin/2 pixels around the edge, do a pretty box *)
+		"ANTECEDENT 3.x Firmware"
+		GConsoleX@ 15 -
+		GConsoleY@ 25 -
+		GCWidth@ FontWidth * 30 +
+		GCHeight@ FontHeight * 40 +
+		GConsoleUIBox
+
+		GConsoleX@ 4 -
+		GConsoleY@ 4 -
+		GCWidth@ FontWidth * 10 +
+		GCHeight@ FontHeight * 10 +
+		GConsoleBG
+		GConsoleRRect
+	end else (* un-pretty box *)
+		0 0 GCGWidth@ GCGHeight@ GConsoleBG GConsoleRRect
+	end
+end
+
 procedure GConsoleDraw (* -- *)
 	if (GCInitialConfig@)
 		GCScreenNode@ DeviceSelectNode
 			"init" DCallMethod drop
 		DeviceExit
+
+		VConsoleDraw
 	end
 end
 

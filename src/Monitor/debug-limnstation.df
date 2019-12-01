@@ -83,7 +83,7 @@ procedure MonitorCommandDumpstate (* -- *)
 		end
 
 		i@ 4 * MonitorState@ + @ dup
-		[i@]TrapFrame_Names@ "\[[34m%s\[[0m\t\t\[[32m0x%x / %d\[[0m\n" Printf
+		[i@]TrapFrame_Names@ "\[[33m%s\[[0m\t\t\[[94m0x%x / %d\[[0m\n" Printf
 
 		1 i +=
 	end
@@ -107,7 +107,7 @@ procedure MonitorCommandPrintreg (* -- *)
 	end
 
 	off@ MonitorState@ + @ dup
-	reg@ "\[[34m%s\[[0m\t\[[32m0x%x / %d\[[0m\n" Printf
+	reg@ "\[[33m%s\[[0m\t\[[94m0x%x / %d\[[0m\n" Printf
 
 	reg@ Free
 end
@@ -135,7 +135,7 @@ procedure MonitorCommandSavereg (* -- *)
 	val@ atoi off@ MonitorState@ + !
 
 	val@ atoi dup
-	reg@ "set \[[34m%s\[[0m\t\[[32m0x%x / %d\[[0m\n" Printf
+	reg@ "set \[[33m%s\[[0m\t\[[94m0x%x / %d\[[0m\n" Printf
 
 	val@ Free
 
