@@ -6,7 +6,7 @@ Boot firmware for the LIMN architecture, written in limn1k assembly and dragonfr
 
 Makes heavy internal use of NVRAM variables and a device tree model.
 
-![Running](https://i.imgur.com/BJ9HSsx.png)
+![Running](https://i.imgur.com/P0ooOux.png)
 
 ## Building
 
