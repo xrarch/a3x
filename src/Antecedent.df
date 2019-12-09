@@ -49,8 +49,10 @@ asm "
 
 Reset:
 .global Reset
-	lri.l r0, 0xFFFE0000
-	br r0
+	li ivt, 0
+	divi r0, r0, 0
+.loop:
+	b .loop
 
 "
 

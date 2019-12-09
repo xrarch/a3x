@@ -10,15 +10,6 @@ procedure BuildLimn1k
 
 		"AISA,limn1k" "model" DAddProperty
 
-		pointerof Limn1kReset "reset" DAddMethod
+		pointerof Reset "reset" DAddMethod
 	DeviceExit
 end
-
-asm "
-
-Limn1kReset:
-.global Limn1kReset
-	lri.l r0, 0xFFFE0000
-	br r0
-
-"
