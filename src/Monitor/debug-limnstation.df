@@ -20,6 +20,7 @@ struct TrapFrame
 	4 r6	4 r5
 	4 r4	4 r3
 	4 r2	4 r1
+	4 ivt
 	4 icause
 	4 rs
 	4 r0
@@ -44,6 +45,7 @@ table TrapFrame_Names
 	"r4"	"r3"
 	"r2"	"r1"
 	"icause"
+	"ivt"
 	"rs"
 	"r0"
 	"pc"
