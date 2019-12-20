@@ -37,6 +37,8 @@ procedure Main (* -- *)
 			ConsoleUserOut
 		end
 		[r@]BootErrors@ "boot: %s\n" Printf
+	end else
+		"auto-boot?=false, not automatically booting\n" Printf
 	end
 
 	CR

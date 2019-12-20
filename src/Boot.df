@@ -25,7 +25,7 @@ procedure DevBootableR { devnode } (* -- brecord bootable? *)
 	end
 
 	auto brecord
-	4096 Calloc brecord!
+	4096 Malloc brecord!
 
 	"loading boot record\n" Printf
 

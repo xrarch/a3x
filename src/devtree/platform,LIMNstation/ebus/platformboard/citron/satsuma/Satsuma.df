@@ -65,12 +65,40 @@ procedure private AHDBDMATransferBlock { src dest -- }
 	end
 end
 
-procedure AHDBPartitions { id -- }
+procedure AHDBBootable { part id -- }
+	auto brecord
+	4096 Malloc brecord!
+
+	if (brecord@ 1 AHDBRead 1 ==)
+		(* is it a valid boot record? *)
+		if (brecord@ BootRecord_Magic + @ BootMagic == brecord@ BootRecord_ret + gb BootRM == &&)
+			(* yes, it's bootable *)
+
+			brecord@ BootRecord_OSLabel + strdup "osLabel" DAddProperty
+		end
+	end else
+		auto pc
+		if (part@ -1 ==)
+			'-' pc!
+		end else
+			part@ 'a' + pc!
+		end
+		pc@ id@ "dks%d/%l: couldn't read boot record\n" Printf
+	end
+
+	brecord@ Free
+end
+
+procedure AHDBPartitions { id -- pcount }
 	auto vdbuf
 	4096 Malloc vdbuf!
 
-	if (vdbuf@ 0 AHDBRead)
+	0 pcount!
+
+	if (vdbuf@ 0 AHDBRead 1 ==)
 		if (vdbuf@ AHDB_VDB_Magic + @ 0x4E4D494C ==)
+			vdbuf@ AHDB_VDB_Label + strdup "diskLabel" DAddProperty
+
 			auto i
 			0 i!
 
@@ -89,6 +117,8 @@ procedure AHDBPartitions { id -- }
 					2 Calloc char!
 					'a' pc@ + char@ sb
 
+					1 pcount +=
+
 					DeviceNew
 						char@ DSetName
 
@@ -98,14 +128,13 @@ procedure AHDBPartitions { id -- }
 
 						"disk-logical" "deviceType" DAddProperty
 
+						ptr@ AHDB_PTE_Label + strdup "diskLabel" DAddProperty
+
 						pointerof AHDBRead "readBlock" DAddMethod
 						pointerof AHDBWrite "writeBlock" DAddMethod
 
-						DevCurrent@
+						i@ id@ AHDBBootable
 					DeviceExit
-
-					auto dn
-					dn!
 
 					ptr@ AHDB_PTE_Blocks + @ offset@ + offset!
 
@@ -114,7 +143,11 @@ procedure AHDBPartitions { id -- }
 
 				1 i +=
 			end
+		end else
+			id@ "dks%d: bad volume descriptor\n" Printf
 		end
+	end else
+		id@ "dks%d: couldn't read blk0\n" Printf
 	end
 
 	vdbuf@ Free
@@ -149,8 +182,6 @@ procedure BuildSatsuma (* -- *)
 					blocks@ "blocks" DAddProperty
 					0 "offset" DAddProperty
 
-					"disk" "type" DAddProperty
-
 					"disk" "deviceType" DAddProperty
 
 					"AISA,satsuma-disk" "model" DAddProperty
@@ -158,12 +189,16 @@ procedure BuildSatsuma (* -- *)
 					pointerof AHDBRead "readBlock" DAddMethod
 					pointerof AHDBWrite "writeBlock" DAddMethod
 
-					i@ AHDBPartitions
-					DevCurrent@
-				DeviceExit
+					auto pcount
 
-				auto dn
-				dn!
+					i@ AHDBPartitions pcount!
+
+					if (pcount@ 0 ==)
+						-1 i@ AHDBBootable
+					end
+
+					pcount@ "partitions" DAddProperty
+				DeviceExit
 			end
 
 			1 i +=

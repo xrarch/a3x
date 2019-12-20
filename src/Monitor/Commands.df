@@ -18,6 +18,11 @@ procedure MonitorCommandsInit (* -- *)
 	"autoboot"
 	MonitorAddCommand
 
+	"[dev] Display information about a disk."
+	pointerof MonitorCommandDisklabel
+	"disklabel"
+	MonitorAddCommand
+
 	"Dump firmware heap."
 	pointerof MonitorCommandDumpHeap
 	"dumpheap"
@@ -471,6 +476,64 @@ procedure MonitorCommandLs (* -- *)
 	DeviceExit
 
 	1 dev@ MonitorLsH drop
+end
+
+table DiskTypes
+	0
+	"FLAT DISK"
+	"PARTITION"
+endtable
+
+procedure MonitorCommandDisklabel (* -- *)
+	auto dev
+	MonitorParseDevPath dev!
+	if (dev@ 0 ==) return end
+
+	dev@ DeviceSelectNode
+		auto disk
+		0 disk!
+
+		auto dtype
+		"deviceType" DGetProperty dtype!
+
+		if (dtype@ 0 ==) "not a device.\n" Printf DeviceExit return end
+
+		if (dtype@ "disk" strcmp)
+			1 disk!
+		end elseif (dtype@ "disk-logical" strcmp)
+			2 disk!
+		end
+
+		if (disk@ 0 ==)
+			"not a raw disk or logical volume.\n" Printf
+			DeviceExit
+			return
+		end
+
+		[disk@]DiskTypes@ "\[[33mnode type:\[[0m\t\[[94m%s\[[0m\n" Printf
+
+		auto dlabel
+		"diskLabel" DGetProperty dlabel!
+
+		if (dlabel@ 0 ==)
+			"none or not applicable." dlabel!
+		end
+
+		dlabel@ "\[[33mdisk label:\[[0m\t\[[94m%s\[[0m\n" Printf
+
+		auto oslabel
+		"osLabel" DGetProperty oslabel!
+
+		if (oslabel@ 0 ==)
+			"none or not applicable." oslabel!
+		end
+
+		oslabel@ "\[[33minstalled OS:\[[0m\[[94m\t%s\[[0m\n" Printf
+	DeviceExit
+end
+
+procedure MonitorCommandBootMenu (* -- *)
+
 end
 
 procedure MonitorCommandDumpHeap (* -- *)
