@@ -11,6 +11,8 @@ struct AIXOHeader
 	4 CodeOffset
 	4 CodeSize
 	1 CodeType
+	4 StackSize
+	4 HeapSize
 endstruct
 
 struct AIXOSymbol

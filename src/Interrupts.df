@@ -47,7 +47,7 @@ end
 table FaultsNames
 	"Division by zero"
 	"Invalid opcode"
-	"Page fault"
+	"MMU fault"
 	"Privilege violation"
 	"General fault"
 	"Breakpoint"
