@@ -78,7 +78,7 @@ procedure FirmwareBanner (* -- *)
 	DeviceExit
 
 	"/cpu" DeviceSelect
-		"type" DGetProperty "CPU type: %s\n" BannerPrint
+		"type" DGetProperty "CPU: %s\n" BannerPrint
 	DeviceExit
 
 	"/memory" DeviceSelect

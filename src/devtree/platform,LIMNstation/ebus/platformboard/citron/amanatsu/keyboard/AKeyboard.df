@@ -71,10 +71,15 @@ procedure AKeyboardIsDown { scancode -- down }
 	auto id
 	"amanatsu,unit" DGetProperty id!
 
+	auto rs
+	InterruptDisable rs!
+
 	id@ AmanatsuSelectDev
 	scancode@ AmanatsuWriteA
 	3 AmanatsuCommand
 	AmanatsuReadA down!
+
+	rs@ InterruptRestore
 end
 
 procedure AKeyboardRead { -- c }

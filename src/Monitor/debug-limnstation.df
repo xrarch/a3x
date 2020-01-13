@@ -51,7 +51,7 @@ table TrapFrame_Names
 	"pc"
 endtable
 
-const TrapFrameNElem 35
+const TrapFrameNElem 36
 
 procedure private NameToOffset { name -- reg }
 	auto i

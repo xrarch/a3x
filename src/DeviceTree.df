@@ -112,12 +112,13 @@ procedure private DeviceNNew { -- dnode }
 	ListCreate dnode@ DeviceNode_Properties + !
 end
 
-procedure private DeviceNNewOMP { ml pl -- dnode }
+procedure private DeviceNNewOMP { alias ml pl -- dnode }
 	DeviceNode_SIZEOF Calloc
 	dnode!
 
 	ml@ dnode@ DeviceNode_Methods + !
 	pl@ dnode@ DeviceNode_Properties + !
+	alias@ dnode@ DeviceNode_Alias + !
 end
 
 (* creates a new unnamed device node, adds it to the
@@ -142,7 +143,7 @@ procedure DeviceClone { node -- }
 
 	auto tnode
 
-	ml@ pl@ DeviceNNewOMP DevCurrent@ DevTree@ TreeInsertChild tnode!
+	node@ ml@ pl@ DeviceNNewOMP DevCurrent@ DevTree@ TreeInsertChild tnode!
 
 	tnode@ TreeNodeChildren Free
 	node@ TreeNodeChildren tnode@ TreeNode_Children + !

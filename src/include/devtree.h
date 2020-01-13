@@ -2,6 +2,7 @@ struct DeviceNode
 	4 Name
 	4 Methods
 	4 Properties
+	4 Alias
 endstruct
 
 (* device methods are called like [ ... node -- ... ] *)

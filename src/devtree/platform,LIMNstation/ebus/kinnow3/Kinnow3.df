@@ -29,6 +29,8 @@ const KinnowGPUSetPPW 0x6
 const KinnowGPUSetPPI 0x7
 const KinnowGPUS2S 0x8
 const KinnowGPUSetMode 0x9
+const KinnowGPUSetCursor 0xA
+const KinnowGPUSetCurPos 0xB
 
 var KinnowDMANode 0
 var KinnowDMATransfer 0

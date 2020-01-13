@@ -1,7 +1,7 @@
 .extern LLFWSerialPuts
 .extern LLFWError
 
-LLFWPBV === 0x1
+LLFWPBV === 0x2
 LLFWCPUV === 0x1
 
 ;r0 - RAM count
@@ -57,11 +57,11 @@ LLFWFault:
 	b LLFWError
 
 LLFWBadCPUString:
-	.ds Incompatible CPU type.
+	.ds Incompatible CPU type!
 	.db 0xA, 0x0
 
 LLFWBadPBString:
-	.ds Incompatible platformboard version. How did this ROM end up here?
+	.ds Incompatible motherboard!
 	.db 0xA, 0x0
 
 LLFWFaultString:

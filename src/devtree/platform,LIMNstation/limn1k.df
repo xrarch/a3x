@@ -1,6 +1,8 @@
 #include "<df>/dragonfruit.h"
 #include "<inc>/a3x.h"
 
+extern ClockUptime
+
 procedure BuildLimn1k
 	DeviceNew
 		"limn1k" DSetName

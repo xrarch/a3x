@@ -300,7 +300,7 @@ procedure GConsoleUIBox { title x y w h -- }
 	title@ strlen FontWidth * tw!
 
 	x@ w@ 2 / tw@ 2 / - +
-	y@ 5 +
+	y@ 3 +
 	title@
 	-1
 	0

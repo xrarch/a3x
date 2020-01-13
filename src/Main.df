@@ -2,42 +2,93 @@
 #include "<inc>/a3x.h"
 
 procedure Main (* -- *)
+	auto kbn
+	"/keyboard" DevTreeWalk kbn!
+	
+	auto cn
+	"/clock" DevTreeWalk cn!
+
 	"verbose?" NVRAMGetVar dup if (0 ==)
 		drop "true" "verbose?" NVRAMSetVar
 		"true"
 	end
 
-	if ("true" strcmp)
+	auto fv
+
+	0 fv!
+
+	"true" strcmp fv!
+
+	if (fv@ ~~ kbn@ 0 ~= &&)
+		kbn@ DeviceSelectNode
+			21 "isDown" DCallMethod drop fv!
+			80 "isDown" DCallMethod drop fv@ && fv!
+		DeviceExit
+	end
+
+	if (fv@)
 		ConsoleUserOut
 	end
-	
+
 	"auto-boot?" NVRAMGetVar dup if (0 ==)
 		drop "true" "auto-boot?" NVRAMSetVar
 		"true"
 	end
 
 	if ("true" strcmp)
-		auto r
-		AutoBoot r!
-		if (r@ 1 ~=)
-			if (r@ 9 ==)
-				(* system software error: make sure not to clear any message
-				previously drawn on the framebuffer *)
+		auto cancel
 
-				auto gcn
-				"/gconsole" DevTreeWalk gcn!
+		0 cancel!
 
-				if (gcn@ 0 ~=)
-					gcn@ DeviceSelectNode
-						"suppressDraw" DCallMethod drop
-					DeviceExit
-				end
+		if (kbn@ 0 ~=)
+			kbn@ DeviceSelectNode
+				5 "isDown" DCallMethod drop cancel!
+				80 "isDown" DCallMethod drop cancel@ && cancel!
+			DeviceExit
+
+			if (cancel@ ~~ cn@ 0 ~= && fv@ &&)
+				"\[[33mHold\[[0m \[[94mCTRL-F\[[0m \[[33mto halt automatic boot...\[[0m\n" Printf
+
+				cn@ DeviceSelectNode
+					2000 "wait" DCallMethod drop
+				DeviceExit
+
+				kbn@ DeviceSelectNode
+					5 "isDown" DCallMethod drop cancel!
+					80 "isDown" DCallMethod drop cancel@ && cancel!
+				DeviceExit
 			end
-
-			ConsoleUserOut
 		end
-		[r@]BootErrors@ "boot: %s\n" Printf
+
+		if (cancel@ ~~)
+			auto r
+			AutoBoot r!
+			if (r@ 1 ~=)
+				if (r@ 9 ==)
+					(* system software error: make sure not to clear any message
+					previously drawn on the framebuffer *)
+
+					auto gcn
+					"/gconsole" DevTreeWalk gcn!
+
+					if (gcn@ 0 ~=)
+						gcn@ DeviceSelectNode
+							"suppressDraw" DCallMethod drop
+						DeviceExit
+					end
+				end
+
+				ConsoleUserOut
+			end
+			[r@]BootErrors@ "boot: %s\n" Printf
+		end else
+			ConsoleUserOut
+
+			"user cancelled automatic boot\n" Printf
+		end
 	end else
+		ConsoleUserOut
+
 		"auto-boot?=false, not automatically booting\n" Printf
 	end
 

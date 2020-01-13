@@ -121,6 +121,10 @@ procedure InterruptRegister { handler num -- }
 	handler@ num@ 4 * InterruptsVT@ + !
 end
 
+procedure InterruptUnregister { num -- }
+	0 num@ 4 * InterruptsVT@ + !
+end
+
 procedure InterruptEnable (* -- *)
 	asm "
 

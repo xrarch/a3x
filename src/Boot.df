@@ -5,10 +5,10 @@ table BootErrors
 	0
 	"ok"
 	"not supported by device"
-	"failed to load boot record"
-	"invalid boot record"
-	"aborted while loading boot blocks"
-	"bad boot blocks"
+	"I/O error while searching for system software"
+	"no system software found on disk"
+	"I/O error while reading boot program"
+	"invalid boot program"
 	"no such device"
 	"not enough memory"
 	"system software error"
@@ -26,8 +26,6 @@ procedure DevBootableR { devnode } (* -- brecord bootable? *)
 
 	auto brecord
 	4096 Malloc brecord!
-
-	"loading boot record\n" Printf
 
 	devnode@ DeviceSelectNode
 		auto ok
@@ -55,8 +53,6 @@ procedure DevBootableR { devnode } (* -- brecord bootable? *)
 end
 
 procedure AutoBoot (* -- ok? *)
-	"autoboot: /bootdisk\n" Printf
-
 	auto bootnode
 
 	"/bootdisk" DevTreeWalk bootnode!
@@ -64,6 +60,10 @@ procedure AutoBoot (* -- ok? *)
 	if (bootnode@ 0 ==)
 		7 return
 	end
+
+	bootnode@ DeviceSelectNode
+		"bootPath" DGetProperty "\[[33mautoboot:\[[0m \[[94m%s\[[0m\n" Printf
+	DeviceExit
 
 	bootnode@
 
@@ -78,8 +78,6 @@ procedure AutoBoot (* -- ok? *)
 end
 
 procedure BootNode { devnode args } (* -- ok? *)
-	args@ devnode@ "bootnode:\n\tnode: %x\n\targs: %s\n\n" Printf
-
 	auto brecord
 	auto ok
 
@@ -96,7 +94,7 @@ procedure BootNode { devnode args } (* -- ok? *)
 	brecord@ BootRecord_BootBlockStart + @ bblock!
 	brecord@ BootRecord_BootBlockCount + @ bbc!
 
-	brecord@ BootRecord_OSLabel + bblock@ bbc@ "boot record info:\n\tboot blocks: %d\n\tstarting at: block %d\n\tOS label: %s\n\n" Printf
+	args@ brecord@ BootRecord_OSLabel + "\[[33mbooting: \[[0m\[[94m%s (%s)\[[0m\n" Printf
 
 	brecord@ Free
 
@@ -112,11 +110,11 @@ procedure BootNode { devnode args } (* -- ok? *)
 	ptr@ bbc@ 4096 * + nmem!
 
 	if (nmem@ tmem@ >=)
-		tmem@ nmem@ "at least %d bytes of contiguous memory is required to load this bootloader, only %d bytes present\n" Printf
+		tmem@ nmem@ "at least %d bytes of contiguous memory are required to load this bootloader, only %d bytes present\n" Printf
 		8 return
 	end
 
-	ptr@ bbc@ "loading %d boot blocks at 0x%x" Printf
+	ptr@ bbc@ 4096 * "\[[33mloading boot program:\[[94m %d bytes at 0x%x\[[0m\n" Printf
 
 	devnode@ DeviceSelectNode
 		auto i
@@ -126,25 +124,20 @@ procedure BootNode { devnode args } (* -- ok? *)
 			ptr@ bblock@ "readBlock" DCallMethod drop ok!
 
 			if (ok@ ERR ==)
-				'\n' Putc
 				5 return (* failed to load boot blocks *)
 			end
-
-			'.' Putc
 
 			1 bblock +=
 			1 i +=
 			ptr@ 4096 + ptr!
 		end
-
-		'\n' Putc
 	DeviceExit
 
 	if (BootBottom@ BootMagic ~=)
 		6 return
 	end
 
-	BootBottom 4 + @ args@ devnode@ API "passing control to bootloader\n with:\tAPI: %x\n\tnode: %x\n\targs: %s\n\tentrypoint: 0x%x\n\n" Printf
+	"\[[33mexecuting boot program!\[[0m\n" Printf
 
 	API devnode@ args@ BootBottom 4 + @ asm "
 

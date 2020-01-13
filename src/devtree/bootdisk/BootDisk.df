@@ -5,26 +5,29 @@
 
 var SBootDiskNode 0
 
-procedure GBootDiskDefault (* -- defaultnode *)
+procedure GBootDiskDefault { -- bn defaultnode }
 	"boot-dev" NVRAMGetVar dup if (0 ==)
 		drop "/disks/0/a" "boot-dev" NVRAMSetVar
 		"/disks/0/a"
 	end
 
-	auto dn
-	DevTreeWalk dn!
+	bn!
 
-	dn@
+	bn@ DevTreeWalk defaultnode!
 end
 
 procedure BuildGBootDisk (* -- *)
-	GBootDiskDefault SBootDiskNode!
+	auto bn
+
+	GBootDiskDefault SBootDiskNode! bn!
 
 	if (SBootDiskNode@ 0 ~=)
 		SBootDiskNode@ DeviceClone
 			"bootdisk" DSetName
 
 			SBootDiskNode@ "bootAlias" DAddProperty
+
+			bn@ strdup "bootPath" DAddProperty
 		DeviceExit
 	end else
 		"boot-dev phony or not found, 'bootdisk' node will be absent\n" Printf

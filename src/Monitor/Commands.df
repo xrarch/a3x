@@ -449,13 +449,22 @@ procedure MonitorLsH { tabs dev } (* -- continue *)
 		0 i!
 		while (i@ tabs@ <)
 			"  " Puts
-			i@ 1 + i!
+			1 i +=
 		end
 
-		pnode@ TreeNodeValue DeviceNode_Name + @ "\[[94m/%s\[[0m\n" Printf
+		pnode@ TreeNodeValue DeviceNode_Name + @ "\[[94m/%s\[[0m" Printf
 
-		if (tabs@ 1 + pnode@ MonitorLsH ~~)
-			0 return
+		auto alias
+		pnode@ TreeNodeValue DeviceNode_Alias + @ alias!
+
+		if (alias@ 0 ~=)
+			alias@ "\t-> %x\n" Printf
+		end else
+			CR
+
+			if (tabs@ 1 + pnode@ MonitorLsH ~~)
+				0 return
+			end
 		end
 
 		n@ ListNode_Next + @ n!
