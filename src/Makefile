@@ -17,7 +17,7 @@ $(LLFW):
 	$(MAKE) --directory=llfw
 
 firmware.bin: $(OBJ) pec/PECInterpret.o
-	$(LD) firmware.bin ./Antecedent.o $(OBJ) pec/PECInterpret.o L/generic/lib.o
+	$(LD) firmware.bin ./Antecedent.o $(OBJ) pec/PECInterpret.o L/libsa/lib.o
 	$(OBJTOOL) flatten firmware.bin 0x2000
 	printf '%s' `expr \`cat build\` + 1` > build
 

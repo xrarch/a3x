@@ -11,6 +11,8 @@ procedure BuildPBoard (* -- *)
 
 		PBInfo@ "version" DAddProperty
 
+		0xF8000000 "platformboard,base" DAddProperty
+
 		BuildCitron
 	DeviceExit
 end

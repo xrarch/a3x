@@ -31,6 +31,8 @@ procedure AKeyboardPoll (* -- *)
 
 					pointerof AKeyboardIsDown "isDown" DAddMethod
 
+					pointerof AKeyboardWaitKey "waitKey" DAddMethod
+
 					"keyboard" "deviceType" DAddProperty
 
 					"AISA,keyboard" "model" DAddProperty
@@ -43,6 +45,39 @@ procedure AKeyboardPoll (* -- *)
 		rs@ InterruptRestore
 
 		1 i +=
+	end
+end
+
+procedure AKeyboardWaitKey { cancelkey waitkey timeout -- pressed }
+	0 pressed!
+
+	auto cn
+	"/clock" DevTreeWalk cn!
+
+	auto ticks
+	timeout@ 100 / 1 max ticks!
+
+	if (cn@ 0 ~=)
+		auto i
+		0 i!
+
+		while (i@ ticks@ <)
+			if (cancelkey@ AKeyboardIsDown)
+				0 pressed!
+				return
+			end
+
+			if (waitkey@ AKeyboardIsDown)
+				1 pressed!
+				return
+			end
+
+			cn@ DeviceSelectNode
+				100 "wait" DCallMethod drop
+			DeviceExit
+
+			1 i +=
+		end
 	end
 end
 
@@ -78,6 +113,10 @@ procedure AKeyboardIsDown { scancode -- down }
 	scancode@ AmanatsuWriteA
 	3 AmanatsuCommand
 	AmanatsuReadA down!
+
+	if (down@)
+		while (id@ AKeyboardPopCode 0xFFFF ~=) end
+	end
 
 	rs@ InterruptRestore
 end

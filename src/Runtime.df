@@ -1,5 +1,7 @@
 #include "<df>/dragonfruit.h"
 
+extern Putx
+
 procedure _DumpStack (* -- *)
 
 	"--sd--\n" Printf

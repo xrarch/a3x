@@ -17,6 +17,12 @@ procedure BuildEBus (* -- *)
 		pointerof EBusSlotInterruptRegister "ebus,slotInterruptRegister" DAddMethod
 		pointerof EBusReset "reset" DAddMethod
 
+		EBusSlotsStart "ebus,slotsBase" DAddProperty
+
+		EBusSlotSpace "ebus,slotSize" DAddProperty
+
+		EBusSlots "ebus,slotCount" DAddProperty
+
 		BuildDMA
 
 		BuildPBoard

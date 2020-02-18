@@ -340,7 +340,7 @@ procedure MonitorCommandDinfo (* -- *)
 			auto pnode
 			n@ ListNodeValue pnode!
 
-			pnode@ DeviceProperty_Value + @ pnode@ DeviceProperty_Name + @ " \[[94m%s\[[0m\t\t%d\n" Printf
+			pnode@ DeviceProperty_Value + @ pnode@ DeviceProperty_Name + @ " \[[94m%s\[[0m\t\t0x%x\n" Printf
 
 			n@ ListNode_Next + @ n!
 		end

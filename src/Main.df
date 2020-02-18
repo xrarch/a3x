@@ -21,7 +21,7 @@ procedure Main (* -- *)
 
 	if (fv@ ~~ kbn@ 0 ~= &&)
 		kbn@ DeviceSelectNode
-			21 "isDown" DCallMethod drop fv!
+			5 "isDown" DCallMethod drop fv!
 			80 "isDown" DCallMethod drop fv@ && fv!
 		DeviceExit
 	end
@@ -41,21 +41,11 @@ procedure Main (* -- *)
 		0 cancel!
 
 		if (kbn@ 0 ~=)
-			kbn@ DeviceSelectNode
-				5 "isDown" DCallMethod drop cancel!
-				80 "isDown" DCallMethod drop cancel@ && cancel!
-			DeviceExit
-
-			if (cancel@ ~~ cn@ 0 ~= && fv@ &&)
-				"\[[33mHold\[[0m \[[94mCTRL-F\[[0m \[[33mto halt automatic boot...\[[0m\n" Printf
-
-				cn@ DeviceSelectNode
-					2000 "wait" DCallMethod drop
-				DeviceExit
+			if (fv@)
+				"\[[33mHold\[[0m \[[94mCTRL\[[0m \[[33mto halt automatic boot or \[[94mENTER\[[0m \[[33mto boot immediately...\[[0m\n" Printf
 
 				kbn@ DeviceSelectNode
-					5 "isDown" DCallMethod drop cancel!
-					80 "isDown" DCallMethod drop cancel@ && cancel!
+					50 80 5000 "waitKey" DCallMethod drop cancel!
 				DeviceExit
 			end
 		end
@@ -64,20 +54,6 @@ procedure Main (* -- *)
 			auto r
 			AutoBoot r!
 			if (r@ 1 ~=)
-				if (r@ 9 ==)
-					(* system software error: make sure not to clear any message
-					previously drawn on the framebuffer *)
-
-					auto gcn
-					"/gconsole" DevTreeWalk gcn!
-
-					if (gcn@ 0 ~=)
-						gcn@ DeviceSelectNode
-							"suppressDraw" DCallMethod drop
-						DeviceExit
-					end
-				end
-
 				ConsoleUserOut
 			end
 			[r@]BootErrors@ "boot: %s\n" Printf

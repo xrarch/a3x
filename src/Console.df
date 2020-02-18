@@ -21,41 +21,41 @@ var EarlyBufPtr 0
 var EarlyBufSP 0
 var EarlyCCount 0
 
-var Early 1
-
 var UserOut 0
+
+var ConInit 0
 
 procedure EarlyPut { c -- }
 	c@ EarlyBuffer@ EarlyBufPtr@ EarlyBufferSize % + sb
 
-	EarlyBufPtr@ 1 + EarlyBufPtr!
+	1 EarlyBufPtr +=
 
 	if (EarlyBufPtr@ EarlyBufferSize >=)
-		EarlyBufSP@ 1 + EarlyBufSP!
+		1 EarlyBufSP +=
 	end
 
 	EarlyCCount@ 1 + EarlyBufferSize min EarlyCCount!
 end
 
 procedure DumpEarly (* -- *)
-	0 Early!
+	if (ConsoleOutMethod@ 0 ~=)
+		auto sp
+		EarlyBufSP@ sp!
 
-	auto sp
-	EarlyBufSP@ sp!
+		auto i
+		0 i!
 
-	auto i
-	0 i!
+		while (i@ EarlyCCount@ <)
+			auto c
+			EarlyBuffer@ sp@ EarlyBufferSize % + gb c!
 
-	while (i@ EarlyCCount@ <)
-		auto c
-		EarlyBuffer@ sp@ EarlyBufferSize % + gb c!
+			if (c@ 0 ~=)
+				1 c@ rPutc
+			end
 
-		if (c@ 0 ~=)
-			c@ Putc
+			1 sp +=
+			1 i +=
 		end
-
-		1 sp +=
-		1 i +=
 	end
 end
 
@@ -85,18 +85,16 @@ procedure ConsoleSetOut { dn -- }
 	dn@ DeviceSelectNode
 		"write" DGetMethod ConsoleOutMethod!
 	DeviceExit
-
-	if (ConsoleOutMethod@ 0 ~=)
-		DumpEarly
-	end
 end
 
-procedure Putc { c -- }
-	if (ConsoleOutMethod@ 0 ==)
-		if (EarlyBuffer@ 0 ~=)
+procedure rPutc { de c -- }
+	if (de@ ~~)
+		if (ConInit@ 0 == UserOut@ 0 == ||)
 			c@ EarlyPut
 		end
+	end
 
+	if (ConsoleOutMethod@ 0 ==)
 		(*
 		c@ asm "
 
@@ -112,6 +110,10 @@ procedure Putc { c -- }
 	ConsoleOut@ DeviceSelectNode
 		c@ ConsoleOutMethod@ DCallMethodPtr
 	DeviceExit
+end
+
+procedure Putc { c -- }
+	0 c@ rPutc
 end
 
 procedure Getc { -- c }
@@ -139,9 +141,11 @@ procedure ConsoleUserOut (* -- *)
 			gcn@ ConsoleSetOut
 
 			kbn@ ConsoleSetIn
-		end
 
-		1 UserOut!
+			1 UserOut!
+
+			DumpEarly
+		end
 	end
 end
 
@@ -177,6 +181,10 @@ procedure ConsoleInit (* -- *)
 	if (ConsoleIn@ 0 ==)
 		"/serial" DevTreeWalk ConsoleSetIn
 	end
+
+	1 ConInit!
+
+	DumpEarly
 end
 
 procedure Gets { s max -- }
@@ -214,74 +222,9 @@ procedure Gets { s max -- }
 	0 s@ len@ + sb
 end
 
-table KConsoleDigits
-	'0' '1' '2' '3' '4' '5' '6' '7' '8' '9' 'a' 'b' 'c' 'd' 'e' 'f'
-endtable
-
 procedure Puts { s -- }
 	while (s@ gb 0 ~=)
 		s@ gb Putc
 		1 s +=
-	end
-end
-
-procedure Putx { nx -- }
-	if (nx@ 15 >)
-		auto a
-		nx@ 16 / a!
-
-		nx@ 16 a@ * - nx!
-		a@ Putx
-	end
-
-	[nx@]KConsoleDigits@ Putc
-end
-
-procedure Putn { n -- }
-	if (n@ 9 >)
-		auto a
-		n@ 10 / a!
-
-		n@ 10 a@ * - n!
-		a@ Putn
-	end
-
-	[n@]KConsoleDigits@ Putc
-end
-
-procedure Printf (* ... fmt -- *)
-	auto f
-	f!
-	auto i
-	0 i!
-	auto sl
-	f@ strlen sl!
-	while (i@ sl@ <)
-		auto char
-		f@ i@ + gb char!
-		if (char@ '%' ~=)
-			char@ Putc
-		end else
-			1 i +=
-			if (i@ sl@ >=)
-				return
-			end
-
-			f@ i@ + gb char!
-
-			if (char@ 'd' ==)
-				Putn
-			end elseif (char@ 'x' ==)
-				Putx
-			end elseif (char@ 's' ==)
-				Puts
-			end elseif (char@ '%' ==)
-				'%' Putc
-			end elseif (char@ 'l' ==)
-				Putc
-			end
-		end
-
-		1 i +=
 	end
 end

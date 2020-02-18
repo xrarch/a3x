@@ -11,6 +11,7 @@ var KinnowPipeStart 0
 
 const KinnowCmdPorts 0x4000
 const KinnowSlotFB 0x100000
+const KinnowCursorImage 0xFFF00
 
 const KinnowSlotMID 0x4B494E58
 
@@ -157,6 +158,31 @@ procedure KinnowSetPixelIgnore { color -- }
 	rs@ InterruptRestore
 end
 
+procedure KinnowSetCursor { bmp w h ignore -- }
+	auto rs
+	InterruptDisable rs!
+
+	KinnowCursorImage KinnowSlotSpace@ + bmp@ w@ h@ * memcpy
+
+	ignore@ KinnowOutPortA
+	w@ 16 << h@ | KinnowOutPortB
+
+	KinnowGPUSetCursor KinnowCommand
+
+	rs@ InterruptRestore
+end
+
+procedure KinnowSetCursorPos { x y -- }
+	auto rs
+	InterruptDisable rs!
+
+	x@ 16 << y@ | KinnowOutPortA
+
+	KinnowGPUSetCurPos KinnowCommand
+
+	rs@ InterruptRestore
+end
+
 procedure BuildKinnow3 (* -- *)
 	auto kslot
 	KinnowSlotMID EBusFindFirstBoard kslot!
@@ -204,6 +230,8 @@ procedure BuildKinnow3 (* -- *)
 		pointerof KinnowBlitS2S "blitS2S" DAddMethod
 		pointerof KinnowInit "init" DAddMethod
 		pointerof KinnowVsyncOn "vsyncEnable" DAddMethod
+		pointerof KinnowSetCursor "setCursor" DAddMethod
+		pointerof KinnowSetCursorPos "setCursorPos" DAddMethod
 	DeviceExit
 
 	w@ KinnowWidth!

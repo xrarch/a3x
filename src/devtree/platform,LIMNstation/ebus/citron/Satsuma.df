@@ -122,7 +122,7 @@ procedure AHDBPartitions { id -- pcount }
 					DeviceNew
 						char@ DSetName
 
-						id@ "id" DAddProperty
+						id@ "satsuma,id" DAddProperty
 						ptr@ AHDB_PTE_Blocks + @ "blocks" DAddProperty
 						offset@ "offset" DAddProperty
 
