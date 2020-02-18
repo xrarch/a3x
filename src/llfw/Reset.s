@@ -48,7 +48,7 @@ Reset:
 	call LLFWSerialPuts
 	
 	li r5, 0x1000
-	call FirmwareBase
+	call 0x2000
 	b Hang
 
 LLFWNoStack:
@@ -97,6 +97,13 @@ LLFWHiString:
 
 ;placeholder ivt
 LLFWFaults:
-	.dl LLFWFault, LLFWFault, LLFWFault, LLFWFault, LLFWFault, LLFWFault, LLFWFault, LLFWFault ;8
+	.dl LLFWFault
+	.dl LLFWFault
+	.dl LLFWFault
+	.dl LLFWFault
+	.dl LLFWFault
+	.dl LLFWFault
+	.dl LLFWFault
+	.dl LLFWFault ;8
 	.dl LLFWFault, LLFWFault, 0, 0, 0, 0, 0, 0 ;16
 	.bytes 960 0 ;fill remainder of IVT
