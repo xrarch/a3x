@@ -1,6 +1,8 @@
 #include "<df>/dragonfruit.h"
 #include "<inc>/a3x.h"
 
+#include "monitor.h"
+
 var MonitorRunning 0
 public MonitorRunning
 
@@ -15,8 +17,6 @@ public MonitorLinePoint
 
 var MonitorState 0
 public MonitorState
-
-#include "monitor.h"
 
 extern MonitorCommandsInit
 
