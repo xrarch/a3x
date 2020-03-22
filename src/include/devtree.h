@@ -9,7 +9,7 @@ endstruct
 struct DeviceMethod
 	4 Name
 	4 Func
-	4 PEC
+	4 AUC
 	4 Board
 endstruct
 
@@ -42,7 +42,7 @@ extern DeviceCloneWalk (* path -- *)
 
 extern DSetName (* name -- *)
 
-extern DAddMethodFull (* method pec name -- *)
+extern DAddMethodFull (* method auc name -- *)
 
 extern DAddMethod (* method name -- *)
 

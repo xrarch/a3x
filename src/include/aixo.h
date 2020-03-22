@@ -23,7 +23,7 @@ endstruct
 const AIXOMagic 0x4C455830
 
 const AIXOTypeLimn1k 0x1
-const AIXOTypePEC 0x2
+const AIXOTypeAUC 0x3
 
 extern AIXOValidate (* aixo -- good *)
 

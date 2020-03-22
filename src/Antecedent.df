@@ -8,7 +8,7 @@ extern DeviceInit
 extern ConsoleInit
 extern FaultsRegister
 extern FontInit
-extern PECInit
+extern AUCInit
 extern PlatformInit
 
 extern Main
@@ -30,7 +30,7 @@ procedure AntecedentEntry (* -- *)
 
 	InterruptsInit
 
-	PECInit
+	AUCInit
 
 	DeviceInit
 
@@ -66,7 +66,7 @@ procedure BannerPrint (* ... -- *)
 end
 
 procedure FirmwareBanner (* -- *)
-	CR
+	'\n' Putc
 
 	"/" DeviceSelect
 		"author" DGetProperty "version" DGetProperty DGetName "Implementation details: %s %s written by %s\n" BannerPrint
@@ -85,5 +85,5 @@ procedure FirmwareBanner (* -- *)
 		"totalRAM" DGetProperty 1024 / "RAM: %dkb\n" BannerPrint
 	DeviceExit
 
-	CR
+	'\n' Putc
 end

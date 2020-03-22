@@ -26,13 +26,16 @@ procedure DMADoOperation (* -- *)
 	DMARegisterStatus@ 1 | DMARegisterStatus!
 end
 
-procedure DMATransfer { src dest srcinc destinc count mode -- }
+procedure DMATransfer { src dest srcinc destinc count mode lines destmod srcmod -- }
 	src@ DMARegisterSource!
 	dest@ DMARegisterDest!
 	srcinc@ DMARegisterSInc!
 	destinc@ DMARegisterDInc!
 	count@ DMARegisterCount!
 	mode@ DMARegisterMode!
+	lines@ DMARegisterLines!
+	destmod@ DMARegisterDestMod!
+	srcmod@ DMARegisterSrcMod!
 
 	DMADoOperation
 	DMAWaitUnbusy

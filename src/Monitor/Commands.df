@@ -147,6 +147,11 @@ procedure MonitorCommandsInit (* -- *)
 	pointerof AAA
 	"aaa"
 	MonitorAddCommand
+
+	0
+	pointerof EvalAUC
+	"auc"
+	MonitorAddCommand
 end
 
 const ConsoleAssumedHeight 22
@@ -189,6 +194,25 @@ procedure WaitNext { -- result }
 	1 UsedLines +=
 end
 
+procedure EvalAUC (* -- *)
+	auto slot
+	MonitorParseWord slot!
+
+	auto addr
+	MonitorParseWord addr!
+
+	auto adrn
+	auto slotn
+
+	addr@ atoi adrn!
+	slot@ atoi slotn!
+
+	addr@ Free
+	slot@ Free
+
+	[slotn@ adrn@ AUCEvaluate]AUCErrors@ "auc: %s\n" Printf
+end
+
 procedure AAA (* -- *)
 	ResetLines
 	
@@ -205,7 +229,7 @@ procedure AAA (* -- *)
 	        'A' Putc
 	        1 i +=
 	    end
-	    CR
+	    '\n' Putc
 	    1 count +=
 	end
 end
@@ -322,7 +346,7 @@ procedure MonitorCommandDinfo (* -- *)
 	ResetLines
 
 	dev@ DeviceSelectNode
-		CR
+		'\n' Putc
 
 		"\[[33m[properties]\[[0m\n" Printf
 
@@ -345,7 +369,7 @@ procedure MonitorCommandDinfo (* -- *)
 			n@ ListNode_Next + @ n!
 		end
 
-		CR
+		'\n' Putc
 
 		"\[[33m[methods]\[[0m\n" Printf
 
@@ -366,7 +390,7 @@ procedure MonitorCommandDinfo (* -- *)
 			n@ ListNode_Next + @ n!
 		end
 
-		CR
+		'\n' Putc
 	DeviceExit
 end
 
@@ -460,7 +484,7 @@ procedure MonitorLsH { tabs dev } (* -- continue *)
 		if (alias@ 0 ~=)
 			alias@ "\t-> %x\n" Printf
 		end else
-			CR
+			'\n' Putc
 
 			if (tabs@ 1 + pnode@ MonitorLsH ~~)
 				0 return

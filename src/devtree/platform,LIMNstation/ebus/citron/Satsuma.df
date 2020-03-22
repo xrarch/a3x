@@ -51,6 +51,7 @@ procedure private AHDBDMATransferBlock { src dest -- }
 			4 4
 			1024
 			2
+			1 0 0
 			AHDBDMATransfer@ DCallMethodPtr
 		DeviceExit
 	end else

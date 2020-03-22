@@ -268,6 +268,7 @@ procedure KinnowPipeRead { to count -- }
 			0 1
 			count@
 			0
+			1 0 0
 			KinnowDMATransfer@ DCallMethodPtr
 		DeviceExit
 	end else
@@ -311,6 +312,7 @@ procedure KinnowPipeWrite { from count -- }
 			1 0
 			count@
 			0
+			1 0 0
 			KinnowDMATransfer@ DCallMethodPtr
 		DeviceExit
 	end else

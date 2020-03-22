@@ -1,9 +1,9 @@
 #include "<df>/dragonfruit.h"
 #include "<inc>/a3x.h"
 
-extern PECAddMethod
+extern AUCAddMethod
 
-table PECNativeCalls
+table AUCNativeCalls
 	pointerof DevTreeWalk
 	pointerof DeviceParent
 	pointerof DeviceSelectNode
@@ -12,7 +12,7 @@ table PECNativeCalls
 	pointerof DeviceClone
 	pointerof DeviceCloneWalk
 	pointerof DSetName
-	pointerof PECAddMethod
+	pointerof AUCAddMethod
 	pointerof DSetProperty
 	pointerof DGetProperty
 	pointerof DGetMethod
@@ -28,6 +28,9 @@ table PECNativeCalls
 	pointerof Puts
 	pointerof Gets
 	pointerof Printf
+
+	pointerof DevIteratorInit
+	pointerof DevIterate
 endtable
 
-public PECNativeCalls
+public AUCNativeCalls

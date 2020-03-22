@@ -16,13 +16,13 @@ boot.bin: firmware.bin $(LLFW)
 $(LLFW):
 	$(MAKE) --directory=llfw
 
-firmware.bin: $(OBJ) pec/PECInterpret.o
-	$(LD) firmware.bin ./Antecedent.o $(OBJ) pec/PECInterpret.o L/libsa/lib.o
+firmware.bin: $(OBJ) auc/AUCInterpret.o
+	$(LD) firmware.bin ./Antecedent.o $(OBJ) auc/AUCInterpret.o L/dfrt/dfrt.f.o
 	$(OBJTOOL) flatten firmware.bin 0x2000
 	printf '%s' `expr \`cat build\` + 1` > build
 
-pec/PECInterpret.o: pec/PECInterpret.s
-	$(AS) pec/PECInterpret.s pec/PECInterpret.o
+auc/AUCInterpret.o: auc/AUCInterpret.s
+	$(AS) auc/AUCInterpret.s auc/AUCInterpret.o
 
 %.o: %.df
 	$(DC) incdir=./include/ $< $@

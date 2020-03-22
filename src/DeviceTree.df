@@ -166,7 +166,7 @@ procedure DSetName (* name -- *)
 	DevCurrent@ TreeNodeValue DeviceNode_Name + !
 end
 
-procedure DAddMethodFull { board method pec name -- }
+procedure DAddMethodFull { board method auc name -- }
 	"DAddMethodFull" DevTreeCheck
 
 	auto mnode
@@ -174,7 +174,7 @@ procedure DAddMethodFull { board method pec name -- }
 
 	name@ mnode@ DeviceMethod_Name + !
 	method@ mnode@ DeviceMethod_Func + !
-	pec@ mnode@ DeviceMethod_PEC + !
+	auc@ mnode@ DeviceMethod_AUC + !
 	board@ mnode@ DeviceMethod_Board + !
 
 	mnode@ DGetMethods ListInsert
@@ -284,16 +284,16 @@ procedure DCallMethodCommon (* ... ptr -- ... ok? *)
 	auto pnode
 	pnode!
 
-	if (pnode@ DeviceMethod_PEC + @ 0 ==)
+	if (pnode@ DeviceMethod_AUC + @ 0 ==)
 		pnode@ DeviceMethod_Func + @ Call 1 return
 	end else
 		auto ok
 		pnode@ DeviceMethod_Board + @
 		pnode@ DeviceMethod_Func + @
-		pnode@ DeviceMethod_PEC + @
-		PECEvaluateFunc ok!
+		pnode@ DeviceMethod_AUC + @
+		AUCEvaluateFunc ok!
 		if (ok@ 1 ~=)
-			[ok@]PECErrors@ "couldn't execute PEC method '%s': %s\n" Problem
+			[ok@]AUCErrors@ "couldn't execute microcode method '%s': %s\n" Problem
 			0 return
 		end
 

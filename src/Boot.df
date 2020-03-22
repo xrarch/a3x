@@ -72,10 +72,12 @@ procedure AutoBoot (* -- ok? *)
 		""
 	end
 
-	CR
+	'\n' Putc
 
 	BootNode
 end
+
+var BootResult 0
 
 procedure BootNode { devnode args } (* -- ok? *)
 	auto brecord
@@ -139,38 +141,13 @@ procedure BootNode { devnode args } (* -- ok? *)
 
 	"\[[33mexecuting boot program!\[[0m\n" Printf
 
-	API devnode@ args@ BootBottom 4 + @ asm "
+	asm "pusha"
 
-	popv r5, r3
+	API devnode@ args@ BootBottom 4 + @ Call BootResult!
 
-	popv r5, r2
+	asm "popa"
 
-	popv r5, r1
-
-	popv r5, r0
-
-	pusha
-
-	li k0, 0
-
-	call .layer
-	b .out
-
-	.layer:
-	br r3
-
-	.out:
-
-	popa
-
-	pushv r5, k0
-
-	"
-
-	auto retv
-	retv!
-
-	if (retv@ 0 ==)
+	if (BootResult@ 0 ==)
 		1 (* ok *) return
 	end else
 		9 (* system software error *) return

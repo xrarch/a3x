@@ -68,7 +68,7 @@ procedure Main (* -- *)
 		"auto-boot?=false, not automatically booting\n" Printf
 	end
 
-	CR
+	'\n' Putc
 
 	Monitor
 
