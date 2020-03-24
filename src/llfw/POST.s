@@ -2,7 +2,7 @@
 .extern LLFWError
 
 LLFWPBV === 0x2
-LLFWCPUV === 0x1
+LLFWCPUV === 0x2
 
 ;r0 - RAM count
 LLFWPOST:
