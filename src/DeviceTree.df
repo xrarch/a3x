@@ -10,10 +10,14 @@ public DevCurrent
 extern DevRootBuild
 
 var DevStack 0 (* we can go 64 layers deep *)
+public DevStack
+
 var DevStackPtr 0
+public DevStackPtr
 
 procedure private DevStackPUSH (* v -- *)
 	DevStack@ DevStackPtr@ + !
+
 	DevStackPtr@ 4 + DevStackPtr!
 end
 
@@ -131,6 +135,8 @@ procedure DeviceNew (* -- *)
 
 	DeviceNNew DevCurrent@ DevTree@ TreeInsertChild DevCurrent!
 end
+
+
 
 procedure DeviceClone { node -- }
 	DevCurrent@ DevStackPUSH

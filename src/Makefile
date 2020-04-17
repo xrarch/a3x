@@ -18,7 +18,9 @@ $(LLFW):
 
 firmware.bin: $(OBJ) auc/AUCInterpret.o
 	$(LD) firmware.bin ./Antecedent.o $(OBJ) auc/AUCInterpret.o L/dfrt/dfrt.f.o
-	$(OBJTOOL) flatten firmware.bin 0x2000
+	$(OBJTOOL) move firmware.bin text=0x2000,data=text+text_size,bss=data+data_size
+	cp firmware.bin a3x.LOFF
+	$(OBJTOOL) binary firmware.bin
 	printf '%s' `expr \`cat build\` + 1` > build
 
 auc/AUCInterpret.o: auc/AUCInterpret.s
@@ -28,5 +30,5 @@ auc/AUCInterpret.o: auc/AUCInterpret.s
 	$(DC) incdir=./include/ $< $@
 
 cleanup:
-	rm $(OBJ) firmware.bin boot.bin
+	rm $(OBJ) firmware.bin boot.bin auc/AUCInterpret.o
 	$(MAKE) --directory=llfw cleanup

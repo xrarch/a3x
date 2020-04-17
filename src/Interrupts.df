@@ -6,6 +6,8 @@ var InterruptsVT 0
 procedure InterruptsInit (* -- *)
 	auto oivt
 
+	_flush_all
+
 	asm "
 
 	pushv r5, ivt
@@ -16,7 +18,7 @@ procedure InterruptsInit (* -- *)
 
 	oivt@ FaultsCopy
 
-	InterruptsVT@ asm "
+	InterruptsVT@ _flush_all asm "
 		popv r5, r0
 		cli
 		mov ivt, r0

@@ -16,8 +16,11 @@ extern Main
 (* MUST be at the top *)
 procedure AntecedentEntry (* -- *)
 	HeapInit
+
 	ConsoleEarlyInit
 	(* print routines now work, do NOT use them before this *)
+
+	LinkInfo
 
 	"Welcome to ANTECEDENT 3.x\n" Printf
 
@@ -55,6 +58,20 @@ Reset:
 	b .loop
 
 "
+
+procedure LinkInfo (* -- *)
+	pointerof _text "_text = %x " Printf
+	pointerof _text_size "_text_size = %x " Printf
+	pointerof _text_end "_text_end = %x\n" Printf
+
+	pointerof _data "_data = %x " Printf
+	pointerof _data_size "_data_size = %x " Printf
+	pointerof _data_end "data_end = %x\n" Printf
+
+	pointerof _bss "_bss = %x " Printf
+	pointerof _bss_size "_bss_size = %x " Printf
+	pointerof _bss_end "_bss_end = %x\n" Printf
+end
 
 procedure LateReset (* -- *)
 	"\[c" Printf

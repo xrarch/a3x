@@ -22,4 +22,4 @@ obj/_boot.o: ./client/_boot.s
 	$(AS) $< $@
 
 cleanup:
-	rm $(OBJ) $(SOBJ) obj/rta3x.o
+	rm $(OBJ) $(SOBJ) obj/rta3x.o obj/_boot.o

@@ -96,7 +96,6 @@ AUCInterpret:
 	br r4
 
 .invalid:
-	.db 0xF0
 	li r0, StatusInvalidOp
 	call FastReturn
 
@@ -567,11 +566,11 @@ OpNE:
 	b .le
 
 .g:
-	sri.l AUCRF, 1
+	sii.l AUCRF, 1
 	b .out
 
 .le:
-	sri.l AUCRF, 0
+	sii.l AUCRF, 0
 
 .out:
 	ret

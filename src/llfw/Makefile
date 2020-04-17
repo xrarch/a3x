@@ -9,7 +9,9 @@ all: llfw.bin
 
 llfw.bin: $(OBJ)
 	$(LD) llfw.bin $(OBJ)
-	$(OBJTOOL) flatten llfw.bin 0xFFFE0000
+	$(OBJTOOL) move llfw.bin text=0xFFFE0000,data=text+text_size,bss=data+data_size
+	cp llfw.bin llfw.LOFF
+	$(OBJTOOL) binary llfw.bin
 
 %.o: %.s
 	$(AS) $< $@

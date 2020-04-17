@@ -14,10 +14,14 @@ struct KHeapHeader
 	4 size
 	4 last
 	4 next
-	1 allocated
+	4 allocated
 endstruct
 
 procedure HeapInit (* -- *)
+	pointerof _bss_end dup KHeapStart! KHeapLast!
+
+	0x40000 KHeapStart@ - KHeapSize!
+
 	KHeapSize@ KHeapStart@ KHeapHeader_size + !
 	0 KHeapStart@ KHeapHeader_last + !
 	0 KHeapStart@ KHeapHeader_allocated + !
@@ -52,7 +56,7 @@ procedure HeapDump (* -- *)
 		size@ KHeapHeader_SIZEOF - asz!
 
 		auto alloc
-		ept@ KHeapHeader_allocated + gb alloc!
+		ept@ KHeapHeader_allocated + @ alloc!
 
 		auto last
 		ept@ KHeapHeader_last + @ last!
@@ -124,7 +128,7 @@ procedure private Malloc1 { max last sz } (* -- ptr *)
 		auto size
 		ept@ KHeapHeader_size + @ size!
 
-		if (ept@ KHeapHeader_allocated + gb 0 ==)
+		if (ept@ KHeapHeader_allocated + @ 0 ==)
 			if (size@ big@ >) (* fit *)
 
 				(*
@@ -136,7 +140,7 @@ procedure private Malloc1 { max last sz } (* -- ptr *)
 				*)
 
 				if (big@ 1 + size@ ==) (* just the right size *)
-					1 ept@ KHeapHeader_allocated + sb
+					1 ept@ KHeapHeader_allocated + !
 					ept@ KHeapHeader_SIZEOF +
 
 					ept@ KHeapLast!
@@ -160,14 +164,14 @@ procedure private Malloc1 { max last sz } (* -- ptr *)
 
 					nsize@ nept@ KHeapHeader_size + !
 					ept@ nept@ KHeapHeader_last + !
-					0 nept@ KHeapHeader_allocated + sb
+					0 nept@ KHeapHeader_allocated + !
 
 					MAGIC nept@ KHeapHeader_magic + !
 
 					sz@ KHeapHeader_SIZEOF + ept@ KHeapHeader_size + !
 				end
 
-				1 ept@ KHeapHeader_allocated + sb
+				1 ept@ KHeapHeader_allocated + !
 				ept@ KHeapHeader_SIZEOF +
 
 				ept@ KHeapLast!
@@ -187,6 +191,10 @@ procedure private Malloc1 { max last sz } (* -- ptr *)
 end
 
 procedure Malloc { sz -- ptr }
+	while (sz@ 4 % 0 ~=)
+		1 sz +=
+	end
+
 	0 KHeapLast@ sz@ Malloc1 ptr!
 
 	if (ptr@ ERR ~=)
@@ -233,7 +241,7 @@ procedure private HeapMerge { ptr msize -- }
 			last@ ptr@ "%x: heapmerge left: bad magic on block 0x%x\n" Problem
 		end
 
-		if (last@ KHeapHeader_allocated + gb 0 ==) (* free, merge the boyo *)
+		if (last@ KHeapHeader_allocated + @ 0 ==) (* free, merge the boyo *)
 			if (ptr@ KHeapLast@ ==)
 				last@ KHeapLast!
 			end
@@ -264,7 +272,7 @@ procedure private HeapMerge { ptr msize -- }
 			next@ ptr@ "%x: heapmerge right: bad magic on block 0x%x\n" Problem
 		end
 
-		if (next@ KHeapHeader_allocated + gb 0 ==) (* free, merge the boyo *)
+		if (next@ KHeapHeader_allocated + @ 0 ==) (* free, merge the boyo *)
 			if (next@ KHeapLast@ ==)
 				ptr@ KHeapLast!
 			end
@@ -300,7 +308,7 @@ procedure Free { ptr -- }
 		ptr@ "Free: bad magic on block 0x%x\n" Problem
 	end
 
-	0 nptr@ KHeapHeader_allocated + sb
+	0 nptr@ KHeapHeader_allocated + !
 
 	auto msize
 	nptr@ KHeapHeader_size + @ msize!
