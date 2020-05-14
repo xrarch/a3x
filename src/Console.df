@@ -95,12 +95,12 @@ procedure rPutc { de c -- }
 	end
 
 	if (ConsoleOutMethod@ 0 ==)
-		c@ _flush asm "
+		(* c@ _flush asm "
 
 		lwi.l at, vs, zero
 		.dl 0xFF
 
-		"
+		" *)
 
 		return
 	end
