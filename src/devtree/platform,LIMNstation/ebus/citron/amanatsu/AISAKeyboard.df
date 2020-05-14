@@ -10,7 +10,7 @@ procedure AKeyboardPoll (* -- *)
 	auto i
 	1 i!
 
-	while (i@ 256 <)
+	while (i@ 16 <)
 		auto rs
 		InterruptDisable rs!
 
@@ -36,6 +36,8 @@ procedure AKeyboardPoll (* -- *)
 					"keyboard" "deviceType" DAddProperty
 
 					"AISA,keyboard" "model" DAddProperty
+
+					i@ 4 + "interrupt#" DAddProperty
 
 					1 AKeyboardCount +=
 				DeviceExit

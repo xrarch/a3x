@@ -16,19 +16,16 @@ boot.bin: firmware.bin $(LLFW)
 $(LLFW):
 	$(MAKE) --directory=llfw
 
-firmware.bin: $(OBJ) auc/AUCInterpret.o
-	$(LD) firmware.bin ./Antecedent.o $(OBJ) auc/AUCInterpret.o L/dfrt/dfrt.f.o
+firmware.bin: $(OBJ)
+	$(LD) firmware.bin ./Antecedent.o $(OBJ) L/dfrt/dfrt.f.o
 	$(OBJTOOL) move firmware.bin text=0x2000,data=text+text_size,bss=data+data_size
 	cp firmware.bin a3x.LOFF
-	$(OBJTOOL) binary firmware.bin
+	$(OBJTOOL) strip firmware.bin
 	printf '%s' `expr \`cat build\` + 1` > build
-
-auc/AUCInterpret.o: auc/AUCInterpret.s
-	$(AS) auc/AUCInterpret.s auc/AUCInterpret.o
 
 %.o: %.df
 	$(DC) incdir=./include/ $< $@
 
 cleanup:
-	rm $(OBJ) firmware.bin boot.bin auc/AUCInterpret.o
+	rm $(OBJ) a3x.LOFF firmware.bin boot.bin
 	$(MAKE) --directory=llfw cleanup

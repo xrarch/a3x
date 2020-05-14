@@ -44,7 +44,7 @@ procedure DevBootableR { devnode } (* -- brecord bootable? *)
 		3 return (* failed to load boot record *)
 	end
 
-	if (brecord@ BootRecord_Magic + @ BootMagic == brecord@ BootRecord_ret + gb BootRM == && ~~)
+	if (brecord@ BootRecord_Magic + @ BootMagic == ~~)
 		brecord@ Free
 		4 return (* invalid boot record *)
 	end
@@ -141,11 +141,21 @@ procedure BootNode { devnode args } (* -- ok? *)
 
 	"\[[33mexecuting boot program!\[[0m\n" Printf
 
-	asm "pusha"
+	asm "
+
+	subi.i sp, 112
+	sgpr sp
+
+	"
 
 	API devnode@ args@ BootBottom 4 + @ Call BootResult!
 
-	asm "popa"
+	asm "
+
+	lgpr sp
+	addi.i sp, 112
+
+	"
 
 	if (BootResult@ 0 ==)
 		1 (* ok *) return

@@ -1,6 +1,5 @@
 struct BootRecord
 	4 Magic
-	1 ret
 	16 OSLabel
 	4 BootBlockStart
 	4 BootBlockCount

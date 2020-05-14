@@ -2,15 +2,15 @@
 
 Abbreviated frequently as a3x.
 
-Boot firmware for the LIMN architecture, written in limn1k assembly and dragonfruit.
+Boot firmware for the LIMNstation architecture, written in limn2k assembly and dragonfruit.
 
 Makes heavy internal use of NVRAM variables and a device tree model.
 
-![Running](https://i.imgur.com/P0ooOux.png)
+![Running](https://i.imgur.com/TTYU8WT.png)
 
 ## Building
 
-Download the LIMN sdk, and place it in a folder titled `sdk` in your current directory.
+Download the LIMNstation sdk, and place it in a folder titled `sdk` in your current directory.
 
 Then run the `build.sh` script using the path you'd like to place the ROM file as the argument.
 

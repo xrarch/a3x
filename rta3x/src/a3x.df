@@ -20,9 +20,13 @@ end
 procedure a3xReturn (* code -- *)
 	asm "
 
-	lri.l sp, a3xFwctx
+	la at, a3xFwctx
 
-	pop ivt
+	l.l sp, at, zero
+
+	pop ev
+
+	pop lr
 
 	ret
 
@@ -31,19 +35,20 @@ end
 
 asm "
 
-;r30 - call num
+;at - call num
 _a3xCIC_Call:
-	push r29
-	lri.l r29, a3xCIPtr
-	add r30, r30, r29
-	lrr.l r30, r30
+	push lr
+	push r1
 
-	call .e
-	pop r29
+	la r1, a3xCIPtr
+	l.l r1, r1, zero
+	l.l r1, r1, at
+
+	jalr r1
+
+	pop r1
+	pop lr
 	ret
-
-.e:
-	br r30
 
 _a3xCIC_Putc === 0
 _a3xCIC_Getc === 4
@@ -71,232 +76,232 @@ _a3xCIC_DeviceDGetName === 80
 ; buffer maxchars --
 a3xGets:
 .global a3xGets
-	push r30
+	push lr
 
-	li r30, _a3xCIC_Gets
-	call _a3xCIC_Call
+	li at, _a3xCIC_Gets
+	jal _a3xCIC_Call
 
-	pop r30
+	pop lr
 	ret
 
 ; char -- 
 a3xPutc:
 .global a3xPutc
-	push r30
+	push lr
 
-	li r30, _a3xCIC_Putc
-	call _a3xCIC_Call
+	li at, _a3xCIC_Putc
+	jal _a3xCIC_Call
 
-	pop r30
+	pop lr
 	ret
 
 ; -- char
 a3xGetc:
 .global a3xGetc
-	push r30
+	push lr
 
-	li r30, _a3xCIC_Getc
-	call _a3xCIC_Call
+	li at, _a3xCIC_Getc
+	jal _a3xCIC_Call
 
-	pop r30
+	pop lr
 	ret
 
 ; str --
 a3xPuts:
 .global a3xPuts
-	push r30
+	push lr
 
-	li r30, _a3xCIC_Puts
-	call _a3xCIC_Call
+	li at, _a3xCIC_Puts
+	jal _a3xCIC_Call
 
-	pop r30
+	pop lr
 	ret
 
 ; -- root dcp
 a3xAPIDevTree:
 .global a3xAPIDevTree
-	push r30
+	push lr
 
-	li r30, _a3xCIC_DevTree
-	call _a3xCIC_Call
+	li at, _a3xCIC_DevTree
+	jal _a3xCIC_Call
 
-	pop r30
+	pop lr
 	ret
 
 ; sz -- ptr
 a3xMalloc:
 .global a3xMalloc
-	push r30
+	push lr
 
-	li r30, _a3xCIC_Malloc
-	call _a3xCIC_Call
+	li at, _a3xCIC_Malloc
+	jal _a3xCIC_Call
 
-	pop r30
+	pop lr
 	ret
 
 ; sz -- ptr
 a3xCalloc:
 .global a3xCalloc
-	push r30
+	push lr
 
-	li r30, _a3xCIC_Calloc
-	call _a3xCIC_Call
+	li at, _a3xCIC_Calloc
+	jal _a3xCIC_Call
 
-	pop r30
+	pop lr
 	ret
 
 ; ptr -- 
 a3xFree:
 .global a3xFree
-	push r30
+	push lr
 
-	li r30, _a3xCIC_Free
-	call _a3xCIC_Call
+	li at, _a3xCIC_Free
+	jal _a3xCIC_Call
 
-	pop r30
+	pop lr
 	ret
 
 ; path -- node
 a3xDevTreeWalk:
 .global a3xDevTreeWalk
-	push r30
+	push lr
 
-	li r30, _a3xCIC_DevTreeWalk
-	call _a3xCIC_Call
+	li at, _a3xCIC_DevTreeWalk
+	jal _a3xCIC_Call
 
-	pop r30
+	pop lr
 	ret
 
 ; --
 a3xDeviceParent:
 .global a3xDeviceParent
-	push r30
+	push lr
 
-	li r30, _a3xCIC_DeviceParent
-	call _a3xCIC_Call
+	li at, _a3xCIC_DeviceParent
+	jal _a3xCIC_Call
 
-	pop r30
+	pop lr
 	ret
 
 ; node -- 
 a3xDeviceSelectNode:
 .global a3xDeviceSelectNode
-	push r30
+	push lr
 
-	li r30, _a3xCIC_DeviceSelectNode
-	call _a3xCIC_Call
+	li at, _a3xCIC_DeviceSelectNode
+	jal _a3xCIC_Call
 
-	pop r30
+	pop lr
 	ret
 
 ; path -- 
 a3xDeviceSelect:
 .global a3xDeviceSelect
-	push r30
+	push lr
 
-	li r30, _a3xCIC_DeviceSelect
-	call _a3xCIC_Call
+	li at, _a3xCIC_DeviceSelect
+	jal _a3xCIC_Call
 
-	pop r30
+	pop lr
 	ret
 
 ; name -- value
 a3xDGetProperty:
 .global a3xDGetProperty
-	push r30
+	push lr
 
-	li r30, _a3xCIC_DeviceDGetProperty
-	call _a3xCIC_Call
+	li at, _a3xCIC_DeviceDGetProperty
+	jal _a3xCIC_Call
 
-	pop r30
+	pop lr
 	ret
 
 ; name -- ptr
 a3xDGetMethod:
 .global a3xDGetMethod
-	push r30
+	push lr
 
-	li r30, _a3xCIC_DeviceDGetMethod
-	call _a3xCIC_Call
+	li at, _a3xCIC_DeviceDGetMethod
+	jal _a3xCIC_Call
 
-	pop r30
+	pop lr
 	ret
 
 ; name -- success
 a3xDCallMethod:
 .global a3xDCallMethod
-	push r30
+	push lr
 
-	li r30, _a3xCIC_DeviceDCallMethod
-	call _a3xCIC_Call
+	li at, _a3xCIC_DeviceDCallMethod
+	jal _a3xCIC_Call
 
-	pop r30
+	pop lr
 	ret
 
 ; -- 
 a3xDeviceExit:
 .global a3xDeviceExit
-	push r30
+	push lr
 
-	li r30, _a3xCIC_DeviceExit
-	call _a3xCIC_Call
+	li at, _a3xCIC_DeviceExit
+	jal _a3xCIC_Call
 
-	pop r30
+	pop lr
 	ret
 
 ; prop name --
 a3xDSetProperty:
 .global a3xDSetProperty
-	push r30
+	push lr
 
-	li r30, _a3xCIC_DeviceDSetProperty
-	call _a3xCIC_Call
+	li at, _a3xCIC_DeviceDSetProperty
+	jal _a3xCIC_Call
 
-	pop r30
+	pop lr
 	ret
 
 ; ptr --
 a3xDCallMethodPtr:
 .global a3xDCallMethodPtr
-	push r30
+	push lr
 
-	li r30, _a3xCIC_DeviceDCallMethodPtr
-	call _a3xCIC_Call
+	li at, _a3xCIC_DeviceDCallMethodPtr
+	jal _a3xCIC_Call
 
-	pop r30
+	pop lr
 	ret
 
 ; -- iter
 a3xDevIteratorInit:
 .global a3xDevIteratorInit
-	push r30
+	push lr
 
-	li r30, _a3xCIC_DevIteratorInit
-	call _a3xCIC_Call
+	li at, _a3xCIC_DevIteratorInit
+	jal _a3xCIC_Call
 
-	pop r30
+	pop lr
 	ret
 
 ; iter -- iter
 a3xDevIterate:
 .global a3xDevIterate
-	push r30
+	push lr
 
-	li r30, _a3xCIC_DevIterate
-	call _a3xCIC_Call
+	li at, _a3xCIC_DevIterate
+	jal _a3xCIC_Call
 
-	pop r30
+	pop lr
 	ret
 
 ; -- name
 a3xDGetName:
 .global a3xDGetName
-	push r30
+	push lr
 
-	li r30, _a3xCIC_DeviceDGetName
-	call _a3xCIC_Call
+	li at, _a3xCIC_DeviceDGetName
+	jal _a3xCIC_Call
 
-	pop r30
+	pop lr
 	ret
 
 "

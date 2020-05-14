@@ -7,11 +7,13 @@
 
 Entry:
 
-push ivt
+push lr
+
+push ev
 
 ;push firmware context
-pushv r5, sp
+swd.l vs, zero, sp
 
-call a3xEntry
+jal a3xEntry
 
-call a3xReturn
+jal a3xReturn

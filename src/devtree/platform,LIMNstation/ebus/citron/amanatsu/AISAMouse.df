@@ -24,7 +24,7 @@ procedure AMousePoll (* -- *)
 	auto i
 	1 i!
 
-	while (i@ 256 <)
+	while (i@ 16 <)
 		auto rs
 		InterruptDisable rs!
 
@@ -42,7 +42,7 @@ procedure AMousePoll (* -- *)
 
 					if (AMouseCount@ 0 ==)
 						DevCurrent@ AMouseCDev!
-						pointerof AMouseInterruptASM i@ AmanatsuSetInterrupt "interrupt#" DAddProperty
+						(* pointerof AMouseInterruptASM i@ AmanatsuSetInterrupt "interrupt#" DAddProperty *)
 
 						pointerof AMouseAddCallback "addCallback" DAddMethod
 						pointerof AMouseEvent "getEvent" DAddMethod
@@ -52,6 +52,8 @@ procedure AMousePoll (* -- *)
 					"mouse" "deviceType" DAddProperty
 
 					"AISA,mouse" "model" DAddProperty
+
+					i@ 4 + "interrupt#" DAddProperty
 
 					1 AMouseCount +=
 				DeviceExit
@@ -101,18 +103,6 @@ procedure AMouseReset (* -- *)
 
 	rs@ InterruptRestore
 end
-
-asm "
-
-AMouseInterruptASM:
-	pusha
-
-	call AMouseInterrupt
-
-	popa
-	iret
-
-"
 
 procedure AMouseInterrupt (* -- *)
 	auto id

@@ -290,21 +290,7 @@ procedure DCallMethodCommon (* ... ptr -- ... ok? *)
 	auto pnode
 	pnode!
 
-	if (pnode@ DeviceMethod_AUC + @ 0 ==)
-		pnode@ DeviceMethod_Func + @ Call 1 return
-	end else
-		auto ok
-		pnode@ DeviceMethod_Board + @
-		pnode@ DeviceMethod_Func + @
-		pnode@ DeviceMethod_AUC + @
-		AUCEvaluateFunc ok!
-		if (ok@ 1 ~=)
-			[ok@]AUCErrors@ "couldn't execute microcode method '%s': %s\n" Problem
-			0 return
-		end
-
-		1 return
-	end
+	pnode@ DeviceMethod_Func + @ Call 1
 end
 
 procedure DCallMethodPtr (* ... ptr -- ... *)

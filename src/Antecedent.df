@@ -6,14 +6,12 @@ extern ConsoleEarlyInit
 extern InterruptsInit
 extern DeviceInit
 extern ConsoleInit
-extern FaultsRegister
 extern FontInit
-extern AUCInit
 extern PlatformInit
+extern InterruptEnable
 
 extern Main
 
-(* MUST be at the top *)
 procedure AntecedentEntry (* -- *)
 	HeapInit
 
@@ -33,15 +31,13 @@ procedure AntecedentEntry (* -- *)
 
 	InterruptsInit
 
-	AUCInit
-
 	DeviceInit
+
+	InterruptEnable
 
 	FirmwareBanner
 
 	ConsoleInit
-
-	FaultsRegister (* let llfw handle faults up until here *)
 
 	FontInit
 
@@ -50,12 +46,17 @@ end
 
 asm "
 
+.entry AntecedentEntry
+
+"
+
+asm "
+
 Reset:
 .global Reset
-	li ivt, 0
-	divi r0, r0, 0
-.loop:
-	b .loop
+	la r1, 0xFFFE0000
+	l.l r1, r1, zero
+	mov pc, r1
 
 "
 

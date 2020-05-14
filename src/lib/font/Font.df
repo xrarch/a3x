@@ -7,8 +7,12 @@ var FontBBP 0
 
 asm "
 
+.section data
+
 Font:
 	.static font-terminus.bmp
+
+.section text
 
 "
 

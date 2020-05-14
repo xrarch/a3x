@@ -1,82 +1,83 @@
-.extern LLFWSerialPuts
-.extern LLFWError
+.extern Puts
 
-LLFWPBV === 0x2
-LLFWCPUV === 0x2
+.extern Error
 
-;r0 - RAM count
-LLFWPOST:
-.global LLFWPOST
-	push r0
-	li r0, LLFWPOSTString
-	call LLFWSerialPuts
-	pop r0
+.extern Putn
 
-	cmpi r0, 0x40000 ;if not at least 256KB of RAM,
-	bl .noRAM ;error
+.extern Reset
 
-	lri.l r0, 0xF8000800 ;check platformboard version
-	andi r0, r0, 0xFFFF0000 ;mask off major
-	rshi r0, r0, 16 ;get major
-	cmpi r0, LLFWPBV ;if not compatible,
-	bne .badPB ;bad board.
+PBVersion === 0xF8000800
 
-	cpu ;get cpuid in r0
-	andi r0, r0, 0x7FFF0000 ;mask off experimental bit and minor version
-	rshi r0, r0, 16 ;get major
-	cmpi r0, LLFWCPUV ;if not compatible,
-	bne .badCPU ;bad cpu.
+ExpectedPBVersion === 0x2
+ExpectedCPUVersion === 0x3
 
-	li r0, LLFWPOSTPassed
-	call LLFWSerialPuts
+POST:
+.global POST
+	push lr
 
+	push r1
+	la r1, POSTString
+	jal Puts
+	pop r1
+
+	lui r2, 0x40000
+	blt r1, r2, .noRAM
+
+	la r1, POSTPassed
+	jal Puts
+
+	la r1, PBVersion
+	l.l r1, r1, zero
+	rshi r1, r1, 16
+	bnei r1, ExpectedPBVersion, .badPB
+
+	rshi r1, cpuid, 16
+	andi.i r1, 0x7FFF
+	bnei r1, ExpectedCPUVersion, .badCPU
+
+	pop lr
 	ret
 
 .noRAM:
-	iori r1, r0, 0x01000000
-	li r0, LLFWPOSTNoRAM
-	b LLFWError
+	lui r2, 0x01000000
+	or r2, r2, r1
+	la r1, POSTNoRAM
+	jal Error
+	j Reset
 
 .badPB:
-	mov r1, r0
-	li r0, LLFWBadPBString
-	iori r1, r1, 0x03000000
-	call LLFWError
+	lui r2, 0x03000000
+	or r2, r2, r1
+	la r1, BadPBString
+	jal Error
+	j Reset
 
 .badCPU:
-	mov r1, r0
-	li r0, LLFWBadCPUString
-	iori r1, r1, 0x04000000
-	call LLFWError
+	lui r2, 0x04000000
+	or r2, r2, r1
+	la r1, BadCPUString
+	jal Error
+	j Reset
 
-LLFWFault:
-.global LLFWFault
-	li r1, 0x02000000
-	ior r1, r1, r0
-	li r0, LLFWFaultString
-	b LLFWError
+.section data
 
-LLFWBadCPUString:
+BadCPUString:
 	.ds Incompatible CPU type!
 	.db 0xA, 0x0
 
-LLFWBadPBString:
+BadPBString:
 	.ds Incompatible motherboard!
 	.db 0xA, 0x0
 
-LLFWFaultString:
-	.ds Unexpected fault!
-	.db 0xA, 0x0
-
-LLFWPOSTString:
+POSTString:
 	.ds Basic self-test...
 	.db 0xA, 0x0
 
-LLFWPOSTPassed:
+POSTPassed:
 	.ds Self-test passed.
 	.db 0xA, 0x0
 
-LLFWPOSTNoRAM:
+POSTNoRAM:
 	.ds Insufficient RAM to run this firmware, at least 256KB must be
 	.db 0xA
 	.ds installed in slot 0.

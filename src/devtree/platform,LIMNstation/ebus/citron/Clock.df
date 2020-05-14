@@ -7,7 +7,7 @@ const ClockPortA 0x21
 var ClockStartSec 0
 var ClockStartMS 0
 
-const ClockInterrupt 0x22
+const ClockInterrupt 0x1
 
 procedure BuildCClock (* -- *)
 	DeviceNew

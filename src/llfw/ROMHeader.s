@@ -3,4 +3,4 @@
 ;reset vector
 .dl Reset
 
-.ds limn BootROM, by Will
+.ds limn2k BootROM, by Will

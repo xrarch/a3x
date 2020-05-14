@@ -3,121 +3,114 @@
 
 var InterruptsVT 0
 
-procedure InterruptsInit (* -- *)
-	auto oivt
-
-	_flush_all
-
-	asm "
-
-	pushv r5, ivt
-
-	" oivt!
-
-	1024 Calloc InterruptsVT!
-
-	oivt@ FaultsCopy
-
-	InterruptsVT@ _flush_all asm "
-		popv r5, r0
-		cli
-		mov ivt, r0
-	"
-
-	InterruptEnable
-end
-
-procedure FaultsCopy { oivt -- }
-	auto i
-	0 i!
-	while (i@ 10 <)
-		oivt@ @ i@ InterruptRegister
-		1 i +=
-		4 oivt +=
-	end
-end
-
-procedure FaultsRegister (* -- *)
-	auto i
-	0 i!
-	while (i@ 10 <)
-		pointerof FaultsHandlerASM i@ InterruptRegister
-		1 i +=
-	end
-end
-
-table FaultsNames
-	"Division by zero"
-	"Invalid opcode"
-	"MMU fault"
-	"Privilege violation"
-	"General fault"
-	"Breakpoint"
-	"Unknown"
-	"Bus error"
-	"Unknown"
-	"Spurious interrupt"
-endtable
-public FaultsNames
-
-const Breakpoint 5
-
 var SavedState 0
 public SavedState
 
-procedure FaultsHandler { state num loc fa -- }
-	auto rs
-	InterruptDisable rs!
+procedure InterruptsInit (* -- *)
+	pointerof exception_limn2k _flush_all asm "
 
-	ConsoleUserOut
+	lwi.l ev, vs, zero
 
-	if (ConsoleInMethod@ 0 ~=)
-		if (num@ Breakpoint ==)
-			loc@ "\[[7mA3X: breakpoint at 0x%x, entering monitor\[[0m\n" Printf
-			state@ DebugMonitor
-			return
-		end else
-			state@ SavedState!
-			fa@ [num@]FaultsNames@ "%s at 0x%x.\n" Problem
-		end
-	end else
-		loc@ [num@]FaultsNames@ "\n!!!FAULT!!! %s at %x, resetting.\n" Printf
+	"
 
-		LateReset
-	end
+	64 4 * Calloc InterruptsVT!
 end
 
 asm "
 
-FaultsHandlerASM:
-	pop k3 ;rs
-	pop k2 ;r0
-	pop k1 ;pc
+exception_limn2k:
+	subi.i sp, 112
+	sgpr sp
+	push epc
+	push ers
+	push lr
 
-	push k1
-	push k2
-	push k3
+	swd.l vs, zero, sp
+	swd.l vs, zero, ecause
+	swd.l vs, zero, epc
+	swd.l vs, zero, ers
+	swd.l vs, zero, badaddr
+	jal Exception
 
-	push ivt
+	li badaddr, 0
 
-	pusha
+	pop lr
+	pop ers
+	pop epc
+	lgpr sp
+	addi.i sp, 112
+	rfe
 
-	pushv r5, sp
-
-	pushv r5, r0
-
-	pushv r5, k1
-
-	pushv r5, fa
-
-	call FaultsHandler
-
-	popa
-
-	pop ivt
-
-	iret
 "
+
+table ExceptionNames
+	"Unknown"
+	"Interrupt"
+	"Syscall"
+	"MMU fault"
+	"Bus error"
+	"Timer"
+	"Breakpoint"
+	"Invalid opcode"
+	"Privilege violation"
+	"Unaligned address"
+	"Unaligned PC"
+	"Division by zero"
+endtable
+const ExceptionCount 12
+
+const Breakpoint 6
+
+const ExtInterrupt 1
+
+const LSICClaimComplete 0xF8030010
+
+procedure Exception { state ecause epc ers badaddr -- }
+	if (ecause@ ExtInterrupt ==)
+		auto int
+
+		LSICClaimComplete@ int!
+
+		while (int@)
+			auto h
+			int@ 4 * InterruptsVT@ + @ h!
+
+			if (h@)
+				h@ Call
+			end else
+				int@ "Spurious interrupt: %x\n" Problem
+			end
+
+			int@ LSICClaimComplete!
+
+			LSICClaimComplete@ int!
+		end
+
+		return
+	end
+
+	ConsoleUserOut
+
+	ecause@ "ECAUSE: %x\n" Printf
+	epc@ "EPC: %x\n" Printf
+	ers@ "ERS: %x\n" Printf
+	badaddr@ "BADADDR: %x\n" Printf
+
+	if (ConsoleInMethod@ 0 ~=)
+		if (ecause@ Breakpoint ==)
+			epc@ "\[[7mA3X: breakpoint at 0x%x, entering monitor\[[0m\n" Printf
+			state@ DebugMonitor
+			return
+		end else
+			state@ SavedState!
+			[ecause@]ExceptionNames@ "%s.\n" Problem
+		end
+	end else
+		epc@ [ecause@]ExceptionNames@ "\n!!!FAULT!!! %s, resetting.\n" Printf
+
+		LateReset
+	end
+end
 
 procedure InterruptRegister { handler num -- }
 	handler@ num@ 4 * InterruptsVT@ + !
@@ -138,9 +131,9 @@ end
 procedure InterruptDisable (* -- rs *)
 	asm "
 
-	mov r0, rs
+	mov at, rs
 	bclri rs, rs, 1
-	pushv r5, r0
+	swd.l vs, zero, at
 
 	"
 end
@@ -148,8 +141,7 @@ end
 procedure InterruptRestore (* rs -- *)
 	asm "
 
-	popv r5, r0
-	mov rs, r0
+	lwi.l rs, vs, zero
 
 	"
 end

@@ -72,7 +72,7 @@ procedure AHDBBootable { part id -- }
 
 	if (brecord@ 1 AHDBRead 1 ==)
 		(* is it a valid boot record? *)
-		if (brecord@ BootRecord_Magic + @ BootMagic == brecord@ BootRecord_ret + gb BootRM == &&)
+		if (brecord@ BootRecord_Magic + @ BootMagic ==)
 			(* yes, it's bootable *)
 
 			brecord@ BootRecord_OSLabel + strdup "osLabel" DAddProperty
@@ -162,7 +162,7 @@ procedure BuildSatsuma (* -- *)
 
 		"AISA,satsuma" "model" DAddProperty
 
-		0x20 "interrupt#" DAddProperty
+		0x2 "interrupt#" DAddProperty
 
 		auto i
 		0 i!

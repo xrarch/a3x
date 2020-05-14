@@ -3,14 +3,14 @@
 
 extern ClockUptime
 
-procedure BuildLimn1k
+procedure BuildLimn2k
 	DeviceNew
-		"limn1k" DSetName
-		"limn1k" "type" DAddProperty
+		"limn2k" DSetName
+		"limn2k" "type" DAddProperty
 
 		"cpu" "deviceType" DAddProperty
 
-		"AISA,limn1k" "model" DAddProperty
+		"AISA,limn2k" "model" DAddProperty
 
 		pointerof Reset "reset" DAddMethod
 	DeviceExit

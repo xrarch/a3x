@@ -147,11 +147,6 @@ procedure MonitorCommandsInit (* -- *)
 	pointerof AAA
 	"aaa"
 	MonitorAddCommand
-
-	0
-	pointerof EvalAUC
-	"auc"
-	MonitorAddCommand
 end
 
 const ConsoleAssumedHeight 22
@@ -192,25 +187,6 @@ procedure WaitNext { -- result }
 	end
 
 	1 UsedLines +=
-end
-
-procedure EvalAUC (* -- *)
-	auto slot
-	MonitorParseWord slot!
-
-	auto addr
-	MonitorParseWord addr!
-
-	auto adrn
-	auto slotn
-
-	addr@ atoi adrn!
-	slot@ atoi slotn!
-
-	addr@ Free
-	slot@ Free
-
-	[slotn@ adrn@ AUCEvaluate]AUCErrors@ "auc: %s\n" Printf
 end
 
 procedure AAA (* -- *)

@@ -1,89 +1,100 @@
-LLFWSerialPortA === 0xF8000040
-LLFWSerialPortB === 0xF8000044
+SerialPortA === 0xF8000040
+SerialPortB === 0xF8000044
 
-;r0 - char
-LLFWSerialWrite:
-.global LLFWSerialWrite
-	push r1
-
-	;wait for serial port to become available
-.wait:
-	lri.b r1, LLFWSerialPortA
-	cmpi r1, 0
-	bne .wait
-
-	sir.b LLFWSerialPortB, r0
-	sii.b LLFWSerialPortA, 1
-
-	pop r1
-	ret
-
-;r0 - ptr to string
-LLFWSerialPuts:
-.global LLFWSerialPuts
-	push r1
-	mov r1, r0
+;r1 - str
+Puts:
+.global Puts
+	push lr
+	push r2
 
 .loop:
-	lrr.b r0, r1
-	cmpi r0, 0
-	be .out
+	l.b r2, r1, zero
+	beq r2, zero, .out
 
-	call LLFWSerialWrite
+	push r1
+	mov r1, r2
+	jal Putc
+	pop r1
 
 	addi r1, r1, 1
 	b .loop
 
 .out:
-	pop r1
+	pop r2
+	pop lr
 	ret
 
 ;outputs:
-;r0 - char or 0xFFFF if buf empty
-LLFWSerialRead:
-.global LLFWSerialRead
-	push r1
+;r1 - char
+Getc:
+.global Getc
+	push r2
+	push r3
+	push r4
+	la r2, SerialPortA
 
-	;wait for serial port to become available
+	li r4, 0xFFFF
+	
+.busy:
+	l.b r3, r2, zero
+	bne r3, zero, .busy
+
+	si.b r2, zero, 2
+	lio.i r1, r2, 4
+
+	beq r1, r4, .busy
+
+	pop r4
+	pop r3
+	pop r2
+	ret 
+
+;r1 - char
+Putc:
+.global Putc
+	push r2
+	push r3
+	la r2, SerialPortA
+
 .wait:
-	lri.b r1, LLFWSerialPortA
-	cmpi r1, 0
-	bne .wait
+	l.b r3, r2, zero
+	bne r3, zero, .wait
 
-	sii.b LLFWSerialPortA, 2
-	lri.i r0, LLFWSerialPortB
+	sio.l r2, 4, r1
+	si.l r2, zero, 1
 
-	pop r1
+	pop r3
+	pop r2
 	ret
 
-LLFWSerialIntegerChars:
-	.ds 0123456789ABCDEF
-
-;r0 - number
-;recursive but there shouldnt be risk of stack overflow
-;since 32 bit numbers cant get big enough to do that easily.
-;hexadecimal
-LLFWSerialPutInteger:
-.global LLFWSerialPutInteger
-	push r0
+;r1 - number
+Putn:
+.global Putn
+	push lr
 	push r1
 	push r2
+	push r3
 
-	mov r2, r0
-	divi r0, r0, 16
-	modi r1, r2, 16
-	cmpi r0, 0
-	be .ldigit
+	mov r3, r1
+	divi r1, r1, 16
+	modi r2, r3, 16
+	beq r1, zero, .ldigit
 
-	call LLFWSerialPutInteger
+	jal Putn
 
 .ldigit:
-	addi r1, r1, LLFWSerialIntegerChars
-	lrr.b r0, r1
+	la r3, IntegerChars
+	l.b r1, r3, r2
 
-	call LLFWSerialWrite
+	jal Putc
 
+	pop r3
 	pop r2
 	pop r1
-	pop r0
+	pop lr
 	ret
+
+.section data
+
+IntegerChars:
+	.ds 0123456789ABCDEF

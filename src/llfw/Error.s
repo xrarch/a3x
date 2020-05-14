@@ -1,102 +1,64 @@
-.extern LLFWSerialPuts
-.extern LLFWSerialPutInteger
-.extern LLFWSerialWrite
-.extern LLFWSerialRead
+.extern Puts
 
-.extern LLFWK2Find
-.extern LLFWK2Fill
-.extern LLFWK2BlitIcon
-.extern LLFWK2ColorMode
+.extern Putc
+
+.extern Putn
+
+.extern Getc
 
 .extern Reset
 
-;r0 - message
-;r1 - number
-LLFWError:
-.global LLFWError
-	li sp, 0x1FFF
+;r1 - error string
+;r2 - error code
+Error:
+.global Error
+	push lr
 
-	push r0
 	push r1
-
-	push r0
-	li r0, LLFWErrorString
-	call LLFWSerialPuts
-	pop r0
-	call LLFWSerialPuts
-	li r0, LLFWErrorStringB
-	call LLFWSerialPuts
-	mov r0, r1
-	call LLFWSerialPutInteger
-	li r0, 0xA
-	call LLFWSerialWrite
-	li r0, LLFWErrorStringC
-	call LLFWSerialPuts
-
+	la r1, LLFWErrorString
+	jal Puts
 	pop r1
-	pop r0
-	call LLFWErrorGraphical
 
-.wloop:
-	call LLFWSerialRead
-	cmpi r0, 0xFFFF
-	bne .reset
-	b .wloop
-	
-.reset:
-	cmpi r0, "c"
-	be .clear
-	b .ro
+	jal Puts
+
+	la r1, LLFWErrorStringB
+	jal Puts
+
+	mov r1, r2
+	jal Putn
+
+	li r1, 0xA
+	jal Putc
+
+	la r1, LLFWErrorStringC
+	jal Puts
+
+	jal Getc
+	beqi r1, "c", .out
+	bnei r1, "x", .reset
+
+	li r1, 0
+	lui r2, 0x100000
 
 .clear:
-	andi r1, r1, 0xFFFF0000
-	cmpi r1, 0x01000000 ;was it insufficient RAM that caused this error?
-	be .ro ;then just reset
+	beq r1, r2, .reset
 
-	li r0, 0
-.cloop:
-	cmpi r0, 1048576
-	bge .ro
+	si.l r1, zero, 0
 
-	sri.l r0, 0
+	addi r1, r1, 4
+	b .clear
 
-	addi r0, r0, 4
-	b .cloop
+.reset:
+	la r1, LLFWTermClear
+	jal Puts
 
-.ro:
-	li r0, LLFWTermClear
-	call LLFWSerialPuts
-
-	b Reset
-
-;r0 - message
-;r1 - number (only thing displayed right now)
-LLFWErrorGraphical:
-	push r1
-	push r0
-	call LLFWK2Find
-	cmpi r0, 0
-	be .out
-
-	push r0
-	call LLFWK2ColorMode
-	pop r0
-
-	mov r2, r0
-
-	li r1, 78
-	call LLFWK2Fill
-
-	mov r3, r2
-	li r0, 213
-	li r1, 69
-	li r2, LLFWErrorBMP
-	call LLFWK2BlitIcon
+	j Reset
 
 .out:
-	pop r0
-	pop r1
+	pop lr
 	ret
+
+.section data
 
 LLFWTermClear:
 	.db 0x1B
@@ -114,10 +76,5 @@ LLFWErrorStringB:
 	.db 0x0
 
 LLFWErrorStringC:
-	.ds Resetting on console input.
-	.db 0xA
-	.ds Press 'c' to clear bottom 1M of RAM.
+	.ds Resetting on console input, or press 'c' to continue.
 	.db 0xA, 0x0
-
-LLFWErrorBMP:
-	.static llfwerror.bmp

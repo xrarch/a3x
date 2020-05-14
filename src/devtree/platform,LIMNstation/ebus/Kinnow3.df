@@ -363,18 +363,6 @@ procedure KinnowInit (* -- *)
 	end
 end
 
-asm "
-
-KinnowVsyncIntASM:
-	pusha
-
-	call KinnowVsyncInt
-
-	popa
-	iret
-
-"
-
 procedure KinnowVsyncAdd (* handler -- *)
 	KinnowVsyncList@ ListInsert
 end
@@ -394,7 +382,7 @@ procedure KinnowVsyncOn (* -- *)
 	auto rs
 	InterruptDisable rs!
 
-	pointerof KinnowVsyncIntASM KinnowSlot@ EBusSlotInterruptRegister
+	(* pointerof KinnowVsyncIntASM KinnowSlot@ EBusSlotInterruptRegister *)
 
 	KinnowGPUVsync KinnowCommand
 

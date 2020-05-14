@@ -2,7 +2,7 @@
 #include "<inc>/a3x.h"
 
 extern BuildEBus
-extern BuildLimn1k
+extern BuildLimn2k
 extern BuildMemory
 
 procedure BuildPlatform (* -- *)
@@ -13,7 +13,7 @@ procedure BuildPlatform (* -- *)
 
 		"platform" "deviceType" DAddProperty
 
-		BuildLimn1k
+		BuildLimn2k
 
 		BuildMemory
 
@@ -65,7 +65,7 @@ procedure PlatformInit (* -- *)
 	"/platform/ebus/platformboard/citron/amanatsu/mouse/0" PlatformMousePath!
 	"/platform/ebus/kinnow3" PlatformScreenPath!
 	"/platform/ebus/platformboard/citron/serial" PlatformSerialPath!
-	"/platform/limn1k" PlatformCPUPath!
+	"/platform/limn2k" PlatformCPUPath!
 	"/platform/memory" PlatformMemoryPath!
 	"/platform/ebus" PlatformBusPath!
 

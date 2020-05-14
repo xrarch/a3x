@@ -17,6 +17,8 @@ end
 
 asm "
 
+.section data
+
 ANTEBNS:
 	.static ../build
 	.db 0x0
@@ -24,5 +26,7 @@ ANTEBNS:
 ANTEBDS:
 	.ds$ __DATE
 	.db 0x0
+
+.section text
 
 "

@@ -1,109 +1,88 @@
-;very low-level reset code for limn1k cpu, reset vector specified in ROMHeader.s points to Reset routine
-;special purpose registers are reset, the ROM is copied into RAM, and the main firmware procedure is called
+.extern LLFWStackTop
 
-.extern LLFWSerialPuts
-.extern LLFWPOST
-.extern FirmwareBase
-.extern LLFWFault
+.extern ExceptionVector
+
+.extern Puts
+
+.extern POST
+
+.extern LoadBIOS
+
+.extern Putn
+
+RAMSlotZero === 0x10000004
 
 Reset:
 .global Reset
-	li rs, 0x80000000 ;reset ebus
-	cli ; clear interrupt queue
-	li ivt, 0 ;reset ivt
+	lui rs, 0x80000000 ;reset ebus
+	li ev, 0 ;clear exception vector
 
-	lri.l r0, 0x10000004 ;how much RAM is in slot 0?
-	cmpi r0, 0x2000 ;if not at least 8kb,
-	bl LLFWNoStack ;don't even try to set the stack pointer or show an error message.
+	la r1, RAMSlotZero
+	l.l r1, r1, zero
+	la r2, _bss_size
+	bge r1, r2, .goodRAM ;continue if there's at least enough RAM to fit our bss section
 
-	li ivt, LLFWFaults
-	li sp, 0x2000
+	b Hang ;otherwise hang
 
-	;zero out bottom 8kb of RAM
+.goodRAM:
+	la sp, LLFWStackTop ;set stack
+
+	la ev, ExceptionVector ;set exception vector
+
+	;zero out bss
+	la r2, _bss
+	la r3, _bss_size
+	add r4, r2, r3
+
+.zero:
+	beq r2, r4, .zdone
+
+	s.l r2, zero, zero
+
+	addi r2, r2, 4
+	b .zero
+
+.zdone:
+	push r1
+	la r1, HiString
+	jal Puts
+	pop r1
+
+	jal POST ;self test
+
+	jal LoadBIOS ;load bios image
+
+	push r1
+	la r1, HLRString
+	jal Puts
+	pop r1
+
+	la vs, VStackTop
 	
-	li r1, 0
-.sloop:
-	cmpi r1, 0x2000
-	bge .sld
-
-	sri.l r1, 0
-
-	addi r1, r1, 4
-	b .sloop
-
-.sld:
-
-	push r0
-
-	li r0, LLFWHiString
-	call LLFWSerialPuts
-
-	pop r0
-
-	call LLFWPOST
-
-	call LLFWShadow
-
-	li r0, LLFWHLRString
-	call LLFWSerialPuts
-	
-	li r5, 0x1000
-	call 0x2000
-	b Hang
-
-LLFWNoStack:
+	jalr r1
 
 Hang:
 	b Hang
 
-LLFWShadow:
-	li r0, LLFWShadowString
-	call LLFWSerialPuts
+.section data
 
-	li r0, FirmwareBase
-	li r1, 0x2000
-	li r2, 0xFFFFFFF0
+HiString:
+	.db 0xA
+	.ds =============================
+	.db 0xA
+	.ds low-level firmware for limn2k
+	.db 0xA
+	.ds =============================
+	.db 0xA, 0x0
 
-.loop:
-	cmp r0, r2
-	bge .done
-
-	lrr.l r3, r0
-	srr.l r1, r3
-
-	addi r0, r0, 4
-	addi r1, r1, 4
-	b .loop
-
-.done:
-	ret
-
-LLFWHLRString:
+HLRString:
 	.ds Jumping to high-level firmware!
 	.db 0xA, 0xA, 0x0
 
-LLFWShadowString:
-	.ds Shadowing ROM...
-	.db 0xA, 0x0
+.section bss
 
-LLFWHiString:
-	.db 0xA
-	.ds ==================================
-	.db 0xA
-	.ds low-level firmware for LIMNstation
-	.db 0xA
-	.ds ==================================
-	.db 0xA, 0x0
+.bytes 1024 0
+LLFWStackTop:
 
-;placeholder ivt
-LLFWFaults:
-	.dl LLFWFault
-	.dl LLFWFault
-	.dl LLFWFault
-	.dl LLFWFault
-	.dl LLFWFault
-	.dl LLFWFault
-	.dl LLFWFault
-	.dl LLFWFault ;8
-	.dl LLFWFault, LLFWFault, 0, 0, 0, 0, 0, 0 ;16
-	.bytes 960 0 ;fill remainder of IVT
+.bytes 1024 0
+VStackTop:
