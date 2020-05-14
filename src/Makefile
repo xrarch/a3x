@@ -17,7 +17,7 @@ $(LLFW):
 	$(MAKE) --directory=llfw
 
 firmware.bin: $(OBJ)
-	$(LD) firmware.bin ./Antecedent.o $(OBJ) L/dfrt/dfrt.f.o
+	$(LD) firmware.bin $(OBJ) L/dfrt/dfrt.f.o
 	$(OBJTOOL) move firmware.bin text=0x2000,data=text+text_size,bss=data+data_size
 	cp firmware.bin a3x.LOFF
 	$(OBJTOOL) strip firmware.bin
