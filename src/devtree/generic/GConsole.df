@@ -16,8 +16,8 @@ var GCCurY 0
 var GCWidth 0
 var GCHeight 0
 
-const GConsoleBG 154
-const GConsoleFG 15
+const GConsoleBG 0x394C
+const GConsoleFG 0x7FFF
 
 var GCScreenNode 0
 
@@ -41,24 +41,24 @@ var GCInverted 0
 
 table ColorIndex
 	0
-	4
-	120
-	44
-	1
-	36
-	52
-	28
+	0x14
+	0x1C0
+	0x3FF
+	0x5000
+	0x7C1F
+	0x7FE0
+	0x5AD6
 endtable
 
 table ColorIndex2
-	20
-	89
-	74
-	92
-	102
-	60
-	100
-	15
+	0x1CE7
+	0x5B1F
+	0x5FEF
+	0x5BFF
+	0x7F56
+	0x7DFF
+	0x7FF6
+	0x7FFF
 endtable
 
 procedure GConsoleDefault (* -- *)
@@ -288,13 +288,13 @@ procedure GConsoleBack (* -- *)
 end
 
 procedure GConsoleUIBox { title x y w h -- }
-	x@ y@ w@ h@ 0x0F GConsoleRRect
-	x@ 1 + y@ 1 + w@ h@ 25 GConsoleRRect
-	x@ 1 + y@ 1 + w@ 1 - h@ 1 - 29 GConsoleRRect
-	x@ 10 + y@ 20 + w@ 18 - h@ 28 - 0x0F GConsoleRRect
-	x@ 10 + y@ 20 + w@ 19 - h@ 29 - 25 GConsoleRRect
-	x@ 11 + y@ 21 + w@ 21 - h@ 31 - 0x0F GConsoleRRect
-	x@ 12 + y@ 22 + w@ 22 - h@ 32 - 29 GConsoleRRect
+	x@ y@ w@ h@ 0x7FFF GConsoleRRect
+	x@ 1 + y@ 1 + w@ h@ 0x4210 GConsoleRRect
+	x@ 1 + y@ 1 + w@ 1 - h@ 1 - 0x6318 GConsoleRRect
+	x@ 10 + y@ 20 + w@ 18 - h@ 28 - 0x7FFF GConsoleRRect
+	x@ 10 + y@ 20 + w@ 19 - h@ 29 - 0x4210 GConsoleRRect
+	x@ 11 + y@ 21 + w@ 21 - h@ 31 - 0x7FFF GConsoleRRect
+	x@ 12 + y@ 22 + w@ 22 - h@ 32 - 0x6318 GConsoleRRect
 
 	auto tw
 	title@ strlen FontWidth * tw!

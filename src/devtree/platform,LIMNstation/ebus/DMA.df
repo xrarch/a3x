@@ -1,6 +1,8 @@
 #include "<df>/dragonfruit.h"
 #include "<inc>/a3x.h"
 
+externconst Font
+
 (* ebus dma controller driver *)
 
 procedure BuildDMA (* -- *)
@@ -12,6 +14,7 @@ procedure BuildDMA (* -- *)
 		"AISA,ebus-dma" "model" DAddProperty
 
 		pointerof DMATransfer "transfer" DAddMethod
+		pointerof DMABitTransfer "bitTransfer" DAddMethod
 	DeviceExit
 
 	DMAWaitUnbusy
@@ -26,7 +29,7 @@ procedure DMADoOperation (* -- *)
 	DMARegisterStatus@ 1 | DMARegisterStatus!
 end
 
-procedure DMATransfer { src dest srcinc destinc count mode lines destmod srcmod -- }
+procedure DMAFullTransfer { src dest srcinc destinc count mode lines destmod srcmod -- }
 	src@ DMARegisterSource!
 	dest@ DMARegisterDest!
 	srcinc@ DMARegisterSInc!
@@ -37,6 +40,24 @@ procedure DMATransfer { src dest srcinc destinc count mode lines destmod srcmod 
 	destmod@ DMARegisterDestMod!
 	srcmod@ DMARegisterSrcMod!
 
+	auto rs
+	InterruptDisable rs!
+
 	DMADoOperation
 	DMAWaitUnbusy
+
+	rs@ InterruptRestore
+end
+
+procedure DMABitTransfer (* src dest srcinc destinc count mode lines destmod srcmod *) { direction clearbyte setbyte -- }
+	1 DMARegisterBitMode!
+	clearbyte@ DMARegisterClearByte!
+	setbyte@ DMARegisterSetByte!
+	direction@ DMARegisterDirection!
+
+	DMAFullTransfer
+end
+
+procedure DMATransfer (* src dest srcinc destinc count mode lines destmod srcmod -- *)
+	DMAFullTransfer
 end

@@ -10,6 +10,7 @@ asm "
 .section data
 
 Font:
+.global Font
 	.static font-terminus.bmp
 
 .section text

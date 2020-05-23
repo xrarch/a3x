@@ -76,7 +76,7 @@ Putn:
 	push r3
 
 	mov r3, r1
-	divi r1, r1, 16
+	rshi r1, r1, 4
 	modi r2, r3, 16
 	beq r1, zero, .ldigit
 

@@ -63,12 +63,12 @@ procedure PlatformInit (* -- *)
 	"/platform/ebus/dma" PlatformDMAPath!
 	"/platform/ebus/platformboard/citron/amanatsu/kbd/0" PlatformKeyboardPath!
 	"/platform/ebus/platformboard/citron/amanatsu/mouse/0" PlatformMousePath!
-	"/platform/ebus/kinnow3" PlatformScreenPath!
+	"/platform/ebus/limngfx" PlatformScreenPath!
 	"/platform/ebus/platformboard/citron/serial" PlatformSerialPath!
 	"/platform/limn2k" PlatformCPUPath!
 	"/platform/memory" PlatformMemoryPath!
 	"/platform/ebus" PlatformBusPath!
 
-	"124" PlatformDefaultScreenBG!
-	"15" PlatformDefaultScreenFG!
+	"14784" PlatformDefaultScreenBG!
+	"32767" PlatformDefaultScreenFG!
 end

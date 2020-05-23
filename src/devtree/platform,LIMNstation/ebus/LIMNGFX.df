@@ -1,0 +1,264 @@
+#include "<df>/dragonfruit.h"
+#include "<inc>/a3x.h"
+
+(* a3x driver for LIMNGFX video board *)
+
+const LGSlotMID 0x4B494E34
+
+const LGVRAMOffset 0x100000
+
+const LGCommandOffset 0x2000
+
+const LGRegScreen 0x3000
+const LGRegVRAM   0x3004
+const LGRegRead   0x3008
+const LGRegWrite  0x300C
+const LGRegCursor 0x3010
+const LGRegStatus 0x3014
+const LGRegMode   0x3018
+const LGRegCause  0x301C
+const LGRegCurPos 0x3020
+
+var LGSlotBottom 0
+
+var LGVRAM 0
+
+var LGWidth 0
+var LGHeight 0
+
+var LGDMANode 0
+
+var LGFXNeedsInit 1
+
+var LGDMATransfer 0
+
+procedure BuildLIMNGFX (* -- *)
+	auto slot
+	LGSlotMID EBusFindFirstBoard slot!
+
+	if (slot@ ERR ==)
+		return
+	end
+
+	auto sb
+
+	slot@ EBusSlotSpace * EBusSlotsStart + dup sb! LGSlotBottom!
+
+	auto fb
+	sb@ LGVRAMOffset + dup fb! LGVRAM!
+
+	auto wh
+	sb@ LGRegScreen + @ wh! 
+
+	auto w
+	wh@ 0xFFF & w!
+
+	auto h
+	wh@ 12 >> 0xFFF & h!
+
+	DeviceNew
+		"limngfx" DSetName
+
+		fb@ "framebuffer" DAddProperty
+		w@ "width" DAddProperty
+		h@ "height" DAddProperty
+		16 "depth" DAddProperty
+
+		sb@ LGRegVRAM + @ "vramSize" DAddProperty
+
+		"display" "deviceType" DAddProperty
+
+		"AISA,limngfx" "model" DAddProperty
+
+		slot@ "ebus,unit" DAddProperty
+
+		pointerof LGFXRectangle "rectangle" DAddMethod
+		pointerof LGFXBlitBits "blitBits" DAddMethod
+		pointerof LGFXScroll "scroll" DAddMethod
+		pointerof LGFXBlit "blit" DAddMethod
+		pointerof LGFXInit "init" DAddMethod
+	DeviceExit
+
+	w@ LGWidth!
+	h@ LGHeight!
+end
+
+procedure LGFXInit (* -- *)
+	if (LGFXNeedsInit@)
+		0 0 LGWidth@ LGHeight@ "screen-bg" NVRAMGetVarNum LGFXRectangle
+
+		0 LGFXNeedsInit!
+	end
+end
+
+const TEXSRCDIM   0x01
+const TEXSRCVRAM  0x02
+const TEXDESTDIM  0x03
+const TEXDESTVRAM 0x04
+const ORSRCDIM    0x05
+const ORSRCPOS    0x06
+const ORDESTDIM   0x07
+const ORDESTPOS   0x08
+const OPRECT      0x09
+const BLITRECT    0x0A
+const DRAWLINE    0x0E
+
+const MODECOPY    0x100
+const MODEOR      0x200
+const MODEXOR     0x300
+const MODEAND     0x400
+const MODENOR     0x500
+const MODENAND    0x600
+const MODEXNOR    0x700
+
+const MODECOMB50  0xB00
+const MODECOMB20  0xC00
+const MODECOMB40  0xD00
+const MODECOMB60  0xE00
+const MODECOMB80  0xF00
+
+var WritePtr 0
+
+procedure private Go { -- }
+	auto sb
+	LGSlotBottom@ sb!
+
+	WritePtr@ sb@ LGRegWrite + !
+
+	auto readp
+	sb@ LGRegRead + readp!
+
+	while (readp@@ WritePtr@ ~=) end
+end
+
+procedure private Put { cmd -- }
+	auto sb
+	LGSlotBottom@ sb!
+
+	auto readp
+	sb@ LGRegRead + readp!
+
+	(* wait until command buf isn't full *)
+	while (WritePtr@ 64 % readp@@ 64 % 1 - ==) end
+
+	cmd@ WritePtr@ 64 % 4 * sb@ LGCommandOffset + + !
+
+	1 WritePtr +=
+end
+
+procedure LGFXRectangle { x y w h color -- }
+	auto rs
+	InterruptDisable rs!
+
+	LGHeight@ 20 << LGWidth@ 8 << | TEXDESTDIM | Put
+	0 TEXDESTVRAM | Put
+	h@ 20 << w@ 8 << | ORDESTDIM | Put
+	y@ 20 << x@ 8 << | ORDESTPOS | Put
+	color@ 12 << MODECOPY | OPRECT | Put
+
+	Go
+
+	rs@ InterruptRestore
+end
+
+procedure LGFXBlitBits { bpr fg bg bitd ptr x y w h -- }
+	if (LGDMANode@ 0 ==)
+		auto ndma
+		"/dma" DevTreeWalk ndma!
+
+		if (ndma@ 0 ~=)
+			ndma@ LGDMANode!
+
+			ndma@ DeviceSelectNode
+				"bitTransfer" DGetMethod LGDMATransfer!
+			DeviceExit
+		end else
+			return
+		end
+	end
+
+	if (LGDMATransfer@ 0 ==)
+		return
+	end
+
+	auto dest
+	y@ LGWidth@ * 2 * x@ 2 * + LGVRAM@ + dest!
+
+	LGDMANode@ DeviceSelectNode
+		ptr@ dest@
+		1 2 w@ *
+		w@ 8 /
+		0
+		h@ bpr@ *
+		LGWidth@ w@ - 2 *
+		0
+		bitd@ bg@ fg@
+		LGDMATransfer@ DCallMethodPtr
+	DeviceExit
+end
+
+var LGDMAFTransfer 0
+
+procedure LGFXBlit { x y w h ptr -- }
+	if (LGDMANode@ 0 ==)
+		auto ndma
+		"/dma" DevTreeWalk ndma!
+
+		if (ndma@ 0 ~=)
+			ndma@ LGDMANode!
+
+			ndma@ DeviceSelectNode
+				"transfer" DGetMethod LGDMAFTransfer!
+			DeviceExit
+		end else
+			return
+		end
+	end
+
+	if (LGDMAFTransfer@ 0 ==)
+		return
+	end
+
+	auto dest
+	y@ LGWidth@ * 2 * x@ 2 * + LGVRAM@ + dest!
+
+	LGDMANode@ DeviceSelectNode
+		ptr@ dest@
+		1 2 w@ *
+		w@ 2 *
+		0
+		h@
+		LGWidth@ w@ - 2 *
+		0
+		LGDMAFTransfer@ DCallMethodPtr
+	DeviceExit
+end
+
+procedure private LGFXVBlit { xd yd wd hd xs ys ws hs -- }
+	auto rs
+	InterruptDisable rs!
+
+	LGHeight@ 20 << LGWidth@ 8 << | TEXDESTDIM | Put
+	LGHeight@ 20 << LGWidth@ 8 << | TEXSRCDIM | Put
+	0 TEXDESTVRAM | Put
+	0 TEXSRCVRAM  | Put
+	hd@ 20 << wd@ 8 << | ORDESTDIM | Put
+	yd@ 20 << xd@ 8 << | ORDESTPOS | Put
+	hs@ 20 << ws@ 8 << | ORSRCDIM  | Put
+	ys@ 20 << xs@ 8 << | ORSRCPOS  | Put
+	MODECOPY BLITRECT | Put
+
+	Go
+
+	rs@ InterruptRestore
+end
+
+procedure LGFXScroll { x y w h color rows -- }
+	x@ y@ w@ h@ rows@ - 
+	x@ y@ rows@ + w@ h@ rows@ -
+	LGFXVBlit
+
+	if (color@ -1 ~=)
+		x@ y@ h@ rows@ - + w@ rows@ color@ LGFXRectangle
+	end
+end

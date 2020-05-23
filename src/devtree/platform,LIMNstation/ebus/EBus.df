@@ -3,7 +3,7 @@
 
 extern BuildDMA
 extern BuildPBoard
-extern BuildKinnow3
+extern BuildLIMNGFX
 
 procedure BuildEBus (* -- *)
 	DeviceNew
@@ -27,7 +27,7 @@ procedure BuildEBus (* -- *)
 
 		BuildPBoard
 
-		BuildKinnow3
+		BuildLIMNGFX
 	DeviceExit
 end
 
