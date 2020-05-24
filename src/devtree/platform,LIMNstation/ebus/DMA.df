@@ -13,6 +13,10 @@ procedure BuildDMA (* -- *)
 
 		"AISA,ebus-dma" "model" DAddProperty
 
+		1 "revision" DAddProperty
+
+		DMABase "address" DAddProperty
+
 		pointerof DMATransfer "transfer" DAddMethod
 		pointerof DMABitTransfer "bitTransfer" DAddMethod
 	DeviceExit

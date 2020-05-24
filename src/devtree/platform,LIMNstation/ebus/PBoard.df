@@ -9,9 +9,9 @@ procedure BuildPBoard (* -- *)
 
 		"AISA,platformboard" "model" DAddProperty
 
-		PBInfo@ "version" DAddProperty
+		PBInfo@ "revision" DAddProperty
 
-		0xF8000000 "platformboard,base" DAddProperty
+		0xF8000000 "address" DAddProperty
 
 		BuildCitron
 	DeviceExit

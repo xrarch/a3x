@@ -17,6 +17,8 @@ procedure BuildCitron (* -- *)
 
 		"AISA,citron" "model" DAddProperty
 
+		1 "revision" DAddProperty
+
 		pointerof DCitronInb "citron,inb" DAddMethod
 		pointerof DCitronIni "citron,ini" DAddMethod
 		pointerof DCitronInl "citron,inl" DAddMethod

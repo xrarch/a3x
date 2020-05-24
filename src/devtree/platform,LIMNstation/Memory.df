@@ -9,6 +9,8 @@ procedure BuildMemory (* -- *)
 
 		"AISA,memory" "model" DAddProperty
 
+		1 "revision" DAddProperty
+
 		auto max
 		RAM256Slots max!
 

@@ -21,6 +21,8 @@ procedure BuildCClock (* -- *)
 
 		"AISA,clock" "model" DAddProperty
 
+		1 "revision" DAddProperty
+
 		ClockInterrupt "interrupt#" DAddProperty
 	DeviceExit
 

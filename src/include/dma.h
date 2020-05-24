@@ -1,3 +1,5 @@
+const DMABase              0x38000000
+
 const DMARegisterSource    0x38000000
 const DMARegisterDest      0x38000004
 const DMARegisterSInc      0x38000008

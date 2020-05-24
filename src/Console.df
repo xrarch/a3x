@@ -16,7 +16,7 @@ var ConsoleInMethod 0
 public ConsoleInMethod
 
 var EarlyBuffer 0
-const EarlyBufferSize 2048
+const EarlyBufferSize 1024
 var EarlyBufPtr 0
 var EarlyBufSP 0
 var EarlyCCount 0
@@ -34,7 +34,7 @@ procedure EarlyPut { c -- }
 		1 EarlyBufSP +=
 	end
 
-	EarlyCCount@ 1 + EarlyBufferSize min EarlyCCount!
+	EarlyCCount@ 1 + EarlyBufferSize 1 - min EarlyCCount!
 end
 
 procedure DumpEarly (* -- *)

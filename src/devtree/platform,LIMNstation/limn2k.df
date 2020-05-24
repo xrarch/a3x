@@ -12,6 +12,8 @@ procedure BuildLimn2k
 
 		"AISA,limn2k" "model" DAddProperty
 
+		1 "revision" DAddProperty
+
 		pointerof Reset "reset" DAddMethod
 	DeviceExit
 end

@@ -37,6 +37,8 @@ procedure AKeyboardPoll (* -- *)
 
 					"AISA,keyboard" "model" DAddProperty
 
+					1 "revision" DAddProperty
+
 					i@ 4 + "interrupt#" DAddProperty
 
 					1 AKeyboardCount +=

@@ -15,8 +15,6 @@ procedure Main (* -- *)
 
 	auto fv
 
-	0 fv!
-
 	"true" strcmp fv!
 
 	if (fv@ ~~ kbn@ 0 ~= &&)

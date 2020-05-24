@@ -13,11 +13,6 @@ const AHDBCmdPoll 0x5
 
 const AHDBBuffer 0xF8020000
 
-var AHDBDMANode 0
-var AHDBDMATransfer 0
-
-var AHDBDMAEmulation 0
-
 struct AHDB_VDB
 	16 Label
 	128 PartitionTable
@@ -31,39 +26,8 @@ struct AHDB_PTE
 	3 Unused
 endstruct
 
-procedure private AHDBDMATransferBlock { src dest -- }
-	if (AHDBDMANode@ 0 ==)
-		auto ndma
-		"/dma" DevTreeWalk ndma!
-
-		if (ndma@ 0 ~=)
-			ndma@ AHDBDMANode!
-
-			ndma@ DeviceSelectNode
-				"transfer" DGetMethod AHDBDMATransfer!
-			DeviceExit
-		end
-	end
-
-	if (AHDBDMANode@ 0 ~=)
-		AHDBDMANode@ DeviceSelectNode
-			src@ dest@
-			4 4
-			1024
-			2
-			1 0 0
-			AHDBDMATransfer@ DCallMethodPtr
-		DeviceExit
-	end else
-		if (AHDBDMAEmulation@ PlatformInited@ ~~ ||)
-			(* just copy in software if early *)
-			dest@ src@ 4096 memcpy
-		end else
-			1 AHDBDMAEmulation!
-
-			"dks: where is /dma? using emulation (SLOW)\n" Problem
-		end
-	end
+procedure private AHDBTransferBlock { src dest -- }
+	dest@ src@ 4096 memcpy
 end
 
 procedure AHDBBootable { part id -- }
@@ -120,6 +84,9 @@ procedure AHDBPartitions { id -- pcount }
 
 					1 pcount +=
 
+					auto pnt
+					DevCurrent@ pnt!
+
 					DeviceNew
 						char@ DSetName
 
@@ -133,6 +100,10 @@ procedure AHDBPartitions { id -- pcount }
 
 						pointerof AHDBRead "readBlock" DAddMethod
 						pointerof AHDBWrite "writeBlock" DAddMethod
+
+						pnt@ "parentDisk" DAddProperty
+
+						1 "revision" DAddProperty
 
 						i@ id@ AHDBBootable
 					DeviceExit
@@ -162,6 +133,8 @@ procedure BuildSatsuma (* -- *)
 
 		"AISA,satsuma" "model" DAddProperty
 
+		1 "revision" DAddProperty
+
 		0x2 "interrupt#" DAddProperty
 
 		auto i
@@ -186,6 +159,8 @@ procedure BuildSatsuma (* -- *)
 					"disk" "deviceType" DAddProperty
 
 					"AISA,satsuma-disk" "model" DAddProperty
+
+					1 "revision" DAddProperty
 
 					pointerof AHDBRead "readBlock" DAddMethod
 					pointerof AHDBWrite "writeBlock" DAddMethod
@@ -223,7 +198,7 @@ procedure AHDBRead { ptr block -- ok }
 	block@ AHDBPortA DCitronOutl
 	AHDBCmdRead AHDBCmdPort DCitronCommand
 
-	AHDBBuffer ptr@ AHDBDMATransferBlock
+	AHDBBuffer ptr@ AHDBTransferBlock
 
 	rs@ InterruptRestore
 
@@ -243,7 +218,7 @@ procedure AHDBWrite { ptr block -- ok }
 
 	id@ AHDBSelect
 
-	ptr@ AHDBBuffer AHDBDMATransferBlock
+	ptr@ AHDBBuffer AHDBTransferBlock
 
 	block@ AHDBPortA DCitronOutl
 	AHDBCmdWrite AHDBCmdPort DCitronCommand

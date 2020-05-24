@@ -64,6 +64,8 @@ procedure BuildLIMNGFX (* -- *)
 		h@ "height" DAddProperty
 		16 "depth" DAddProperty
 
+		fb@ "vram" DAddProperty
+
 		sb@ LGRegVRAM + @ "vramSize" DAddProperty
 
 		"display" "deviceType" DAddProperty
@@ -71,6 +73,10 @@ procedure BuildLIMNGFX (* -- *)
 		"AISA,limngfx" "model" DAddProperty
 
 		slot@ "ebus,unit" DAddProperty
+
+		sb@ "address" DAddProperty
+
+		1 "revision" DAddProperty
 
 		pointerof LGFXRectangle "rectangle" DAddMethod
 		pointerof LGFXBlitBits "blitBits" DAddMethod

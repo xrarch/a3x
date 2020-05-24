@@ -15,6 +15,8 @@ procedure BuildAmanatsu (* -- *)
 
 		"AISA,amanatsu" "model" DAddProperty
 
+		1 "revision" DAddProperty
+
 		pointerof AmanatsuPoll "amanatsu,poll" DAddMethod
 		pointerof AmanatsuSelectDev "amanatsu,selectDev" DAddMethod
 		pointerof AmanatsuReadMID "amanatsu,readMID" DAddMethod

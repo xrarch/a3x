@@ -24,6 +24,8 @@ table API
 	pointerof DevIteratorInit
 	pointerof DevIterate
 	pointerof DGetName
+
+	pointerof ConsoleUserOut
 endtable
 public API
 

@@ -52,11 +52,15 @@ asm "
 
 asm "
 
+;set exception vector to zero and immediately cause an exception
+;this forces the CPU to reset and do whatever it needs to do that cleanly
+
 Reset:
 .global Reset
-	la r1, 0xFFFE0000
-	l.l r1, r1, zero
-	mov pc, r1
+	li ev, 0
+	div r1, r1, zero
+.wait:
+	b .wait
 
 "
 
@@ -67,7 +71,7 @@ procedure LinkInfo (* -- *)
 
 	pointerof _data "_data = %x " Printf
 	pointerof _data_size "_data_size = %x " Printf
-	pointerof _data_end "data_end = %x\n" Printf
+	pointerof _data_end "_data_end = %x\n" Printf
 
 	pointerof _bss "_bss = %x " Printf
 	pointerof _bss_size "_bss_size = %x " Printf

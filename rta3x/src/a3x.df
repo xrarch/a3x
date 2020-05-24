@@ -73,6 +73,8 @@ _a3xCIC_DevIteratorInit === 72
 _a3xCIC_DevIterate === 76
 _a3xCIC_DeviceDGetName === 80
 
+_a3xCIC_ConsoleUserOut === 84
+
 ; buffer maxchars --
 a3xGets:
 .global a3xGets
@@ -299,6 +301,17 @@ a3xDGetName:
 	push lr
 
 	li at, _a3xCIC_DeviceDGetName
+	jal _a3xCIC_Call
+
+	pop lr
+	ret
+
+; --
+a3xConsoleUserOut:
+.global a3xConsoleUserOut
+	push lr
+
+	li at, _a3xCIC_ConsoleUserOut
 	jal _a3xCIC_Call
 
 	pop lr
