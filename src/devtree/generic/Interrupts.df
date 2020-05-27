@@ -1,14 +1,35 @@
 #include "<df>/dragonfruit.h"
 #include "<inc>/a3x.h"
 
-(* this isn't an alias to a platform-specific node because it relates back to inherently platform-specific bits of a3x *)
+(* platform independent interrupt interface, antecedent standard *)
 
-procedure BuildInterrupts (* -- *)
-	DeviceNew
-		"interrupts" DSetName
+var SInterruptNode 0
 
-		"interrupts" "deviceType" DAddProperty
+procedure GInterruptDefault (* -- defaultnode *)
+	"interrupt-dev" NVRAMGetVar dup if (0 ==)
+		drop PlatformInterruptPath@ "interrupt-dev" NVRAMSetVar
+		PlatformInterruptPath@
+	end
 
-		pointerof InterruptRegister "setInterrupt" DAddMethod
-	DeviceExit
+	auto dn
+	DevTreeWalk dn!
+
+	if (dn@ 0 ==)
+		"interrupt-dev is phony, trying platform default\n" Printf
+
+		PlatformInterruptPath@ "interrupt-dev" NVRAMSetVar
+		PlatformInterruptPath@ DevTreeWalk dn!
+	end
+
+	dn@
+end
+
+procedure BuildGInterrupt (* -- *)
+	GInterruptDefault SInterruptNode!
+
+	if (SInterruptNode@ 0 ~=)
+		SInterruptNode@ DeviceClone
+			"interrupt" DSetName
+		DeviceExit
+	end
 end

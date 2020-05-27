@@ -7,8 +7,8 @@ procedure DevRootBuild (* -- *)
 	"antecedent" DSetName
 
 	pointerof ANTEBDS "buildDate" DAddProperty
-	"3.5.1" "version" DAddProperty
-	030501 "versionNum" DAddProperty
+	"3.5.2" "version" DAddProperty
+	030502 "versionNum" DAddProperty
 	"Will" "author" DAddProperty
 	pointerof ANTEBNS "build" DAddProperty
 

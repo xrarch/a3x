@@ -1,0 +1,16 @@
+#include "<df>/dragonfruit.h"
+#include "<inc>/a3x.h"
+
+procedure BuildLSIC
+	DeviceNew
+		"lsic" DSetName
+
+		"interrupt-controller" "deviceType" DAddProperty
+
+		"AISA,lsic" "model" DAddProperty
+
+		0xF8030000 "address" DAddProperty
+
+		1 "revision" DAddProperty
+	DeviceExit
+end

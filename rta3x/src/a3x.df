@@ -1,10 +1,11 @@
-var a3xCIPtr 0
+(* if these were initialized to zero, they get put in bss, which might not be desirable *)
+var a3xCIPtr -1
 public a3xCIPtr
 
-var a3xFwctx 0
+var a3xFwctx -1
 public a3xFwctx
 
-var a3xMyDevice 0
+var a3xMyDevice -1
 public a3xMyDevice
 
 extern Main
@@ -74,6 +75,8 @@ _a3xCIC_DevIterate === 76
 _a3xCIC_DeviceDGetName === 80
 
 _a3xCIC_ConsoleUserOut === 84
+
+_a3xCIC_DGetCurrent === 88
 
 ; buffer maxchars --
 a3xGets:
@@ -312,6 +315,17 @@ a3xConsoleUserOut:
 	push lr
 
 	li at, _a3xCIC_ConsoleUserOut
+	jal _a3xCIC_Call
+
+	pop lr
+	ret
+
+; -- current
+a3xDGetCurrent:
+.global a3xDGetCurrent
+	push lr
+
+	li at, _a3xCIC_DGetCurrent
 	jal _a3xCIC_Call
 
 	pop lr

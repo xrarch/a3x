@@ -19,8 +19,6 @@ Free:
 .global Free
 	j a3xFree
 
-.extern a3xPuts
-
 ; str --
 Puts:
 .global Puts

@@ -4,6 +4,7 @@
 extern BuildEBus
 extern BuildLimn2k
 extern BuildMemory
+extern BuildLSIC
 
 procedure BuildPlatform (* -- *)
 	DeviceNew
@@ -18,6 +19,8 @@ procedure BuildPlatform (* -- *)
 		BuildMemory
 
 		BuildEBus
+
+		BuildLSIC
 	DeviceExit
 end
 
@@ -57,6 +60,9 @@ public PlatformDefaultScreenFG
 var PlatformBusPath 0
 public PlatformBusPath
 
+var PlatformInterruptPath 0
+public PlatformInterruptPath
+
 procedure PlatformInit (* -- *)
 	"/platform/ebus/platformboard/citron/clock" PlatformClockPath!
 	"/platform/ebus/platformboard/citron/dks" PlatformDiskBusPath!
@@ -68,6 +74,7 @@ procedure PlatformInit (* -- *)
 	"/platform/limn2k" PlatformCPUPath!
 	"/platform/memory" PlatformMemoryPath!
 	"/platform/ebus" PlatformBusPath!
+	"/platform/lsic" PlatformInterruptPath!
 
 	"14784" PlatformDefaultScreenBG!
 	"32767" PlatformDefaultScreenFG!

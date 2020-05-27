@@ -33,8 +33,6 @@ procedure AntecedentEntry (* -- *)
 
 	DeviceInit
 
-	InterruptEnable
-
 	FirmwareBanner
 
 	ConsoleInit
@@ -100,7 +98,7 @@ procedure FirmwareBanner (* -- *)
 	DeviceExit
 
 	"/cpu" DeviceSelect
-		"type" DGetProperty "CPU: %s\n" BannerPrint
+		"model" DGetProperty "CPU: %s\n" BannerPrint
 	DeviceExit
 
 	"/memory" DeviceSelect

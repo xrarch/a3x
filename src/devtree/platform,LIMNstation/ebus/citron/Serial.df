@@ -21,6 +21,9 @@ procedure BuildCSerial (* -- *)
 		1 "revision" DAddProperty
 
 		0x3 "interrupt#" DAddProperty
+
+		SerialCmdPort "serial,cmdPort" DAddProperty
+		SerialDataPort "serial,dataPort" DAddProperty
 	DeviceExit
 end
 

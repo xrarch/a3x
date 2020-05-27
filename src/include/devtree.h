@@ -69,3 +69,5 @@ extern DGetName (* -- name *)
 extern DGetMethods (* -- methods *)
 
 extern DGetProperties (* -- properties *)
+
+extern DGetCurrent (* -- currentnode *)

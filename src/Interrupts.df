@@ -131,10 +131,10 @@ end
 procedure InterruptDisable (* -- rs *)
 	asm "
 
-	mov at, rs
+	swd.l vs, zero, rs
+	bclri rs, rs, 3
 	bclri rs, rs, 1
-	swd.l vs, zero, at
-
+	
 	"
 end
 

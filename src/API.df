@@ -26,6 +26,8 @@ table API
 	pointerof DGetName
 
 	pointerof ConsoleUserOut
+
+	pointerof DGetCurrent
 endtable
 public API
 

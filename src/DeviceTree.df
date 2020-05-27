@@ -360,6 +360,10 @@ procedure DGetProperties (* -- properties *)
 	DevCurrent@ TreeNodeValue DeviceNode_Properties + @
 end
 
+procedure DGetCurrent { -- current }
+	DevCurrent@ current!
+end
+
 procedure private BuildDeviceTree (* -- *)
 	TreeCreate DevTree!
 

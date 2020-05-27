@@ -21,3 +21,5 @@ externconst PlatformDefaultScreenBG (* var *)
 externconst PlatformDefaultScreenFG (* var *)
 
 externconst PlatformBusPath (* var *)
+
+externconst PlatformInterruptPath (* var *)
