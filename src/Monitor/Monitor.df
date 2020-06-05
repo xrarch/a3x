@@ -73,6 +73,12 @@ procedure MonitorParseDevPath (* -- dev or 0 *)
 	auto word
 	MonitorParseWord word!
 
+	if (word@ strlen 0 ==)
+		"empty device path.\n" Printf
+		word@ Free
+		return
+	end
+
 	auto dev
 	word@ DevTreeWalk dev!
 
@@ -105,6 +111,10 @@ end
 
 procedure MonitorParseWord { -- word }
 	256 Calloc word!
+
+	if (MonitorLinePoint@ 0 ==)
+		return
+	end
 
 	MonitorLinePoint@ word@ ' ' 255 strntok MonitorLinePoint!
 end

@@ -24,6 +24,9 @@ procedure BuildCClock (* -- *)
 		1 "revision" DAddProperty
 
 		ClockInterrupt "interrupt#" DAddProperty
+
+		ClockPortCmd "clock,cmdPort" DAddProperty
+		ClockPortA "clock,dataPort" DAddProperty
 	DeviceExit
 
 	ClockEpoch ClockStartMS! ClockStartSec!

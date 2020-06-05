@@ -143,6 +143,11 @@ procedure MonitorCommandsInit (* -- *)
 	"peek"
 	MonitorAddCommand
 
+	"[path] [property] [value] Set property value in device node."
+	pointerof MonitorCommandSetProp
+	"setprop"
+	MonitorAddCommand
+
 	0
 	pointerof AAA
 	"aaa"
@@ -281,6 +286,62 @@ end
 
 procedure MonitorCommandAutoboot (* -- *)
 	[AutoBoot]BootErrors@ "boot: %s\n" Printf
+end
+
+procedure MonitorCommandSetProp (* -- *)
+	auto dev
+	MonitorParseDevPath dev!
+	if (dev@ 0 ==) return end
+
+	auto prop
+	MonitorParseWord prop!
+
+	if (prop@ strlen 0 ==)
+		"no property name\n" Printf
+		prop@ Free
+		return
+	end
+
+	auto svalue
+	MonitorLinePoint@ svalue!
+
+	if (svalue@ 0 ==)
+		"no value\n" Printf
+		prop@ Free
+		return
+	end
+
+	1 svalue +=
+
+	if (svalue@ gb '"' ==)
+		auto ends
+		svalue@ strlen 1 - svalue@ + ends!
+
+		if (ends@ gb '"' ~=)
+			"bad string\n" Printf
+			prop@ Free
+			return
+		end
+
+		0 ends@ sb
+
+		dev@ DeviceSelectNode
+			svalue@ 1 + prop@ DSetProperty
+		DeviceExit
+	end else
+		MonitorParseWord svalue!
+
+		auto nvalue
+		svalue@ atoi nvalue!
+
+		dev@ DeviceSelectNode
+			nvalue@ prop@ DSetProperty
+		DeviceExit
+
+		svalue@ Free
+	end
+
+	prop@ Free
 end
 
 procedure MonitorCommandBoot (* -- *)
