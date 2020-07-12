@@ -5,14 +5,8 @@
 
 var SClockNode 0
 
-procedure GClockDefault (* -- defaultnode *)
-	"clock-dev" NVRAMGetVar dup if (0 ==)
-		drop PlatformClockPath@ "clock-dev" NVRAMSetVar
-		PlatformClockPath@
-	end
-
-	auto dn
-	DevTreeWalk dn!
+fn GClockDefault { -- dn }
+	PlatformClockPath@ "clock-dev" NVRAMDefaultGetVar DevTreeWalk dn!
 
 	if (dn@ 0 ==)
 		"clock-dev is phony, trying platform default\n" Printf
@@ -20,11 +14,9 @@ procedure GClockDefault (* -- defaultnode *)
 		PlatformClockPath@ "clock-dev" NVRAMSetVar
 		PlatformClockPath@ DevTreeWalk dn!
 	end
-
-	dn@
 end
 
-procedure BuildGClock (* -- *)
+fn BuildGClock { -- }
 	GClockDefault SClockNode!
 
 	if (SClockNode@ 0 ~=)

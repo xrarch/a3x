@@ -5,13 +5,8 @@
 
 var SMouseNode 0
 
-procedure GMouseDefault { -- dn }
-	"mouse-dev" NVRAMGetVar dup if (0 ==)
-		drop PlatformMousePath@ "mouse-dev" NVRAMSetVar
-		PlatformMousePath@
-	end
-
-	DevTreeWalk dn!
+fn GMouseDefault { -- dn }
+	PlatformMousePath@ "mouse-dev" NVRAMDefaultGetVar DevTreeWalk dn!
 
 	if (dn@ 0 ==)
 		"mouse-dev is phony, trying platform default\n" Printf
@@ -21,7 +16,7 @@ procedure GMouseDefault { -- dn }
 	end
 end
 
-procedure BuildGMouse (* -- *)
+fn BuildGMouse { -- }
 	GMouseDefault SMouseNode!
 
 	if (SMouseNode@ 0 ~=)

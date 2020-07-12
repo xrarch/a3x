@@ -15,81 +15,76 @@ table BootErrors
 endtable
 public BootErrors
 
-procedure DevBootable (* devnode -- bootable? *)
-	DevBootableR swap drop
+fn DevBootable { devnode -- bootable }
+	devnode@ DevBootableR swap drop bootable!
 end
 
-procedure DevBootableR { devnode } (* -- brecord bootable? *)
+fn DevBootableR { devnode -- brecord bootable }
 	if (devnode@ 0 ==)
-		7 return
+		7 bootable! return
 	end
 
-	auto brecord
 	4096 Malloc brecord!
 
+	auto ok
+	auto dok
+
 	devnode@ DeviceSelectNode
-		auto ok
-		brecord@ 1 "readBlock" DCallMethod
+		brecord@ 1 "readBlock" DCallMethod ok! drop drop dok!
 	DeviceExit
 
-	ok!
 	if (ok@ ~~)
 		brecord@ Free
-		2 return (* not supported *)
+		2 bootable! return (* not supported *)
 	end
 
-	ok!
-	if (ok@ ERR ==)
+	if (dok@ ERR ==)
 		brecord@ Free
-		3 return (* failed to load boot record *)
+		3 bootable! return (* failed to load boot record *)
 	end
 
 	if (brecord@ BootRecord_Magic + @ BootMagic == ~~)
 		brecord@ Free
-		4 return (* invalid boot record *)
+		4 bootable! return (* invalid boot record *)
 	end
 
-	brecord@ 1 return
+	1 bootable!
+
+	return
 end
 
-procedure AutoBoot (* -- ok? *)
+fn AutoBoot { -- ok }
 	auto bootnode
 
 	"/bootdisk" DevTreeWalk bootnode!
 
 	if (bootnode@ 0 ==)
-		7 return
+		7 ok! return
 	end
 
 	bootnode@ DeviceSelectNode
 		"bootPath" DGetProperty "\[[33mautoboot:\[[0m \[[94m%s\[[0m\n" Printf
 	DeviceExit
 
-	bootnode@
-
-	"boot-args" NVRAMGetVar dup if (0 ==)
-		drop "" "boot-args" NVRAMSetVar
-		""
-	end
-
 	'\n' Putc
 
-	BootNode
+	bootnode@
+
+	"" "boot-args" NVRAMDefaultGetVar
+
+	BootNode ok!
 end
 
-var BootResult 0
+fnptr BootProgramEntry { api devnode args -- ret }
 
-procedure BootNode { devnode args } (* -- ok? *)
+fn BootNode { devnode args -- ok }
 	auto brecord
-	auto ok
 
-	devnode@ DevBootableR ok!
+	devnode@ DevBootableR ok! brecord!
 
 	if (ok@ 1 ~=)
-		ok@ return
+		return
 	end
-	
-	brecord!
 
 	auto bblock
 	auto bbc
@@ -113,7 +108,7 @@ procedure BootNode { devnode args } (* -- ok? *)
 
 	if (nmem@ tmem@ >=)
 		tmem@ nmem@ "at least %d bytes of contiguous memory are required to load this bootloader, only %d bytes present\n" Printf
-		8 return
+		8 ok! return
 	end
 
 	ptr@ bbc@ 4096 * "\[[33mloading boot program:\[[94m %d bytes at 0x%x\[[0m\n" Printf
@@ -123,10 +118,10 @@ procedure BootNode { devnode args } (* -- ok? *)
 		0 i!
 
 		while (i@ bbc@ <)
-			ptr@ bblock@ "readBlock" DCallMethod drop ok!
+			ptr@ bblock@ "readBlock" DCallMethod drop drop drop ok!
 
 			if (ok@ ERR ==)
-				5 return (* failed to load boot blocks *)
+				5 ok! return (* failed to load boot blocks *)
 			end
 
 			1 bblock +=
@@ -136,30 +131,18 @@ procedure BootNode { devnode args } (* -- ok? *)
 	DeviceExit
 
 	if (BootBottom@ BootMagic ~=)
-		6 return
+		6 ok! return
 	end
 
 	"\[[33mexecuting boot program!\[[0m\n" Printf
 
-	asm "
+	auto res
 
-	subi.i sp, 112
-	sgpr sp
+	API devnode@ args@ BootBottom 4 + @ BootProgramEntry res!
 
-	"
-
-	API devnode@ args@ BootBottom 4 + @ Call BootResult!
-
-	asm "
-
-	lgpr sp
-	addi.i sp, 112
-
-	"
-
-	if (BootResult@ 0 ==)
-		1 (* ok *) return
+	if (res@ 0 ==)
+		1 ok!
 	end else
-		9 (* system software error *) return
+		9 ok!
 	end
 end

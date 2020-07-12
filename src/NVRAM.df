@@ -1,14 +1,15 @@
 #include "<df>/dragonfruit.h"
 #include "<inc>/a3x.h"
 
-procedure NVRAMCheck (* -- ok? *)
+fn NVRAMCheck { -- ok }
 	if (NVRAMHeader_Magic NVRAMOffset @ NVRAMMagic ==)
-		1 return
+		1 ok!
+	end else
+		0 ok!
 	end
-	0 return
 end
 
-procedure NVRAMFormat (* -- *)
+fn NVRAMFormat { -- }
 	auto i
 	0 i!
 	while (i@ NVRAMSize <)
@@ -19,7 +20,7 @@ procedure NVRAMFormat (* -- *)
 	NVRAMMagic NVRAMHeader_Magic NVRAMOffset !
 end
 
-procedure NVRAMOffset { loc -- nvaddr }
+fn NVRAMOffset { loc -- nvaddr }
 	if (loc@ NVRAMSize >=)
 		0 nvaddr!
 		return
@@ -28,7 +29,7 @@ procedure NVRAMOffset { loc -- nvaddr }
 	loc@ NVRAMBase + nvaddr!
 end
 
-procedure NVRAMFindFree (* -- free or 0 *)
+fn NVRAMFindFree { -- free }
 	auto i
 	0 i!
 
@@ -36,17 +37,17 @@ procedure NVRAMFindFree (* -- free or 0 *)
 	NVRAMHeader_SIZEOF sp!
 	while (i@ NVRAMVarCount <)
 		if (sp@ NVRAMOffset gb 0 ==)
-			sp@ NVRAMOffset return
+			sp@ NVRAMOffset free! return
 		end
 
 		sp@ NVRAMVariable_SIZEOF + sp!
 		1 i +=
 	end
 
-	0 return
+	0 free! return
 end
 
-procedure NVRAMDeleteVar { name -- }
+fn NVRAMDeleteVar { name -- }
 	auto vl
 	name@ NVRAMGetVar vl!
 
@@ -55,7 +56,7 @@ procedure NVRAMDeleteVar { name -- }
 	0 vl@ NVRAMVariable_Contents - sb
 end
 
-procedure NVRAMSetVar { str name -- }
+fn NVRAMSetVar { str name -- }
 	auto vl
 	name@ NVRAMGetVar vl!
 
@@ -73,7 +74,7 @@ procedure NVRAMSetVar { str name -- }
 	end
 end
 
-procedure NVRAMSetVarNum { num name -- }
+fn NVRAMSetVarNum { num name -- }
 	auto buf
 	15 Calloc buf!
 
@@ -83,7 +84,16 @@ procedure NVRAMSetVarNum { num name -- }
 	buf@ Free
 end
 
-procedure NVRAMGetVar { name -- ptr }
+fn NVRAMDefaultGetVar { default name -- ptr }
+	name@ NVRAMGetVar ptr!
+
+	if (ptr@ 0 ==)
+		default@ name@ NVRAMSetVar
+		default@ ptr!
+	end
+end
+
+fn NVRAMGetVar { name -- ptr }
 	auto i
 	0 i!
 
@@ -103,6 +113,10 @@ procedure NVRAMGetVar { name -- ptr }
 	return
 end
 
-procedure NVRAMGetVarNum (* var -- n *)
-	NVRAMGetVar dup if (0 ~=) atoi return end
+fn NVRAMGetVarNum { var -- n }
+	var@ NVRAMGetVar n!
+
+	if (n@)
+		n@ atoi n!
+	end
 end

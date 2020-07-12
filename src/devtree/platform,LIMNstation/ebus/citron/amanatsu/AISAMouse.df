@@ -8,7 +8,7 @@ var AMouseCDev 0
 
 var AMouseCallbacks 0
 
-procedure AMouseInit (* -- *)
+fn AMouseInit { -- }
 	DeviceNew
 		"mouse" DSetName
 
@@ -20,7 +20,7 @@ end
 
 const AMouseMID 0x4D4F5553
 
-procedure AMousePoll (* -- *)
+fn AMousePoll { -- }
 	auto i
 	1 i!
 
@@ -44,9 +44,9 @@ procedure AMousePoll (* -- *)
 						DevCurrent@ AMouseCDev!
 						(* pointerof AMouseInterruptASM i@ AmanatsuSetInterrupt "interrupt#" DAddProperty *)
 
-						pointerof AMouseAddCallback "addCallback" DAddMethod
-						pointerof AMouseEvent "getEvent" DAddMethod
-						pointerof AMouseReset "reset" DAddMethod
+						pointerof AMouseAddCallbackM "addCallback" DAddMethod
+						pointerof AMouseEventM "getEvent" DAddMethod
+						pointerof AMouseResetM "reset" DAddMethod
 					end
 
 					"mouse" "deviceType" DAddProperty
@@ -72,11 +72,20 @@ procedure AMousePoll (* -- *)
 	end
 end
 
-procedure AMouseAddCallback (* handler -- *)
-	AMouseCallbacks@ ListInsert
+fn private AMouseAddCallbackM { argvt argcn -- out1 out2 out3 }
+	argvt@ @
+	AMouseAddCallback
 end
 
-procedure AMouseEvent { -- detail event }
+fn AMouseAddCallback { handler -- }
+	handler@ AMouseCallbacks@ ListInsert
+end
+
+fn private AMouseEventM { argvt argcn -- out1 out2 out3 }
+	AMouseEvent out2! out1!
+end
+
+fn AMouseEvent { -- detail event }
 	auto id
 	"amanatsu,unit" DGetProperty id!
 
@@ -91,7 +100,11 @@ procedure AMouseEvent { -- detail event }
 	rs@ InterruptRestore
 end
 
-procedure AMouseReset (* -- *)
+fn private AMouseResetM { argvt argcn -- out1 out2 out3 }
+	AMouseReset
+end
+
+fn AMouseReset { -- }
 	auto id
 	AMouseCDev@ DeviceSelectNode
 		"amanatsu,unit" DGetProperty id!
@@ -106,7 +119,9 @@ procedure AMouseReset (* -- *)
 	rs@ InterruptRestore
 end
 
-procedure AMouseInterrupt (* -- *)
+fnptr MouseCallback { detail event -- }
+
+fn AMouseInterrupt { -- }
 	auto id
 	AMouseCDev@ DeviceSelectNode
 		"amanatsu,unit" DGetProperty id!
@@ -125,7 +140,7 @@ procedure AMouseInterrupt (* -- *)
 	AMouseCallbacks@ ListHead n!
 
 	while (n@ 0 ~=)
-		detail@ event@ n@ ListNodeValue Call
+		detail@ event@ n@ ListNodeValue MouseCallback
 
 		n@ ListNodeNext n!
 	end

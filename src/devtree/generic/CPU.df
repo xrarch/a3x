@@ -5,14 +5,8 @@
 
 var SCPUNode 0
 
-procedure GCPUDefault (* -- defaultnode *)
-	"cpu-dev" NVRAMGetVar dup if (0 ==)
-		drop PlatformCPUPath@ "cpu-dev" NVRAMSetVar
-		PlatformCPUPath@
-	end
-
-	auto dn
-	DevTreeWalk dn!
+fn GCPUDefault { -- dn }
+	PlatformCPUPath@ "cpu-dev" NVRAMDefaultGetVar DevTreeWalk dn!
 
 	if (dn@ 0 ==)
 		"cpu-dev is phony, trying platform default\n" Printf
@@ -20,11 +14,9 @@ procedure GCPUDefault (* -- defaultnode *)
 		PlatformCPUPath@ "cpu-dev" NVRAMSetVar
 		PlatformCPUPath@ DevTreeWalk dn!
 	end
-
-	dn@
 end
 
-procedure BuildGCPU (* -- *)
+fn BuildGCPU { -- }
 	GCPUDefault SCPUNode!
 
 	if (SCPUNode@ 0 ~=)

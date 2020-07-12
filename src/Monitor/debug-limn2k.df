@@ -20,8 +20,8 @@ struct TrapFrame
 	4 r19   4 r20
 	4 r21   4 r22
 	4 r23   4 r24
-	4 r25   4 tf
-	4 vs    4 at
+	4 r25   4 r26
+	4 at    4 tf
 endstruct
 
 table TrapFrame_Names
@@ -29,25 +29,25 @@ table TrapFrame_Names
 	"ers"
 	"epc"
 
-	"r1"    "r2"
-	"r3"    "r4"
-	"r5"    "r6"
-	"r7"    "r8"
-	"r9"    "r10"
-	"r11"   "r12"
-	"r13"   "r14"
-	"r15"   "r16"
-	"r17"   "r18"
-	"r19"   "r20"
-	"r21"   "r22"
-	"r23"   "r24"
-	"r25"   "tf"
-	"vs"    "at"
+	"t0"    "t1"
+	"t2"    "t3"
+	"t4"    "a0"
+	"a1"    "a2"
+	"a3"    "v0"
+	"v1"    "s0"
+	"s1"    "s2"
+	"s3"    "s4"
+	"s5"    "s6"
+	"s7"    "s7"
+	"s9"    "s10"
+	"s11"   "s12"
+	"s13"   "s14"
+	"at"    "tf"
 endtable
 
 const TrapFrameNElem 31
 
-procedure private NameToOffset { name -- reg }
+fn private NameToOffset { name -- reg }
 	auto i
 	0 i!
 
@@ -63,7 +63,7 @@ procedure private NameToOffset { name -- reg }
 end
 
 
-procedure MonitorCommandDumpstate (* -- *)
+fn MonitorCommandDumpstate { -- }
 	if (MonitorState@ 0 ==)
 		"no state saved\n" Printf
 		return
@@ -85,7 +85,7 @@ procedure MonitorCommandDumpstate (* -- *)
 	end
 end
 
-procedure MonitorCommandPrintreg (* -- *)
+fn MonitorCommandPrintreg { -- }
 	if (MonitorState@ 0 ==)
 		"no state saved\n" Printf
 		return
@@ -108,7 +108,7 @@ procedure MonitorCommandPrintreg (* -- *)
 	reg@ Free
 end
 
-procedure MonitorCommandSavereg (* -- *)
+fn MonitorCommandSavereg { -- }
 	if (MonitorState@ 0 ==)
 		"no state saved\n" Printf
 		return

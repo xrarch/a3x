@@ -11,12 +11,12 @@
 #include "<inc>/citron.h"
 #include "<inc>/platform.h"
 
-extern Reset
-extern LateReset
+extern Reset { -- }
+extern LateReset { -- }
 
-extern Monitor
-extern DebugMonitor
+extern Monitor { -- }
+extern DebugMonitor { state -- }
 
-extern Problem
+extern Problem { ... fmt -- }
 
-externconst PlatformInited
+externptr PlatformInited

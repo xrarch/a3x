@@ -5,13 +5,8 @@
 
 var SScreenNode 0
 
-procedure GScreenDefault { -- dn }
-	"screen-dev" NVRAMGetVar dup if (0 ==)
-		drop PlatformScreenPath@ "screen-dev" NVRAMSetVar
-		PlatformScreenPath@
-	end
-
-	DevTreeWalk dn!
+fn GScreenDefault { -- dn }
+	PlatformScreenPath@ "screen-dev" NVRAMDefaultGetVar DevTreeWalk dn!
 
 	if (dn@ 0 ==)
 		"screen-dev is phony, trying platform default\n" Printf
@@ -21,7 +16,7 @@ procedure GScreenDefault { -- dn }
 	end
 end
 
-procedure BuildGScreen (* -- *)
+fn BuildGScreen { -- }
 	GScreenDefault SScreenNode!
 
 	if (SScreenNode@ 0 ~=)

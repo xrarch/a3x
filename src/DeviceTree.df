@@ -7,7 +7,7 @@ public DevTree
 var DevCurrent 0
 public DevCurrent
 
-extern DevRootBuild
+extern DevRootBuild { -- }
 
 var DevStack 0 (* we can go 64 layers deep *)
 public DevStack
@@ -15,24 +15,24 @@ public DevStack
 var DevStackPtr 0
 public DevStackPtr
 
-procedure private DevStackPUSH (* v -- *)
-	DevStack@ DevStackPtr@ + !
+fn private DevStackPUSH { v -- }
+	v@ DevStack@ DevStackPtr@ + !
 
 	DevStackPtr@ 4 + DevStackPtr!
 end
 
-procedure private DevStackPOP (* -- v *)
+fn private DevStackPOP { -- v }
 	DevStackPtr@ 4 - dup DevStackPtr!
-	DevStack@ + @
+	DevStack@ + @ v!
 end
 
-procedure private DevTreeCheck { opname -- }
+fn private DevTreeCheck { opname -- }
 	if (DevCurrent@ 0 == DevCurrent@ -1 == ||)
 		opname@ "no valid device tree node selected for operation %s\n" Problem
 	end
 end
 
-procedure DevTreeWalk { path -- cnode }
+fn DevTreeWalk { path -- cnode }
 	DevTree@ TreeRoot cnode!
 
 	auto pcomp
@@ -80,23 +80,23 @@ procedure DevTreeWalk { path -- cnode }
 	pcomp@ Free
 end
 
-procedure DeviceParent (* -- *)
+fn DeviceParent { -- }
 	"DeviceParent" DevTreeCheck
 
 	DevCurrent@ DevStackPUSH
 	DevCurrent@ TreeNodeParent DevCurrent!
 end
 
-procedure DeviceSelectNode { node -- }
+fn DeviceSelectNode { node -- }
 	if (node@ 0 == node@ -1 == ||)
-		node@ "tried to DeviceSelectNode null or invalid node\n" Problem
+		node@ "tried to DeviceSelectNode null or invalid node %x\n" Problem
 	end
 
 	DevCurrent@ DevStackPUSH
 	node@ DevCurrent!
 end
 
-procedure DeviceSelect { path -- }
+fn DeviceSelect { path -- }
 	DevCurrent@ DevStackPUSH
 
 	auto node
@@ -109,14 +109,14 @@ procedure DeviceSelect { path -- }
 	end
 end
 
-procedure private DeviceNNew { -- dnode }
-	DeviceNode_SIZEOF Calloc dnode!
+fn private DeviceNNew { -- node }
+	DeviceNode_SIZEOF Calloc node!
 
-	ListCreate dnode@ DeviceNode_Methods + !
-	ListCreate dnode@ DeviceNode_Properties + !
+	ListCreate node@ DeviceNode_Methods + !
+	ListCreate node@ DeviceNode_Properties + !
 end
 
-procedure private DeviceNNewOMP { alias ml pl -- dnode }
+fn private DeviceNNewOMP { alias ml pl -- dnode }
 	DeviceNode_SIZEOF Calloc
 	dnode!
 
@@ -128,7 +128,7 @@ end
 (* creates a new unnamed device node, adds it to the
 device tree as a child of the current device, sets
 itself as the new current device *)
-procedure DeviceNew (* -- *)
+fn DeviceNew { -- }
 	"DeviceNew" DevTreeCheck
 
 	DevCurrent@ DevStackPUSH
@@ -138,7 +138,7 @@ end
 
 
 
-procedure DeviceClone { node -- }
+fn DeviceClone { node -- }
 	DevCurrent@ DevStackPUSH
 
 	auto ml
@@ -157,22 +157,22 @@ procedure DeviceClone { node -- }
 	tnode@ DevCurrent!
 end
 
-procedure DeviceCloneWalk (* path -- *)
+fn DeviceCloneWalk { path -- }
 	auto dn
-	DevTreeWalk dn!
+	path@ DevTreeWalk dn!
 
 	if (dn@ 0 ~=)
 		dn@ DeviceClone
 	end
 end
 
-procedure DSetName (* name -- *)
+fn DSetName { name -- }
 	"DSetName" DevTreeCheck
 
-	DevCurrent@ TreeNodeValue DeviceNode_Name + !
+	name@ DevCurrent@ TreeNodeValue DeviceNode_Name + !
 end
 
-procedure DAddMethodFull { board method auc name -- }
+fn DAddMethodFull { board method auc name -- }
 	"DAddMethodFull" DevTreeCheck
 
 	auto mnode
@@ -186,13 +186,13 @@ procedure DAddMethodFull { board method auc name -- }
 	mnode@ DGetMethods ListInsert
 end
 
-procedure DAddMethod { method name -- }
+fn DAddMethod { method name -- }
 	"DAddMethod" DevTreeCheck
 
 	0 method@ 0 name@ DAddMethodFull
 end
 
-procedure DSetProperty { value name -- }
+fn DSetProperty { value name -- }
 	"DSetProperty" DevTreeCheck
 
 	auto plist
@@ -230,13 +230,13 @@ procedure DSetProperty { value name -- }
 	end
 end
 
-procedure DAddProperty (* prop name -- *)
+fn DAddProperty { value name -- }
 	"DAddProperty" DevTreeCheck
 
-	DSetProperty
+	value@ name@ DSetProperty
 end
 
-procedure DGetProperty { name -- string }
+fn DGetProperty { name -- string }
 	"DGetProperty" DevTreeCheck
 
 	auto plist
@@ -261,7 +261,7 @@ procedure DGetProperty { name -- string }
 	0 string!
 end
 
-procedure DGetMethod { name -- ptr }
+fn DGetMethod { name -- ptr }
 	"DGetMethod" DevTreeCheck
 
 	auto plist
@@ -286,24 +286,16 @@ procedure DGetMethod { name -- ptr }
 	0 ptr!
 end
 
-procedure DCallMethodCommon (* ... ptr -- ... ok? *)
-	auto pnode
-	pnode!
+fnptr DevMethod { argvt argcn -- out1 out2 out3 }
 
-	pnode@ DeviceMethod_Func + @ Call 1
-end
-
-procedure DCallMethodPtr (* ... ptr -- ... *)
+fn DCallMethodPtr { ... ptr -- out1 out2 out3 }
 	"DCallMethodPtr" DevTreeCheck
 
-	DCallMethodCommon drop
+	argv argc@ ptr@ DeviceMethod_Func + @ DevMethod out3! out2! out1!
 end
 
-procedure DCallMethod (* ... name -- ... ok? *)
+fn DCallMethod { ... name -- out1 out2 out3 ok }
 	"DCallMethod" DevTreeCheck
-
-	auto name
-	name!
 
 	auto plist
 	DGetMethods plist!
@@ -317,54 +309,56 @@ procedure DCallMethod (* ... name -- ... ok? *)
 		pnode!
 
 		if (pnode@ DeviceMethod_Name + @ name@ strcmp)
-			pnode@ DCallMethodCommon return
+			argv argc@ pnode@ DeviceMethod_Func + @ DevMethod out3! out2! out1!
+
+			1 ok! return
 		end
 
 		n@ ListNodeNext n!
 	end
 
-	0
+	0 ok!
 end
 
-procedure DevIteratorInit { -- iter }
+fn DevIteratorInit { -- iter }
 	"DevIteratorInit" DevTreeCheck
 
 	DevCurrent@ TreeNodeChildren ListHead iter!
 end
 
-procedure DevIterate { iterin -- iterout }
+fn DevIterate { iterin -- iterout }
 	iterin@ ListNodeValue DeviceSelectNode
 
 	iterin@ ListNodeNext iterout!
 end
 
-procedure DeviceExit (* -- *)
+fn DeviceExit { -- }
 	DevStackPOP DevCurrent!
 end
 
-procedure DGetName (* -- name *)
+fn DGetName { -- name }
 	"DGetName" DevTreeCheck
 
-	DevCurrent@ TreeNodeValue DeviceNode_Name + @
+	DevCurrent@ TreeNodeValue DeviceNode_Name + @ name!
 end
 
-procedure DGetMethods (* -- methods *)
+fn DGetMethods { -- methods }
 	"DGetMethods" DevTreeCheck
 
-	DevCurrent@ TreeNodeValue DeviceNode_Methods + @
+	DevCurrent@ TreeNodeValue DeviceNode_Methods + @ methods!
 end
 
-procedure DGetProperties (* -- properties *)
+fn DGetProperties { -- properties }
 	"DGetProperties" DevTreeCheck
 
-	DevCurrent@ TreeNodeValue DeviceNode_Properties + @
+	DevCurrent@ TreeNodeValue DeviceNode_Properties + @ properties!
 end
 
-procedure DGetCurrent { -- current }
+fn DGetCurrent { -- current }
 	DevCurrent@ current!
 end
 
-procedure private BuildDeviceTree (* -- *)
+fn private BuildDeviceTree { -- }
 	TreeCreate DevTree!
 
 	DeviceNNew DevTree@ TreeSetRoot DevCurrent!
@@ -372,7 +366,7 @@ procedure private BuildDeviceTree (* -- *)
 	DevRootBuild
 end
 
-procedure DeviceInit (* -- *)
+fn DeviceInit { -- }
 	256 Calloc DevStack!
 
 	BuildDeviceTree

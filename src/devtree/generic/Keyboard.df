@@ -5,13 +5,8 @@
 
 var SKbdNode 0
 
-procedure GKbdDefault { -- dn }
-	"kbd-dev" NVRAMGetVar dup if (0 ==)
-		drop PlatformKeyboardPath@ "kbd-dev" NVRAMSetVar
-		PlatformKeyboardPath@
-	end
-
-	DevTreeWalk dn!
+fn GKbdDefault { -- dn }
+	PlatformKeyboardPath@ "kbd-dev" NVRAMDefaultGetVar DevTreeWalk dn!
 
 	if (dn@ 0 ==)
 		"kbd-dev is phony, trying platform default\n" Printf
@@ -21,7 +16,7 @@ procedure GKbdDefault { -- dn }
 	end
 end
 
-procedure BuildGKeyboard (* -- *)
+fn BuildGKeyboard { -- }
 	GKbdDefault SKbdNode!
 
 	if (SKbdNode@ 0 ~=)

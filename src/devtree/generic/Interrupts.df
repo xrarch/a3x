@@ -5,14 +5,8 @@
 
 var SInterruptNode 0
 
-procedure GInterruptDefault (* -- defaultnode *)
-	"interrupt-dev" NVRAMGetVar dup if (0 ==)
-		drop PlatformInterruptPath@ "interrupt-dev" NVRAMSetVar
-		PlatformInterruptPath@
-	end
-
-	auto dn
-	DevTreeWalk dn!
+fn GInterruptDefault { -- dn }
+	PlatformInterruptPath@ "interrupt-dev" NVRAMDefaultGetVar DevTreeWalk dn!
 
 	if (dn@ 0 ==)
 		"interrupt-dev is phony, trying platform default\n" Printf
@@ -20,11 +14,9 @@ procedure GInterruptDefault (* -- defaultnode *)
 		PlatformInterruptPath@ "interrupt-dev" NVRAMSetVar
 		PlatformInterruptPath@ DevTreeWalk dn!
 	end
-
-	dn@
 end
 
-procedure BuildGInterrupt (* -- *)
+fn BuildGInterrupt { -- }
 	GInterruptDefault SInterruptNode!
 
 	if (SInterruptNode@ 0 ~=)

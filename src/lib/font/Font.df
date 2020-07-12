@@ -17,7 +17,7 @@ Font:
 
 "
 
-procedure FontInit (* -- *)
+fn FontInit { -- }
 	"/screen" DevTreeWalk FontScreenNode!
 	if (FontScreenNode@ 0 ==)
 		return
@@ -28,13 +28,13 @@ procedure FontInit (* -- *)
 	DeviceExit
 end
 
-procedure private FontBlitBits (* bpr fg bg bitd bmp x y w h -- *)
+fn private FontBlitBits { bpr fg bg bitd bmp x y w h -- }
 	FontScreenNode@ DeviceSelectNode
-		FontBBP@ DCallMethodPtr
+		bpr@ fg@ bg@ bitd@ bmp@ x@ y@ w@ h@ FontBBP@ DCallMethodPtr drop drop drop
 	DeviceExit
 end
 
-procedure FontDrawChar { x y char bg color -- }
+fn FontDrawChar { x y char bg color -- }
 	(* dont draw spaces *)
 	if (char@ ' ' ==)
 		return
@@ -46,7 +46,7 @@ procedure FontDrawChar { x y char bg color -- }
 	FontBytesPerRow color@ bg@ FontBitD bmp@ x@ y@ FontWidth FontHeight FontBlitBits
 end
 
-procedure FontDrawString { x y str bg color -- }
+fn FontDrawString { x y str bg color -- }
 	auto sx
 	x@ sx!
 

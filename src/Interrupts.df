@@ -6,17 +6,19 @@ var InterruptsVT 0
 var SavedState 0
 public SavedState
 
-procedure InterruptsInit (* -- *)
-	pointerof exception_limn2k _flush_all asm "
+extern setvector { -- }
 
-	lwi.l ev, vs, zero
-
-	"
+fn InterruptsInit { -- }
+	setvector
 
 	64 4 * Calloc InterruptsVT!
 end
 
 asm "
+
+setvector:
+	la ev, exception_limn2k
+	ret
 
 exception_limn2k:
 	subi.i sp, 112
@@ -25,12 +27,19 @@ exception_limn2k:
 	push ers
 	push lr
 
-	swd.l vs, zero, sp
-	swd.l vs, zero, ecause
-	swd.l vs, zero, epc
-	swd.l vs, zero, ers
-	swd.l vs, zero, badaddr
+	mov t0, sp
+	subi.i sp, 12
+	sio.l sp, 8, t0
+	siio.l sp, 4, 0
+	s.l sp, zero, zero
+
+	mov a3, ecause
+	mov a2, epc
+	mov a1, ers
+	mov a0, badaddr
 	jal Exception
+
+	addi.i sp, 12
 
 	li badaddr, 0
 
@@ -65,7 +74,9 @@ const ExtInterrupt 1
 
 const LSICClaimComplete 0xF8030010
 
-procedure Exception { state ecause epc ers badaddr -- }
+fnptr IntHandler { -- }
+
+fn Exception { state ecause epc ers badaddr -- }
 	if (ecause@ ExtInterrupt ==)
 		auto int
 
@@ -76,7 +87,7 @@ procedure Exception { state ecause epc ers badaddr -- }
 			int@ 4 * InterruptsVT@ + @ h!
 
 			if (h@)
-				h@ Call
+				h@ IntHandler
 			end else
 				int@ "Spurious interrupt: %x\n" Problem
 			end
@@ -112,36 +123,31 @@ procedure Exception { state ecause epc ers badaddr -- }
 	end
 end
 
-procedure InterruptRegister { handler num -- }
+fn InterruptRegister { handler num -- }
 	handler@ num@ 4 * InterruptsVT@ + !
 end
 
-procedure InterruptUnregister { num -- }
+fn InterruptUnregister { num -- }
 	0 num@ 4 * InterruptsVT@ + !
 end
 
-procedure InterruptEnable (* -- *)
-	asm "
+asm "
 
+InterruptEnable:
+.global InterruptEnable
 	bseti rs, rs, 1
+	ret
 
-	"
-end
-
-procedure InterruptDisable (* -- rs *)
-	asm "
-
-	swd.l vs, zero, rs
+InterruptDisable:
+.global InterruptDisable
+	mov v0, rs
 	bclri rs, rs, 3
 	bclri rs, rs, 1
-	
-	"
-end
+	ret
 
-procedure InterruptRestore (* rs -- *)
-	asm "
+InterruptRestore:
+.global InterruptRestore
+	mov rs, a0
+	ret
 
-	lwi.l rs, vs, zero
-
-	"
-end
+"

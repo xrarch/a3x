@@ -15,8 +15,8 @@ const DMARegisterSetByte   0x3800002C
 const DMARegisterClearByte 0x38000030
 const DMARegisterDirection 0x38000034
 
-extern DMAWaitUnbusy (* -- *)
+extern DMAWaitUnbusy { -- }
 
-extern DMADoOperation (* -- *)
+extern DMADoOperation { -- }
 
-extern DMATransfer (* src dest srcinc destinc count mode -- *)
+extern DMATransfer { src dest srcinc destinc count mode lines destmod srcmod -- }

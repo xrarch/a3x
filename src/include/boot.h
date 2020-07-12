@@ -10,16 +10,16 @@ const BootRM 0x24
 
 const BootBottom 0x40000
 
-externconst BootErrors (* table *)
+externptr BootErrors (* table *)
 
-externconst API (* table *)
+externptr API (* table *)
 
-extern DevBootable (* dnode -- bootable? *)
+extern DevBootable { devnode -- bootable }
 
-extern DevBootableR (* dnode -- brecord bootable? *)
+extern DevBootableR { devnode -- brecord bootable }
 
-extern AutoBoot (* -- ok? *)
+extern AutoBoot { -- ok }
 
-extern BootNode (* devnode args -- ok? *)
+extern BootNode { devnode args -- ok }
 
-extern BootUI (* -- *)
+extern BootUI { -- }

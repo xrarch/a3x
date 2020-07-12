@@ -4,24 +4,24 @@ const AmaPortCMD 0x32
 const AmaPortA 0x33
 const AmaPortB 0x34
 
-extern AmanatsuPoll (* num -- mid *)
+extern AmanatsuPoll { num -- mid }
 
-extern AmanatsuSelectDev (* num -- *)
+extern AmanatsuSelectDev { num -- }
 
-extern AmanatsuReadMID (* -- mid *)
+extern AmanatsuReadMID { -- mid }
 
-extern AmanatsuCommand (* cmd -- *)
+extern AmanatsuCommand { cmd -- }
 
-extern AmanatsuCommandAsync (* cmd -- *)
+extern AmanatsuCommandAsync { cmd -- }
 
-extern AmanatsuWriteA (* long -- *)
+extern AmanatsuWriteA { long -- }
 
-extern AmanatsuWriteB (* long -- *)
+extern AmanatsuWriteB { long -- }
 
-extern AmanatsuReadA (* -- long *)
+extern AmanatsuReadA { -- long }
 
-extern AmanatsuReadB (* -- long *)
+extern AmanatsuReadB { -- long }
 
-extern AmanatsuSetInterrupt (* handler dev -- *)
+extern AmanatsuSetInterrupt { handler dev -- num }
 
-extern AmanatsuSpecialCMD (* a b cmd -- *)
+extern AmanatsuSpecialCMD { a b cmd -- }

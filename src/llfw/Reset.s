@@ -57,8 +57,11 @@ Reset:
 	jal Puts
 	pop r1
 
-	la vs, VStackTop
-	
+	;pointer to last frame as defined by limn2k abi
+	subi sp, sp, 8
+	si.l sp, zero, 0 ;zero
+	siio.l sp, 4, 0
+
 	jalr r1
 
 Hang:
@@ -81,8 +84,5 @@ HLRString:
 
 .section bss
 
-.bytes 1024 0
+.bytes 4096 0
 LLFWStackTop:
-
-.bytes 1024 0
-VStackTop:

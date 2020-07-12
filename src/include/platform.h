@@ -1,25 +1,25 @@
-externconst PlatformClockPath (* var *)
+externptr PlatformClockPath (* var *)
 
-externconst PlatformDiskBusPath (* var *)
+externptr PlatformDiskBusPath (* var *)
 
-externconst PlatformDMAPath (* var *)
+externptr PlatformDMAPath (* var *)
 
-externconst PlatformKeyboardPath (* var *)
+externptr PlatformKeyboardPath (* var *)
 
-externconst PlatformMousePath (* var *)
+externptr PlatformMousePath (* var *)
 
-externconst PlatformScreenPath (* var *)
+externptr PlatformScreenPath (* var *)
 
-externconst PlatformSerialPath (* var *)
+externptr PlatformSerialPath (* var *)
 
-externconst PlatformCPUPath (* var *)
+externptr PlatformCPUPath (* var *)
 
-externconst PlatformMemoryPath (* var *)
+externptr PlatformMemoryPath (* var *)
 
-externconst PlatformDefaultScreenBG (* var *)
+externptr PlatformDefaultScreenBG (* var *)
 
-externconst PlatformDefaultScreenFG (* var *)
+externptr PlatformDefaultScreenFG (* var *)
 
-externconst PlatformBusPath (* var *)
+externptr PlatformBusPath (* var *)
 
-externconst PlatformInterruptPath (* var *)
+externptr PlatformInterruptPath (* var *)

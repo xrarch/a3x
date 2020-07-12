@@ -1,12 +1,12 @@
 #include "<df>/dragonfruit.h"
 #include "<inc>/a3x.h"
 
-extern BuildEBus
-extern BuildLimn2k
-extern BuildMemory
-extern BuildLSIC
+extern BuildEBus { -- }
+extern BuildLimn2k { -- }
+extern BuildMemory { -- }
+extern BuildLSIC { -- }
 
-procedure BuildPlatform (* -- *)
+fn BuildPlatform { -- }
 	DeviceNew
 		"platform" DSetName
 	
@@ -63,7 +63,7 @@ public PlatformBusPath
 var PlatformInterruptPath 0
 public PlatformInterruptPath
 
-procedure PlatformInit (* -- *)
+fn PlatformInit { -- }
 	"/platform/ebus/platformboard/citron/clock" PlatformClockPath!
 	"/platform/ebus/platformboard/citron/dks" PlatformDiskBusPath!
 	"/platform/ebus/dma" PlatformDMAPath!

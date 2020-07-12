@@ -6,6 +6,6 @@ const FontHeight 16
 
 const FontBitD 1
 
-extern FontDrawChar (* x y char bg color -- *)
+extern FontDrawChar { x y char bg color -- }
 
-extern FontDrawString (* x y string bg color -- *)
+extern FontDrawString { x y str bg color -- }

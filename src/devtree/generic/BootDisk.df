@@ -1,22 +1,17 @@
 #include "<df>/dragonfruit.h"
 #include "<inc>/a3x.h"
 
-(* platform independent keyboard interface, antecedent standard *)
+(* platform independent bootdisk interface, antecedent standard *)
 
 var SBootDiskNode 0
 
-procedure GBootDiskDefault { -- bn defaultnode }
-	"boot-dev" NVRAMGetVar dup if (0 ==)
-		drop "/disks/0/a" "boot-dev" NVRAMSetVar
-		"/disks/0/a"
-	end
-
-	bn!
+fn GBootDiskDefault { -- bn defaultnode }
+	"/disks/0/a" "boot-dev" NVRAMDefaultGetVar bn!
 
 	bn@ DevTreeWalk defaultnode!
 end
 
-procedure BuildGBootDisk (* -- *)
+fn BuildGBootDisk { -- }
 	auto bn
 
 	GBootDiskDefault SBootDiskNode! bn!

@@ -14,20 +14,22 @@ struct NVRAMVariable
 	224 Contents
 endstruct
 
-extern NVRAMCheck (* -- ok? *)
+extern NVRAMCheck { -- ok }
 
-extern NVRAMFormat (* -- *)
+extern NVRAMFormat { -- }
 
-extern NVRAMOffset (* loc -- nvaddr *)
+extern NVRAMOffset { loc -- nvaddr }
 
-extern NVRAMFindFree (* -- free or 0 *)
+extern NVRAMFindFree { -- free }
 
-extern NVRAMDeleteVar (* name -- *)
+extern NVRAMDeleteVar { name -- }
 
-extern NVRAMSetVar (* str name -- *)
+extern NVRAMSetVar { str name -- }
 
-extern NVRAMSetVarNum (* num name -- *)
+extern NVRAMSetVarNum { num name -- }
 
-extern NVRAMGetVar (* name -- ptr or 0 *)
+extern NVRAMGetVar { name -- ptr }
 
-extern NVRAMGetVarNum (* var -- n *)
+extern NVRAMGetVarNum { var -- n }
+
+extern NVRAMDefaultGetVar { default name -- ptr }

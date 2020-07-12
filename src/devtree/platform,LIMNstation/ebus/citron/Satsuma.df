@@ -26,11 +26,11 @@ struct AHDB_PTE
 	3 Unused
 endstruct
 
-procedure private AHDBTransferBlock { src dest -- }
+fn private AHDBTransferBlock { src dest -- }
 	dest@ src@ 4096 memcpy
 end
 
-procedure AHDBBootable { part id -- }
+fn AHDBBootable { part id -- }
 	auto brecord
 	4096 Malloc brecord!
 
@@ -54,7 +54,7 @@ procedure AHDBBootable { part id -- }
 	brecord@ Free
 end
 
-procedure AHDBPartitions { id -- pcount }
+fn AHDBPartitions { id -- pcount }
 	auto vdbuf
 	4096 Malloc vdbuf!
 
@@ -98,8 +98,8 @@ procedure AHDBPartitions { id -- pcount }
 
 						ptr@ AHDB_PTE_Label + strdup "diskLabel" DAddProperty
 
-						pointerof AHDBRead "readBlock" DAddMethod
-						pointerof AHDBWrite "writeBlock" DAddMethod
+						pointerof AHDBReadM "readBlock" DAddMethod
+						pointerof AHDBWriteM "writeBlock" DAddMethod
 
 						pnt@ "parentDisk" DAddProperty
 
@@ -125,7 +125,7 @@ procedure AHDBPartitions { id -- pcount }
 	vdbuf@ Free
 end
 
-procedure BuildSatsuma (* -- *)
+fn BuildSatsuma { -- }
 	DeviceNew
 		"dks" DSetName
 
@@ -162,8 +162,8 @@ procedure BuildSatsuma (* -- *)
 
 					1 "revision" DAddProperty
 
-					pointerof AHDBRead "readBlock" DAddMethod
-					pointerof AHDBWrite "writeBlock" DAddMethod
+					pointerof AHDBReadM "readBlock" DAddMethod
+					pointerof AHDBWriteM "writeBlock" DAddMethod
 
 					auto pcount
 
@@ -182,7 +182,13 @@ procedure BuildSatsuma (* -- *)
 	DeviceExit
 end
 
-procedure AHDBRead { ptr block -- ok }
+fn private AHDBReadM { argvt argcn -- out1 out2 out3 }
+	argvt@ 4 + @
+	argvt@ @
+	AHDBRead out1!
+end
+
+fn AHDBRead { ptr block -- ok }
 	auto rs
 	InterruptDisable rs!
 
@@ -205,7 +211,13 @@ procedure AHDBRead { ptr block -- ok }
 	1 ok!
 end
 
-procedure AHDBWrite { ptr block -- ok }
+fn private AHDBWriteM { argvt argcn -- out1 out2 out3 }
+	argvt@ 4 + @
+	argvt@ @
+	AHDBWrite out1!
+end
+
+fn AHDBWrite { ptr block -- ok }
 	auto rs
 	InterruptDisable rs!
 
@@ -228,7 +240,7 @@ procedure AHDBWrite { ptr block -- ok }
 	1 ok!
 end
 
-procedure AHDBPoll { id -- blocks present }
+fn AHDBPoll { id -- blocks present }
 	auto rs
 	InterruptDisable rs!
 
@@ -242,7 +254,7 @@ procedure AHDBPoll { id -- blocks present }
 	rs@ InterruptRestore
 end
 
-procedure AHDBInfo { -- event details }
+fn AHDBInfo { -- event details }
 	auto rs
 	InterruptDisable rs!
 
@@ -253,7 +265,7 @@ procedure AHDBInfo { -- event details }
 	rs@ InterruptRestore
 end
 
-procedure AHDBSelect { drive -- }
+fn AHDBSelect { drive -- }
 	auto rs
 	InterruptDisable rs!
 

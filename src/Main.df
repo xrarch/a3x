@@ -1,26 +1,21 @@
 #include "<df>/dragonfruit.h"
 #include "<inc>/a3x.h"
 
-procedure Main (* -- *)
+fn Main { -- }
 	auto kbn
 	"/keyboard" DevTreeWalk kbn!
 	
 	auto cn
 	"/clock" DevTreeWalk cn!
 
-	"verbose?" NVRAMGetVar dup if (0 ==)
-		drop "true" "verbose?" NVRAMSetVar
-		"true"
-	end
-
 	auto fv
 
-	"true" strcmp fv!
+	"true" "verbose?" NVRAMDefaultGetVar "true" strcmp fv!
 
 	if (fv@ ~~ kbn@ 0 ~= &&)
 		kbn@ DeviceSelectNode
-			5 "isDown" DCallMethod drop fv!
-			80 "isDown" DCallMethod drop fv@ && fv!
+			5 "isDown" DCallMethod drop drop drop fv!
+			80 "isDown" DCallMethod drop drop drop fv@ && fv!
 		DeviceExit
 	end
 
@@ -28,12 +23,7 @@ procedure Main (* -- *)
 		ConsoleUserOut
 	end
 
-	"auto-boot?" NVRAMGetVar dup if (0 ==)
-		drop "true" "auto-boot?" NVRAMSetVar
-		"true"
-	end
-
-	if ("true" strcmp)
+	if ("true" "auto-boot?" NVRAMDefaultGetVar "true" strcmp)
 		auto cancel
 
 		0 cancel!
@@ -43,7 +33,7 @@ procedure Main (* -- *)
 				"\[[33mHold\[[0m \[[94mCTRL\[[0m \[[33mto halt automatic boot or \[[94mENTER\[[0m \[[33mto boot immediately...\[[0m\n" Printf
 
 				kbn@ DeviceSelectNode
-					50 80 5000 "waitKey" DCallMethod drop cancel!
+					50 80 5000 "waitKey" DCallMethod drop drop drop cancel!
 				DeviceExit
 			end
 		end

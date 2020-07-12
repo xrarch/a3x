@@ -1,13 +1,13 @@
-externconst ConsoleOut (* var *)
+externptr ConsoleOut (* var *)
 
-externconst ConsoleIn (* var *)
+externptr ConsoleIn (* var *)
 
-externconst ConsoleOutMethod (* var *)
+externptr ConsoleOutMethod (* var *)
 
-externconst ConsoleInMethod (* var *)
+externptr ConsoleInMethod (* var *)
 
-extern ConsoleSetIn (* devnode -- *)
+extern ConsoleSetIn { dn -- }
 
-extern ConsoleSetOut (* devnode -- *)
+extern ConsoleSetOut { dn -- }
 
-extern ConsoleUserOut (* -- *)
+extern ConsoleUserOut { -- }

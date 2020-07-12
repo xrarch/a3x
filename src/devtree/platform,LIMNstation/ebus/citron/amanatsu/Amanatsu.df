@@ -1,13 +1,13 @@
 #include "<df>/dragonfruit.h"
 #include "<inc>/a3x.h"
 
-extern AKeyboardInit
-extern AKeyboardPoll
+extern AKeyboardInit { -- }
+extern AKeyboardPoll { -- }
 
-extern AMouseInit
-extern AMousePoll
+extern AMouseInit { -- }
+extern AMousePoll { -- }
 
-procedure BuildAmanatsu (* -- *)
+fn BuildAmanatsu { -- }
 	DeviceNew
 		"amanatsu" DSetName
 
@@ -16,18 +16,6 @@ procedure BuildAmanatsu (* -- *)
 		"AISA,amanatsu" "model" DAddProperty
 
 		1 "revision" DAddProperty
-
-		pointerof AmanatsuPoll "amanatsu,poll" DAddMethod
-		pointerof AmanatsuSelectDev "amanatsu,selectDev" DAddMethod
-		pointerof AmanatsuReadMID "amanatsu,readMID" DAddMethod
-		pointerof AmanatsuCommand "amanatsu,command" DAddMethod
-		pointerof AmanatsuCommandAsync "amanatsu,commandAsync" DAddMethod
-		pointerof AmanatsuWriteA "amanatsu,writeA" DAddMethod
-		pointerof AmanatsuWriteB "amanatsu,writeB" DAddMethod
-		pointerof AmanatsuReadA "amanatsu,readA" DAddMethod
-		pointerof AmanatsuReadB "amanatsu,readB" DAddMethod
-		pointerof AmanatsuSetInterrupt "amanatsu,setInterrupt" DAddMethod
-		pointerof AmanatsuSpecialCMD "amanatsu,specialCommand" DAddMethod
 
 		pointerof AmanatsuReset "reset" DAddMethod
 
@@ -44,45 +32,45 @@ var AmaLastInterrupt 0x40
 
 (* disabling and restoring interrupts is up to the user of these functions *)
 
-procedure AmanatsuPoll (* num -- mid *)
-	AmanatsuSelectDev AmanatsuReadMID
+fn AmanatsuPoll { num -- mid }
+	num@ AmanatsuSelectDev AmanatsuReadMID mid!
 end
 
-procedure AmanatsuSelectDev (* num -- *)
-	AmaPortDev DCitronOutb
+fn AmanatsuSelectDev { num -- }
+	num@ AmaPortDev DCitronOutb
 end
 
-procedure AmanatsuReadMID (* -- mid *)
-	AmaPortMID DCitronInl
+fn AmanatsuReadMID { -- mid }
+	AmaPortMID DCitronInl mid!
 end
 
-procedure AmanatsuCommand { cmd -- }
+fn AmanatsuCommand { cmd -- }
 	cmd@ AmaPortCMD DCitronOutl
 
 	while (AmaPortCMD DCitronInl 0 ~=) end
 end
 
-procedure AmanatsuCommandAsync (* cmd -- *)
-	AmaPortCMD DCitronOutl
+fn AmanatsuCommandAsync { cmd -- }
+	cmd@ AmaPortCMD DCitronOutl
 end
 
-procedure AmanatsuWriteA (* long -- *)
-	AmaPortA DCitronOutl
+fn AmanatsuWriteA { long -- }
+	long@ AmaPortA DCitronOutl
 end
 
-procedure AmanatsuWriteB (* long -- *)
-	AmaPortB DCitronOutl
+fn AmanatsuWriteB { long -- }
+	long@ AmaPortB DCitronOutl
 end
 
-procedure AmanatsuReadA (* -- long *)
-	AmaPortA DCitronInl
+fn AmanatsuReadA { -- long }
+	AmaPortA DCitronInl long!
 end
 
-procedure AmanatsuReadB (* -- long *)
-	AmaPortB DCitronInl
+fn AmanatsuReadB { -- long }
+	AmaPortB DCitronInl long!
 end
 
-procedure AmanatsuSetInterrupt { handler dev -- num }
+fn AmanatsuSetInterrupt { handler dev -- num }
 	handler@ AmaLastInterrupt@ InterruptRegister
 	AmaLastInterrupt@ dev@ 1 AmanatsuSpecialCMD
 
@@ -91,7 +79,7 @@ procedure AmanatsuSetInterrupt { handler dev -- num }
 	1 AmaLastInterrupt +=
 end
 
-procedure AmanatsuSpecialCMD { a b cmd -- }
+fn AmanatsuSpecialCMD { a b cmd -- }
 	0 AmanatsuSelectDev
 	a@ AmanatsuWriteA
 	b@ AmanatsuWriteB
@@ -99,7 +87,7 @@ procedure AmanatsuSpecialCMD { a b cmd -- }
 	cmd@ AmanatsuCommand
 end
 
-procedure AmanatsuReset (* -- *)
+fn AmanatsuReset { -- }
 	0 0 2 AmanatsuSpecialCMD
 end
 

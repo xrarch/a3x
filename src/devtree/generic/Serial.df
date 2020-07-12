@@ -5,13 +5,8 @@
 
 var SSerialNode 0
 
-procedure GSerialDefault { -- defaultnode }
-	"serial-dev" NVRAMGetVar dup if (0 ==)
-		drop PlatformSerialPath@ "serial-dev" NVRAMSetVar
-		PlatformSerialPath@
-	end
-
-	DevTreeWalk defaultnode!
+fn GSerialDefault { -- defaultnode }
+	PlatformSerialPath@ "serial-dev" NVRAMDefaultGetVar DevTreeWalk defaultnode!
 
 	if (defaultnode@ 0 ==)
 		"serial-dev is phony, trying platform default\n" Printf
@@ -21,7 +16,7 @@ procedure GSerialDefault { -- defaultnode }
 	end
 end
 
-procedure BuildGSerial (* -- *)
+fn BuildGSerial { -- }
 	GSerialDefault SSerialNode!
 
 	if (SSerialNode@ 0 ~=)

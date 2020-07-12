@@ -18,56 +18,52 @@ struct DeviceProperty
 	4 Value
 endstruct
 
-externconst DevTree (* var *)
+externptr DevTree (* var *)
 
-externconst DevCurrent (* var *)
+externptr DevCurrent (* var *)
 
-extern DevTreeWalk (* path -- node or 0 *)
+extern DevTreeWalk { path -- cnode }
 
-extern DeviceParent (* -- *)
+extern DeviceParent { -- }
 
-extern DeviceSelectNode (* node -- *)
+extern DeviceSelectNode { node -- }
 
-extern DeviceSelect (* path -- *)
+extern DeviceSelect { path -- }
 
-extern DeviceNNew (* -- node *)
+extern DeviceNew { -- }
 
-extern DeviceNNewOMP (* methodslist propertieslist -- node *)
+extern DeviceClone { node -- }
 
-extern DeviceNew (* -- *)
+extern DeviceCloneWalk { path -- }
 
-extern DeviceClone (* node -- *)
+extern DSetName { name -- }
 
-extern DeviceCloneWalk (* path -- *)
+extern DAddMethodFull { board method auc name -- }
 
-extern DSetName (* name -- *)
+extern DAddMethod { method name -- }
 
-extern DAddMethodFull (* method auc name -- *)
+extern DAddProperty { value name -- }
 
-extern DAddMethod (* method name -- *)
+extern DSetProperty { value name -- }
 
-extern DAddProperty (* value name -- *)
+extern DGetProperty { name -- string }
 
-extern DSetProperty (* value name -- *)
+extern DGetMethod { name -- ptr }
 
-extern DGetProperty (* name -- string or 0 *)
+extern DCallMethod { ... name -- out1 out2 out3 ok }
 
-extern DGetMethod (* name -- ptr or 0 *)
+extern DCallMethodPtr { ... ptr -- out1 out2 out3 }
 
-extern DCallMethod (* ... name -- ... ok? *)
+extern DevIteratorInit { -- iter }
 
-extern DCallMethodPtr (* ... ptr -- ... *)
+extern DevIterate { iterin -- iterout }
 
-extern DevIteratorInit (* -- iter *)
+extern DeviceExit { -- }
 
-extern DevIterate (* iterin -- iterout *)
+extern DGetName { -- name }
 
-extern DeviceExit (* -- *)
+extern DGetMethods { -- methods }
 
-extern DGetName (* -- name *)
+extern DGetProperties { -- properties }
 
-extern DGetMethods (* -- methods *)
-
-extern DGetProperties (* -- properties *)
-
-extern DGetCurrent (* -- currentnode *)
+extern DGetCurrent { -- current }

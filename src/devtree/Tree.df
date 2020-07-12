@@ -4,24 +4,24 @@
 var PlatformInited 0
 public PlatformInited
 
-extern BuildPlatform
+extern BuildPlatform { -- }
 
-extern BuildGDMA
-extern BuildGSerial
-extern BuildGScreen
-extern BuildGConsole
-extern BuildGKeyboard
-extern BuildGMouse
-extern BuildGBootDisk
-extern BuildGClock
-extern BuildGDisk
-extern BuildGCPU
-extern BuildGMemory
-extern BuildGBus
-extern BuildGInterrupt
-extern BuildNVRAM
+extern BuildGDMA { -- }
+extern BuildGSerial { -- }
+extern BuildGScreen { -- }
+extern BuildGConsole { -- }
+extern BuildGKeyboard { -- }
+extern BuildGMouse { -- }
+extern BuildGBootDisk { -- }
+extern BuildGClock { -- }
+extern BuildGDisk { -- }
+extern BuildGCPU { -- }
+extern BuildGMemory { -- }
+extern BuildGBus { -- }
+extern BuildGInterrupt { -- }
+extern BuildNVRAM { -- }
 
-procedure BuildTree (* -- *)
+fn BuildTree { -- }
 	BuildPlatform
 
 	1 PlatformInited!

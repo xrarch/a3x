@@ -1,11 +1,11 @@
-externconst MonitorRunning (* var *)
+externptr MonitorRunning (* var *)
 
-externconst MonitorCommandList (* var *)
+externptr MonitorCommandList (* var *)
 
-externconst MonitorLine (* var *)
-externconst MonitorLinePoint (* var *)
+externptr MonitorLine (* var *)
+externptr MonitorLinePoint (* var *)
 
-externconst MonitorState (* var *)
+externptr MonitorState (* var *)
 
 struct MonitorCommand
 	4 Name
@@ -20,20 +20,20 @@ struct MonitorI
 endstruct
 
 (* should be called before any command leaves the monitor, for instance 'boot' *)
-extern MonitorExit (* -- *)
+extern MonitorExit { -- }
 
-extern MonitorParseDevPath (* -- dev or 0 *)
+extern MonitorParseDevPath { -- dev }
 
-extern MonitorPrompt (* -- *)
+extern MonitorPrompt { -- }
 
-extern MonitorDoLine (* -- *)
+extern MonitorDoLine { -- }
 
-extern MonitorParseWord (* -- word *)
+extern MonitorParseWord { -- word }
 
-extern MonitorDoCommand (* command -- ok? *)
+extern MonitorDoCommand { name -- ok }
 
-extern MonitorAddCommand (* helptext callback name -- *)
+extern MonitorAddCommand { helptext callback name -- }
 
-extern ResetLines (* -- *)
+extern ResetLines { -- }
 
-extern WaitNext (* -- result *)
+extern WaitNext { -- result }

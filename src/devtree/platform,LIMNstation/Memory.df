@@ -1,7 +1,7 @@
 #include "<df>/dragonfruit.h"
 #include "<inc>/a3x.h"
 
-procedure BuildMemory (* -- *)
+fn BuildMemory { -- }
 	DeviceNew
 		"memory" DSetName
 
@@ -32,10 +32,10 @@ end
 
 const RAM256DescSpace 0x10000000
 
-procedure RAM256Slots (* -- slots *)
-	RAM256DescSpace@
+fn RAM256Slots { -- slots }
+	RAM256DescSpace@ slots!
 end
 
-procedure RAM256SlotSize (* n -- size *)
-	1 + 4 * RAM256DescSpace + @
+fn RAM256SlotSize { n -- size }
+	n@ 1 + 4 * RAM256DescSpace + @ size!
 end

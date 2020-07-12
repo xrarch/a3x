@@ -6,7 +6,7 @@ var AKeyboardCount 0
 
 const AKeyboardMID 0x8FC48FC4
 
-procedure AKeyboardPoll (* -- *)
+fn AKeyboardPoll { -- }
 	auto i
 	1 i!
 
@@ -27,11 +27,11 @@ procedure AKeyboardPoll (* -- *)
 
 					i@ "amanatsu,unit" DAddProperty
 
-					pointerof AKeyboardRead "read" DAddMethod
+					pointerof AKeyboardReadM "read" DAddMethod
 
-					pointerof AKeyboardIsDown "isDown" DAddMethod
+					pointerof AKeyboardIsDownM "isDown" DAddMethod
 
-					pointerof AKeyboardWaitKey "waitKey" DAddMethod
+					pointerof AKeyboardWaitKeyM "waitKey" DAddMethod
 
 					"keyboard" "deviceType" DAddProperty
 
@@ -52,7 +52,14 @@ procedure AKeyboardPoll (* -- *)
 	end
 end
 
-procedure AKeyboardWaitKey { cancelkey waitkey timeout -- pressed }
+fn private AKeyboardWaitKeyM { argvt argcn -- out1 out2 out3 }
+	argvt@ 8 + @
+	argvt@ 4 + @
+	argvt@ @
+	AKeyboardWaitKey out1!
+end
+
+fn AKeyboardWaitKey { cancelkey waitkey timeout -- pressed }
 	0 pressed!
 
 	auto cn
@@ -77,7 +84,7 @@ procedure AKeyboardWaitKey { cancelkey waitkey timeout -- pressed }
 			end
 
 			cn@ DeviceSelectNode
-				100 "wait" DCallMethod drop
+				100 "wait" DCallMethod drop drop drop drop
 			DeviceExit
 
 			1 i +=
@@ -85,7 +92,7 @@ procedure AKeyboardWaitKey { cancelkey waitkey timeout -- pressed }
 	end
 end
 
-procedure AKeyboardPopCode { id -- code }
+fn AKeyboardPopCode { id -- code }
 	auto rs
 	InterruptDisable rs!
 
@@ -96,7 +103,7 @@ procedure AKeyboardPopCode { id -- code }
 	rs@ InterruptRestore
 end
 
-procedure AKeyboardSpecial { code -- char }
+fn AKeyboardSpecial { code -- char }
 	if (code@ 50 ==)
 		'\n' char!
 	end elseif (code@ 51 ==)
@@ -106,7 +113,12 @@ procedure AKeyboardSpecial { code -- char }
 	end
 end
 
-procedure AKeyboardIsDown { scancode -- down }
+fn private AKeyboardIsDownM { argvt argcn -- out1 out2 out3 }
+	argvt@ @
+	AKeyboardIsDown out1!
+end
+
+fn AKeyboardIsDown { scancode -- down }
 	auto id
 	"amanatsu,unit" DGetProperty id!
 
@@ -125,7 +137,11 @@ procedure AKeyboardIsDown { scancode -- down }
 	rs@ InterruptRestore
 end
 
-procedure AKeyboardRead { -- c }
+fn private AKeyboardReadM { argvt argcn -- out1 out2 out3 }
+	AKeyboardRead out1!
+end
+
+fn AKeyboardRead { -- c }
 	auto id
 	"amanatsu,unit" DGetProperty id!
 
@@ -157,7 +173,7 @@ procedure AKeyboardRead { -- c }
 	end
 end
 
-procedure AKeyboardInit (* -- *)
+fn AKeyboardInit { -- }
 	DeviceNew
 		"kbd" DSetName
 		DevCurrent@ AKeyboardDev!

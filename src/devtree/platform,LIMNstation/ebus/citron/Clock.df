@@ -9,13 +9,13 @@ var ClockStartMS 0
 
 const ClockInterrupt 0x1
 
-procedure BuildCClock (* -- *)
+fn BuildCClock { -- }
 	DeviceNew
 		"clock" DSetName
 
-		pointerof ClockUptime "uptime" DAddMethod
-		pointerof ClockEpoch "epoch" DAddMethod
-		pointerof ClockWait "wait" DAddMethod
+		pointerof ClockUptimeM "uptime" DAddMethod
+		pointerof ClockEpochM "epoch" DAddMethod
+		pointerof ClockWaitM "wait" DAddMethod
 
 		"rtc" "deviceType" DAddProperty
 
@@ -32,7 +32,11 @@ procedure BuildCClock (* -- *)
 	ClockEpoch ClockStartMS! ClockStartSec!
 end
 
-procedure ClockEpoch { -- sec ms }
+fn private ClockEpochM { argvt argcn -- out1 out2 out3 }
+	ClockEpoch out2! out1!
+end
+
+fn ClockEpoch { -- sec ms }
 	auto rs
 	InterruptDisable rs!
 
@@ -45,21 +49,30 @@ procedure ClockEpoch { -- sec ms }
 	rs@ InterruptRestore
 end
 
-procedure ClockUptime { -- ms }
+fn private ClockUptimeM { argvt argcn -- out1 out2 out3 }
+	ClockUptime out1!
+end
+
+fn ClockUptime { -- ms }
 	auto sec
 	ClockEpoch ms! sec!
 
 	sec@ ClockStartSec@ - 1000 * ms@ + ms!
 end
 
-procedure ClockWait { ms -- }
+fn private ClockWaitM { argvt argcn -- out1 out2 out3 }
+	argvt@ @
+	ClockWait
+end
+
+fn ClockWait { ms -- }
 	auto wu
 	ClockUptime ms@ + wu!
 
 	while (ClockUptime wu@ <) end
 end
 
-procedure ClockSetInterval { ms -- }
+fn ClockSetInterval { ms -- }
 	auto rs
 	InterruptDisable rs!
 

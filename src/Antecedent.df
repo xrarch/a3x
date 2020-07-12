@@ -1,18 +1,17 @@
 #include "<df>/dragonfruit.h"
 #include "<inc>/a3x.h"
 
-extern HeapInit
-extern ConsoleEarlyInit
-extern InterruptsInit
-extern DeviceInit
-extern ConsoleInit
-extern FontInit
-extern PlatformInit
-extern InterruptEnable
+extern HeapInit { -- }
+extern ConsoleEarlyInit { -- }
+extern InterruptsInit { -- }
+extern DeviceInit { -- }
+extern ConsoleInit { -- }
+extern FontInit { -- }
+extern PlatformInit { -- }
 
-extern Main
+extern Main { -- }
 
-procedure AntecedentEntry (* -- *)
+fn AntecedentEntry { -- }
 	HeapInit
 
 	ConsoleEarlyInit
@@ -62,7 +61,7 @@ Reset:
 
 "
 
-procedure LinkInfo (* -- *)
+fn LinkInfo { -- }
 	pointerof _text "_text = %x " Printf
 	pointerof _text_size "_text_size = %x " Printf
 	pointerof _text_end "_text_end = %x\n" Printf
@@ -76,33 +75,29 @@ procedure LinkInfo (* -- *)
 	pointerof _bss_end "_bss_end = %x\n" Printf
 end
 
-procedure LateReset (* -- *)
+fn LateReset { -- }
 	"\[c" Printf
 	Reset
 end
 
-procedure BannerPrint (* ... -- *)
-	Printf
-end
-
-procedure FirmwareBanner (* -- *)
+fn FirmwareBanner { -- }
 	'\n' Putc
 
 	"/" DeviceSelect
-		"author" DGetProperty "version" DGetProperty DGetName "Implementation details: %s %s written by %s\n" BannerPrint
-		"buildDate" DGetProperty "build" DGetProperty "Build %s, built on %s\n" BannerPrint
+		"author" DGetProperty "version" DGetProperty DGetName "Implementation details: %s %s written by %s\n" Printf
+		"buildDate" DGetProperty "build" DGetProperty "Build %s, built on %s\n" Printf
 	DeviceExit
 
 	"/platform" DeviceSelect
-		"model" DGetProperty "Platform: %s\n" BannerPrint
+		"model" DGetProperty "Platform: %s\n" Printf
 	DeviceExit
 
 	"/cpu" DeviceSelect
-		"model" DGetProperty "CPU: %s\n" BannerPrint
+		"model" DGetProperty "CPU: %s\n" Printf
 	DeviceExit
 
 	"/memory" DeviceSelect
-		"totalRAM" DGetProperty 1024 / "RAM: %dkb\n" BannerPrint
+		"totalRAM" DGetProperty 1024 / "RAM: %dkb\n" Printf
 	DeviceExit
 
 	'\n' Putc

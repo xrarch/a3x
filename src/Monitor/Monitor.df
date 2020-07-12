@@ -18,11 +18,11 @@ public MonitorLinePoint
 var MonitorState 0
 public MonitorState
 
-extern MonitorCommandsInit
+extern MonitorCommandsInit { -- }
 
-extern MonitorCommandBanner
+extern MonitorCommandBanner { -- }
 
-procedure DebugMonitor { state -- }
+fn DebugMonitor { state -- }
 	if (MonitorCommandList@ 0 ==)
 		MonitorCommandsInit
 	end
@@ -60,26 +60,25 @@ procedure DebugMonitor { state -- }
 	savestate@ MonitorState!
 end
 
-procedure Monitor (* -- *)
+fn Monitor { -- }
 	0 DebugMonitor
 end
 
 (* should be called before any command leaves the monitor, for instance 'boot' *)
-procedure MonitorExit (* -- *)
+fn MonitorExit { -- }
 	if (MonitorLine@) MonitorLine@ Free end
 end
 
-procedure MonitorParseDevPath (* -- dev or 0 *)
+fn MonitorParseDevPath { -- dev }
 	auto word
 	MonitorParseWord word!
 
 	if (word@ strlen 0 ==)
 		"empty device path.\n" Printf
 		word@ Free
-		return
+		0 dev! return
 	end
 
-	auto dev
 	word@ DevTreeWalk dev!
 
 	if (dev@ 0 ==)
@@ -87,16 +86,15 @@ procedure MonitorParseDevPath (* -- dev or 0 *)
 	end
 
 	word@ Free
-	dev@
 end
 
-procedure MonitorPrompt (* -- *)
+fn MonitorPrompt { -- }
 	MonitorLine@ MonitorLinePoint!
 	"> " Printf
 	MonitorLine@ 255 Gets
 end
 
-procedure MonitorDoLine (* -- *)
+fn MonitorDoLine { -- }
 	auto word
 	MonitorParseWord word!
 
@@ -109,7 +107,7 @@ procedure MonitorDoLine (* -- *)
 	word@ Free
 end
 
-procedure MonitorParseWord { -- word }
+fn MonitorParseWord { -- word }
 	256 Calloc word!
 
 	if (MonitorLinePoint@ 0 ==)
@@ -119,7 +117,9 @@ procedure MonitorParseWord { -- word }
 	MonitorLinePoint@ word@ ' ' 255 strntok MonitorLinePoint!
 end
 
-procedure MonitorDoCommand { name -- ok }
+fnptr MonCommand { -- }
+
+fn MonitorDoCommand { name -- ok }
 	auto plist
 	MonitorCommandList@ plist!
 
@@ -134,7 +134,7 @@ procedure MonitorDoCommand { name -- ok }
 		if (pnode@ MonitorCommand_Name + @ name@ strcmp)
 			name@ Free
 
-			pnode@ MonitorCommand_Callback + @ Call 1 ok! return
+			pnode@ MonitorCommand_Callback + @ MonCommand 1 ok! return
 		end
 
 		n@ ListNodeNext n!
@@ -143,7 +143,7 @@ procedure MonitorDoCommand { name -- ok }
 	0 ok!
 end
 
-procedure MonitorAddCommand { helptext callback name -- }
+fn MonitorAddCommand { helptext callback name -- }
 	auto command
 	MonitorCommand_SIZEOF Calloc command!
 

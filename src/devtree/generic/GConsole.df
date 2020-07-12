@@ -61,7 +61,7 @@ table ColorIndex2
 	0x7FFF
 endtable
 
-procedure GConsoleDefault (* -- *)
+fn GConsoleDefault { -- }
 	GCScreenNode@ DeviceSelectNode
 		"width" DGetProperty GCGWidth!
 		"height" DGetProperty GCGHeight!
@@ -97,7 +97,7 @@ procedure GConsoleDefault (* -- *)
 	1 GCNeedsDraw!
 end
 
-procedure BuildGConsole (* -- *)
+fn BuildGConsole { -- }
 	"/screen" DevTreeWalk GCScreenNode!
 	if (GCScreenNode@ 0 ==)
 		return
@@ -113,10 +113,7 @@ procedure BuildGConsole (* -- *)
 	DeviceNew
 		"gconsole" DSetName
 
-		pointerof GConsoleModifiedF "chkModified" DAddMethod
-		pointerof GConsoleSetScreen "setScreen" DAddMethod
-		pointerof GConsoleSuppressDraw "suppressDraw" DAddMethod
-		pointerof GConsolePutChar "write" DAddMethod
+		pointerof GConsolePutCharM "write" DAddMethod
 
 		FontWidth "fontWidth" DAddProperty
 		FontHeight "fontHeight" DAddProperty
@@ -129,11 +126,11 @@ procedure BuildGConsole (* -- *)
 	GConsoleDefault
 end
 
-procedure GConsoleSuppressDraw (* -- *)
+fn GConsoleSuppressDraw { -- }
 	0 GCNeedsDraw!
 end
 
-procedure GConsoleSetScreen { fg bg x y w h -- }
+fn GConsoleSetScreen { fg bg x y w h -- }
 	if (x@ -1 ==)
 		GConsoleDefault
 		return
@@ -156,34 +153,31 @@ procedure GConsoleSetScreen { fg bg x y w h -- }
 	0 GCInitialConfig!
 end
 
-procedure GConsoleModifiedF (* -- modified? *)
-	GConsoleModified@
+fn GConsoleModifiedF { -- modified }
+	GConsoleModified@ modified!
 
 	0 GConsoleModified!
 end
 
-procedure GConsoleLongestLine (* -- width *)
+fn GConsoleLongestLine { -- width }
 	auto i
 	0 i!
 
-	auto longest
-	0 longest!
+	0 width!
 
 	while (i@ GCHeight@ <)
 		auto len
 		i@ 4 * GCLineLenBuf@ + @ len!
 
-		if (len@ longest@ >)
-			len@ longest!
+		if (len@ width@ >)
+			len@ width!
 		end
 
 		1 i +=
 	end
-
-	longest@
 end
 
-procedure GConsoleClear (* -- *)
+fn GConsoleClear { -- }
 	0 0 GConsoleLongestLine FontWidth * GCHeight@ FontHeight * GCColorBG@ GConsoleRect
 
 	0 GCCurX!
@@ -194,30 +188,30 @@ procedure GConsoleClear (* -- *)
 	1 GConsoleModified!
 end
 
-procedure GConsoleRRect (* x y w h color -- *)
+fn GConsoleRRect { x y w h color -- }
 	GCScreenNode@ DeviceSelectNode
-		GCRectP@ DCallMethodPtr
+		x@ y@ w@ h@ color@ GCRectP@ DCallMethodPtr drop drop drop
 	DeviceExit
 end
 
-procedure GConsoleRect { x y w h color -- }
+fn GConsoleRect { x y w h color -- }
 	GCScreenNode@ DeviceSelectNode
 		x@ GConsoleX@ +
 		y@ GConsoleY@ +
 		w@ h@
 		color@
-		GCRectP@ DCallMethodPtr
+		GCRectP@ DCallMethodPtr drop drop drop
 	DeviceExit
 end
 
-procedure GConsoleScroll { rows -- }
+fn GConsoleScroll { rows -- }
 	GCScreenNode@ DeviceSelectNode
 		GConsoleX@ GConsoleY@
 		GConsoleLongestLine FontWidth *
 		FontHeight GCHeight@ *
 		GCColorDefBG@
 		rows@ FontHeight *
-		GCScrollP@ DCallMethodPtr
+		GCScrollP@ DCallMethodPtr drop drop drop
 	DeviceExit
 
 	auto k
@@ -248,21 +242,21 @@ procedure GConsoleScroll { rows -- }
 	1 GConsoleModified!
 end
 
-procedure GConsoleDoCur { color -- }
+fn GConsoleDoCur { color -- }
 	GCCurX@ FontWidth * GCCurY@ FontHeight * FontWidth FontHeight color@ GConsoleRect
 
 	1 GConsoleModified!
 end
 
-procedure GConsoleClearCur (* -- *)
+fn GConsoleClearCur { -- }
 	GCColorBG@ GConsoleDoCur
 end
 
-procedure GConsoleDrawCur (* -- *)
+fn GConsoleDrawCur { -- }
 	GCColorFG@ GConsoleDoCur
 end
 
-procedure GConsoleNewline (* -- *)
+fn GConsoleNewline { -- }
 	GCCurX@ GCCurY@ 4 * GCLineLenBuf@ + !
 
 	0 GCCurX!
@@ -275,7 +269,7 @@ procedure GConsoleNewline (* -- *)
 	end
 end
 
-procedure GConsoleBack (* -- *)
+fn GConsoleBack { -- }
 	if (GCCurX@ 0 ==)
 		if (GCCurY@ 0 >)
 			GCCurY@ 1 - GCCurY!
@@ -287,7 +281,7 @@ procedure GConsoleBack (* -- *)
 	GCCurX@ 1 - GCCurX!
 end
 
-procedure GConsoleUIBox { title x y w h -- }
+fn GConsoleUIBox { title x y w h -- }
 	x@ y@ w@ h@ 0x7FFF GConsoleRRect
 	x@ 1 + y@ 1 + w@ h@ 0x4210 GConsoleRRect
 	x@ 1 + y@ 1 + w@ 1 - h@ 1 - 0x6318 GConsoleRRect
@@ -307,7 +301,7 @@ procedure GConsoleUIBox { title x y w h -- }
 	FontDrawString
 end
 
-procedure VConsoleDraw (* -- *)
+fn VConsoleDraw { -- }
 	if (GConsoleX@ 80 >= GConsoleY@ 80 >= &&) (* there is at least GConsoleMargin/2 pixels around the edge, do a pretty box *)
 		"ANTECEDENT 3.x Firmware"
 		GConsoleX@ 15 -
@@ -327,17 +321,17 @@ procedure VConsoleDraw (* -- *)
 	end
 end
 
-procedure GConsoleDraw (* -- *)
+fn GConsoleDraw { -- }
 	if (GCInitialConfig@)
 		GCScreenNode@ DeviceSelectNode
-			"init" DCallMethod drop
+			"init" DCallMethod drop drop drop drop
 		DeviceExit
 
 		VConsoleDraw
 	end
 end
 
-procedure GConsoleTab (* -- *)
+fn GConsoleTab { -- }
 	GCCurX@ 8 / 1 + 8 * GCCurX!
 
 	if (GCCurX@ GCWidth@ >=)
@@ -356,7 +350,9 @@ const GCEVC 4
 
 var GCEV 0
 
-procedure GConsoleSetColor (* -- *)
+fn GConsoleSetColor { -- }
+	auto color
+
 	if ([0]GCEVT@ 0 ==)
 		GCColorDefFG@ GCColorFG!
 		GCColorDefBG@ GCColorBG!
@@ -366,7 +362,9 @@ procedure GConsoleSetColor (* -- *)
 		return
 	end elseif ([0]GCEVT@ 7 ==)
 		if (GCInverted@ ~~)
-			GCColorFG@ GCColorBG@ GCColorFG! GCColorBG!
+			GCColorFG@ color!
+			GCColorBG@ GCColorFG!
+			color@ GCColorBG!
 
 			1 GCInverted!
 		end
@@ -377,8 +375,6 @@ procedure GConsoleSetColor (* -- *)
 	end elseif ([0]GCEVT@ 49 ==)
 		GCColorDefBG@ GCColorBG!
 	end elseif ([0]GCEVT@ 30 >= [0]GCEVT@ 37 <= &&) (* foreground, first 8 *)
-		auto color
-
 		[0]GCEVT@ 30 - color!
 
 		[color@]ColorIndex@ GCColorFG!
@@ -403,7 +399,7 @@ procedure GConsoleSetColor (* -- *)
 	end
 end
 
-procedure GConsoleClearLine (* -- *)
+fn GConsoleClearLine { -- }
 	auto ox
 	GCCurX@ ox!
 
@@ -414,7 +410,7 @@ procedure GConsoleClearLine (* -- *)
 	ox@ GCCurX!
 end
 
-procedure GConsoleReset (* -- *)
+fn GConsoleReset { -- }
 	GCColorDefFG@ GCColorFG!
 	GCColorDefBG@ GCColorBG!
 
@@ -423,7 +419,7 @@ procedure GConsoleReset (* -- *)
 	GConsoleClear
 end
 
-procedure GConsoleParseEscape { c -- }
+fn GConsoleParseEscape { c -- }
 	if (c@ '0' >= c@ '9' <= &&)
 		auto np
 		GCEV@ 4 * GCEVT + np!
@@ -443,7 +439,12 @@ procedure GConsoleParseEscape { c -- }
 	0 GCEscape!
 end
 
-procedure GConsolePutChar { char -- }
+fn private GConsolePutCharM { argvt argcn -- out1 out2 out3 }
+	argvt@ @
+	GConsolePutChar
+end
+
+fn GConsolePutChar { char -- }
 	if (char@ 255 >)
 		return
 	end
@@ -469,7 +470,7 @@ procedure GConsolePutChar { char -- }
 	GConsoleDrawCur
 end
 
-procedure GConsolePutCharF { char -- }
+fn GConsolePutCharF { char -- }
 	if (char@ '\n' ==)
 		GConsoleNewline
 		return

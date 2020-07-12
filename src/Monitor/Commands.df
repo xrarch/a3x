@@ -3,14 +3,14 @@
 
 #include "monitor.h"
 
-extern _DumpStack
-extern HeapDump
+extern _DumpStack { -- }
+extern HeapDump { -- }
 
-extern MonitorCommandDumpstate
-extern MonitorCommandPrintreg
-extern MonitorCommandSavereg
+extern MonitorCommandDumpstate { -- }
+extern MonitorCommandPrintreg { -- }
+extern MonitorCommandSavereg { -- }
 
-procedure MonitorCommandsInit (* -- *)
+fn MonitorCommandsInit { -- }
 	ListCreate MonitorCommandList!
 
 	"Boot with default parameters."
@@ -159,12 +159,12 @@ const ConsoleAssumedHeight 22
 var UsedLines 0
 var AllLines 0
 
-procedure ResetLines (* -- *)
+fn ResetLines { -- }
 	0 UsedLines!
 	0 AllLines!
 end
 
-procedure WaitNext { -- result }
+fn WaitNext { -- result }
 	1 result!
 
 	if (AllLines@)
@@ -194,7 +194,7 @@ procedure WaitNext { -- result }
 	1 UsedLines +=
 end
 
-procedure AAA (* -- *)
+fn AAA { -- }
 	ResetLines
 	
 	auto count
@@ -215,7 +215,7 @@ procedure AAA (* -- *)
 	end
 end
 
-procedure MonitorCommandPoke (* -- *)
+fn MonitorCommandPoke { -- }
 	auto addr
 	MonitorParseWord addr!
 
@@ -230,7 +230,7 @@ procedure MonitorCommandPoke (* -- *)
 	addr@ Free
 end
 
-procedure MonitorCommandPeek (* -- *)
+fn MonitorCommandPeek { -- }
 	auto addr
 	MonitorParseWord addr!
 
@@ -239,7 +239,7 @@ procedure MonitorCommandPeek (* -- *)
 	addr@ Free
 end
 
-procedure MonitorCommandWait (* -- *)
+fn MonitorCommandWait { -- }
 	auto clock
 	"/clock" DevTreeWalk clock!
 
@@ -252,13 +252,13 @@ procedure MonitorCommandWait (* -- *)
 		auto ms
 		MonitorParseWord ms!
 
-		ms@ atoi "wait" DCallMethod drop
+		0 0 ms@ atoi "wait" DCallMethod drop drop drop drop
 
 		ms@ Free
 	DeviceExit
 end
 
-procedure MonitorCommandUptime (* -- *)
+fn MonitorCommandUptime { -- }
 	auto clock
 	"/clock" DevTreeWalk clock!
 
@@ -268,27 +268,30 @@ procedure MonitorCommandUptime (* -- *)
 	end
 
 	clock@ DeviceSelectNode
-		"uptime" DCallMethod drop "uptime (ms): %d\n" Printf
+		0 0 0 "uptime" DCallMethod drop drop drop "uptime (ms): %d\n" Printf
 	DeviceExit
 end
 
-procedure MonitorCommandHinv (* -- *)
+fn MonitorCommandHinv { -- }
 
 end
 
-procedure MonitorCommandNVReset (* -- *)
+fn MonitorCommandNVReset { -- }
 	NVRAMFormat
 end
 
-procedure MonitorCommandClear (* -- *)
+fn MonitorCommandClear { -- }
 	"\[c" Printf
 end
 
-procedure MonitorCommandAutoboot (* -- *)
-	[AutoBoot]BootErrors@ "boot: %s\n" Printf
+fn MonitorCommandAutoboot { -- }
+	auto r
+	AutoBoot r!
+
+	[r@]BootErrors@ "boot: %s\n" Printf
 end
 
-procedure MonitorCommandSetProp (* -- *)
+fn MonitorCommandSetProp { -- }
 	auto dev
 	MonitorParseDevPath dev!
 	if (dev@ 0 ==) return end
@@ -344,7 +347,7 @@ procedure MonitorCommandSetProp (* -- *)
 	prop@ Free
 end
 
-procedure MonitorCommandBoot (* -- *)
+fn MonitorCommandBoot { -- }
 	auto dev
 	MonitorParseDevPath dev!
 	if (dev@ 0 ==) return end
@@ -355,18 +358,21 @@ procedure MonitorCommandBoot (* -- *)
 		MonitorLinePoint@ 1 + arg!
 	end
 
-	[dev@ arg@ BootNode]BootErrors@ "boot: %s\n" Printf
+	auto r
+	dev@ arg@ BootNode r!
+
+	[r@]BootErrors@ "boot: %s\n" Printf
 end
 
-procedure MonitorCommandExit (* -- *)
+fn MonitorCommandExit { -- }
 	0 MonitorRunning!
 end
 
-procedure MonitorCommandEcho (* -- *)
+fn MonitorCommandEcho { -- }
 	MonitorLinePoint@ 1 + "%s\n" Printf
 end
 
-procedure MonitorCommandPuts (* -- *)
+fn MonitorCommandPuts { -- }
 	auto ptr
 	MonitorParseWord ptr!
 
@@ -375,7 +381,7 @@ procedure MonitorCommandPuts (* -- *)
 	ptr@ Free
 end
 
-procedure MonitorCommandDinfo (* -- *)
+fn MonitorCommandDinfo { -- }
 	auto dev
 	MonitorParseDevPath dev!
 	if (dev@ 0 ==) return end
@@ -431,7 +437,7 @@ procedure MonitorCommandDinfo (* -- *)
 	DeviceExit
 end
 
-procedure MonitorCommandListenv (* -- *)
+fn MonitorCommandListenv { -- }
 	auto i
 	0 i!
 
@@ -453,7 +459,7 @@ procedure MonitorCommandListenv (* -- *)
 	end
 end
 
-procedure MonitorCommandDelenv (* -- *)
+fn MonitorCommandDelenv { -- }
 	auto name
 	MonitorParseWord name!
 
@@ -462,7 +468,7 @@ procedure MonitorCommandDelenv (* -- *)
 	name@ Free
 end
 
-procedure MonitorCommandSetenv (* -- *)
+fn MonitorCommandSetenv { -- }
 	auto name
 	MonitorParseWord name!
 
@@ -476,20 +482,23 @@ procedure MonitorCommandSetenv (* -- *)
 	name@ Free
 end
 
-procedure MonitorCommandPrintenv (* -- *)
+fn MonitorCommandPrintenv { -- }
 	auto word
 	MonitorParseWord word!
 
-	word@ NVRAMGetVar dup if (0 ~=)
-		word@ "%s = \"%s\"\n" Printf
+	auto q
+	word@ NVRAMGetVar q!
+
+	if (q@ 0 ~=)
+		q@ word@ "%s = \"%s\"\n" Printf
 	end else
-		drop word@ "%s is not a variable.\n" Printf
+		word@ "%s is not a variable.\n" Printf
 	end
 
 	word@ Free
 end
 
-procedure MonitorLsH { tabs dev } (* -- continue *)
+fn MonitorLsH { tabs dev -- cont }
 	auto tnc
 	dev@ TreeNodeChildren tnc!
 
@@ -498,7 +507,7 @@ procedure MonitorLsH { tabs dev } (* -- continue *)
 
 	while (n@ 0 ~=)
 		if (WaitNext ~~)
-			0 return
+			0 cont! return
 		end
 
 		auto pnode
@@ -524,17 +533,17 @@ procedure MonitorLsH { tabs dev } (* -- continue *)
 			'\n' Putc
 
 			if (tabs@ 1 + pnode@ MonitorLsH ~~)
-				0 return
+				0 cont! return
 			end
 		end
 
 		n@ ListNode_Next + @ n!
 	end
 
-	1
+	1 cont!
 end
 
-procedure MonitorCommandLs (* -- *)
+fn MonitorCommandLs { -- }
 	auto dev
 	MonitorParseDevPath dev!
 	if (dev@ 0 ==) return end
@@ -554,7 +563,7 @@ table DiskTypes
 	"PARTITION"
 endtable
 
-procedure MonitorCommandDisklabel (* -- *)
+fn MonitorCommandDisklabel { -- }
 	auto dev
 	MonitorParseDevPath dev!
 	if (dev@ 0 ==) return end
@@ -602,15 +611,15 @@ procedure MonitorCommandDisklabel (* -- *)
 	DeviceExit
 end
 
-procedure MonitorCommandBootMenu (* -- *)
+fn MonitorCommandBootMenu { -- }
 
 end
 
-procedure MonitorCommandDumpHeap (* -- *)
+fn MonitorCommandDumpHeap { -- }
 	HeapDump
 end
 
-procedure MonitorCommandHelp (* -- *)
+fn MonitorCommandHelp { -- }
 	auto plist
 	MonitorCommandList@ plist!
 
@@ -624,18 +633,21 @@ procedure MonitorCommandHelp (* -- *)
 		n@ ListNodeValue
 		pnode!
 
-		pnode@ MonitorCommand_HelpText + @ dup if (0 ~=)
+		auto q
+		pnode@ MonitorCommand_HelpText + @ q!
+
+		if (q@ 0 ~=)
 			if (WaitNext ~~)
-				0 return
+				return
 			end
 		
-			pnode@ MonitorCommand_Name + @ "\[[33m%s\[[0m\t\t%s\n" Printf
-		end else drop end
+			q@ pnode@ MonitorCommand_Name + @ "\[[33m%s\[[0m\t\t%s\n" Printf
+		end
 
 		n@ ListNodeNext n!
 	end
 end
 
-procedure MonitorCommandBanner (* -- *)
+fn MonitorCommandBanner { -- }
 	"Type 'help' for commands, or 'exit' to return from the monitor.\n" Printf
 end

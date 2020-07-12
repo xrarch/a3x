@@ -1,11 +1,9 @@
 #include "<df>/dragonfruit.h"
 #include "<inc>/a3x.h"
 
-externconst Font
-
 (* ebus dma controller driver *)
 
-procedure BuildDMA (* -- *)
+fn BuildDMA { -- }
 	DeviceNew
 		"dma" DSetName
 
@@ -17,23 +15,23 @@ procedure BuildDMA (* -- *)
 
 		DMABase "address" DAddProperty
 
-		pointerof DMATransfer "transfer" DAddMethod
-		pointerof DMABitTransfer "bitTransfer" DAddMethod
+		pointerof DMATransferM "transfer" DAddMethod
+		pointerof DMABitTransferM "bitTransfer" DAddMethod
 	DeviceExit
 
 	DMAWaitUnbusy
 	0 DMARegisterStatus!
 end
 
-procedure DMAWaitUnbusy (* -- *)
+fn DMAWaitUnbusy { -- }
 	while (DMARegisterStatus@ 1 &) end
 end
 
-procedure DMADoOperation (* -- *)
+fn DMADoOperation { -- }
 	DMARegisterStatus@ 1 | DMARegisterStatus!
 end
 
-procedure DMAFullTransfer { src dest srcinc destinc count mode lines destmod srcmod -- }
+fn private DMAFullTransfer { src dest srcinc destinc count mode lines destmod srcmod bitmode -- }
 	src@ DMARegisterSource!
 	dest@ DMARegisterDest!
 	srcinc@ DMARegisterSInc!
@@ -44,6 +42,8 @@ procedure DMAFullTransfer { src dest srcinc destinc count mode lines destmod src
 	destmod@ DMARegisterDestMod!
 	srcmod@ DMARegisterSrcMod!
 
+	bitmode@ DMARegisterBitMode!
+
 	auto rs
 	InterruptDisable rs!
 
@@ -53,15 +53,43 @@ procedure DMAFullTransfer { src dest srcinc destinc count mode lines destmod src
 	rs@ InterruptRestore
 end
 
-procedure DMABitTransfer (* src dest srcinc destinc count mode lines destmod srcmod *) { direction clearbyte setbyte -- }
-	1 DMARegisterBitMode!
+fn private DMABitTransferM { argvt argcn -- out1 out2 out3 }
+	argvt@ 44 + @
+	argvt@ 40 + @
+	argvt@ 36 + @
+	argvt@ 32 + @
+	argvt@ 28 + @
+	argvt@ 24 + @
+	argvt@ 20 + @
+	argvt@ 16 + @
+	argvt@ 12 + @
+	argvt@ 8 + @
+	argvt@ 4 + @
+	argvt@ @
+	DMABitTransfer
+end
+
+fn DMABitTransfer { src dest srcinc destinc count mode lines destmod srcmod direction clearbyte setbyte -- }
 	clearbyte@ DMARegisterClearByte!
 	setbyte@ DMARegisterSetByte!
 	direction@ DMARegisterDirection!
 
-	DMAFullTransfer
+	src@ dest@ srcinc@ destinc@ count@ mode@ lines@ destmod@ srcmod@ 1 DMAFullTransfer
 end
 
-procedure DMATransfer (* src dest srcinc destinc count mode lines destmod srcmod -- *)
-	DMAFullTransfer
+fn private DMATransferM { argvt argcn -- out1 out2 out3 }
+	argvt@ 32 + @
+	argvt@ 28 + @
+	argvt@ 24 + @
+	argvt@ 20 + @
+	argvt@ 16 + @
+	argvt@ 12 + @
+	argvt@ 8 + @
+	argvt@ 4 + @
+	argvt@ @
+	DMATransfer
+end
+
+fn DMATransfer { src dest srcinc destinc count mode lines destmod srcmod -- }
+	src@ dest@ srcinc@ destinc@ count@ mode@ lines@ destmod@ srcmod@ 0 DMAFullTransfer
 end

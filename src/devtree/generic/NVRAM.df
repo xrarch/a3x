@@ -3,16 +3,43 @@
 
 (* this isn't an alias to a platform-specific node because it relates back to inherently platform-specific bits of a3x *)
 
-procedure BuildNVRAM (* -- *)
+fn BuildNVRAM { -- }
 	DeviceNew
 		"nvram" DSetName
 
 		"nvram" "deviceType" DAddProperty
 
-		pointerof NVRAMDeleteVar "deleteVar" DAddMethod
-		pointerof NVRAMSetVar "setVar" DAddMethod
-		pointerof NVRAMSetVarNum "setVarNum" DAddMethod
-		pointerof NVRAMGetVar "getVar" DAddMethod
-		pointerof NVRAMGetVarNum "getVarNum" DAddMethod
+		pointerof NVRAMDeleteVarM "deleteVar" DAddMethod
+		pointerof NVRAMSetVarM "setVar" DAddMethod
+		pointerof NVRAMSetVarNumM "setVarNum" DAddMethod
+		pointerof NVRAMGetVarM "getVar" DAddMethod
+		pointerof NVRAMGetVarNumM "getVarNum" DAddMethod
 	DeviceExit
+end
+
+fn private NVRAMDeleteVarM { argvt argcn -- out1 out2 out3 }
+	argvt@ @
+	NVRAMDeleteVar
+end
+
+fn private NVRAMSetVarM { argvt argcn -- out1 out2 out3 }
+	argvt@ 4 + @
+	argvt@ @
+	NVRAMSetVar
+end
+
+fn private NVRAMSetVarNumM { argvt argcn -- out1 out2 out3 }
+	argvt@ 4 + @
+	argvt@ @
+	NVRAMSetVarNum
+end
+
+fn private NVRAMGetVarM { argvt argcn -- out1 out2 out3 }
+	argvt@ @
+	NVRAMGetVar out1!
+end
+
+fn private NVRAMGetVarNumM { argvt argcn -- out1 out2 out3 }
+	argvt@ @
+	NVRAMGetVarNum out1!
 end

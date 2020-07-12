@@ -5,14 +5,8 @@
 
 var SBusNode 0
 
-procedure GBusDefault (* -- defaultnode *)
-	"bus-dev" NVRAMGetVar dup if (0 ==)
-		drop PlatformBusPath@ "bus-dev" NVRAMSetVar
-		PlatformBusPath@
-	end
-
-	auto dn
-	DevTreeWalk dn!
+fn GBusDefault { -- dn }
+	PlatformBusPath@ "bus-dev" NVRAMDefaultGetVar DevTreeWalk dn!
 
 	if (dn@ 0 ==)
 		"bus-dev is phony, trying platform default\n" Printf
@@ -20,11 +14,9 @@ procedure GBusDefault (* -- defaultnode *)
 		PlatformBusPath@ "bus-dev" NVRAMSetVar
 		PlatformBusPath@ DevTreeWalk dn!
 	end
-
-	dn@
 end
 
-procedure BuildGBus (* -- *)
+fn BuildGBus { -- }
 	GBusDefault SBusNode!
 
 	if (SBusNode@ 0 ~=)

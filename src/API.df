@@ -31,6 +31,6 @@ table API
 endtable
 public API
 
-procedure private APIDevTree (* -- root dcp *)
-	DevCurrent@ DevTree@
+fn private APIDevTree { -- root dcp }
+	DevCurrent@ DevTree@ root! dcp!
 end

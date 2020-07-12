@@ -32,7 +32,7 @@ var LGFXNeedsInit 1
 
 var LGDMATransfer 0
 
-procedure BuildLIMNGFX (* -- *)
+fn BuildLIMNGFX { -- }
 	auto slot
 	LGSlotMID EBusFindFirstBoard slot!
 
@@ -40,15 +40,15 @@ procedure BuildLIMNGFX (* -- *)
 		return
 	end
 
-	auto sb
+	auto sbe
 
-	slot@ EBusSlotSpace * EBusSlotsStart + dup sb! LGSlotBottom!
+	slot@ EBusSlotSpace * EBusSlotsStart + dup sbe! LGSlotBottom!
 
 	auto fb
-	sb@ LGVRAMOffset + dup fb! LGVRAM!
+	sbe@ LGVRAMOffset + dup fb! LGVRAM!
 
 	auto wh
-	sb@ LGRegScreen + @ wh! 
+	sbe@ LGRegScreen + @ wh! 
 
 	auto w
 	wh@ 0xFFF & w!
@@ -66,7 +66,7 @@ procedure BuildLIMNGFX (* -- *)
 
 		fb@ "vram" DAddProperty
 
-		sb@ LGRegVRAM + @ "vramSize" DAddProperty
+		sbe@ LGRegVRAM + @ "vramSize" DAddProperty
 
 		"display" "deviceType" DAddProperty
 
@@ -74,14 +74,14 @@ procedure BuildLIMNGFX (* -- *)
 
 		slot@ "ebus,unit" DAddProperty
 
-		sb@ "address" DAddProperty
+		sbe@ "address" DAddProperty
 
 		1 "revision" DAddProperty
 
-		pointerof LGFXRectangle "rectangle" DAddMethod
-		pointerof LGFXBlitBits "blitBits" DAddMethod
-		pointerof LGFXScroll "scroll" DAddMethod
-		pointerof LGFXBlit "blit" DAddMethod
+		pointerof LGFXRectangleM "rectangle" DAddMethod
+		pointerof LGFXBlitBitsM "blitBits" DAddMethod
+		pointerof LGFXScrollM "scroll" DAddMethod
+		pointerof LGFXBlitM "blit" DAddMethod
 		pointerof LGFXInit "init" DAddMethod
 	DeviceExit
 
@@ -89,7 +89,7 @@ procedure BuildLIMNGFX (* -- *)
 	h@ LGHeight!
 end
 
-procedure LGFXInit (* -- *)
+fn LGFXInit { argvt argcn -- out1 out2 out3 }
 	if (LGFXNeedsInit@)
 		0 0 LGWidth@ LGHeight@ "screen-bg" NVRAMGetVarNum LGFXRectangle
 
@@ -125,34 +125,43 @@ const MODECOMB80  0xF00
 
 var WritePtr 0
 
-procedure private Go { -- }
-	auto sb
-	LGSlotBottom@ sb!
+fn private Go { -- }
+	auto sbe
+	LGSlotBottom@ sbe!
 
-	WritePtr@ sb@ LGRegWrite + !
+	WritePtr@ sbe@ LGRegWrite + !
 
 	auto readp
-	sb@ LGRegRead + readp!
+	sbe@ LGRegRead + readp!
 
 	while (readp@@ WritePtr@ ~=) end
 end
 
-procedure private Put { cmd -- }
-	auto sb
-	LGSlotBottom@ sb!
+fn private Put { cmd -- }
+	auto sbe
+	LGSlotBottom@ sbe!
 
 	auto readp
-	sb@ LGRegRead + readp!
+	sbe@ LGRegRead + readp!
 
 	(* wait until command buf isn't full *)
 	while (WritePtr@ 64 % readp@@ 64 % 1 - ==) end
 
-	cmd@ WritePtr@ 64 % 4 * sb@ LGCommandOffset + + !
+	cmd@ WritePtr@ 64 % 4 * sbe@ LGCommandOffset + + !
 
 	1 WritePtr +=
 end
 
-procedure LGFXRectangle { x y w h color -- }
+fn private LGFXRectangleM { argvt argcn -- out1 out2 out3 }
+	argvt@ 16 + @
+	argvt@ 12 + @
+	argvt@ 8 + @
+	argvt@ 4 + @
+	argvt@ @
+	LGFXRectangle
+end
+
+fn LGFXRectangle { x y w h color -- }
 	auto rs
 	InterruptDisable rs!
 
@@ -167,7 +176,20 @@ procedure LGFXRectangle { x y w h color -- }
 	rs@ InterruptRestore
 end
 
-procedure LGFXBlitBits { bpr fg bg bitd ptr x y w h -- }
+fn private LGFXBlitBitsM { argvt argcn -- out1 out2 out3 }
+	argvt@ 32 + @
+	argvt@ 28 + @
+	argvt@ 24 + @
+	argvt@ 20 + @
+	argvt@ 16 + @
+	argvt@ 12 + @
+	argvt@ 8 + @
+	argvt@ 4 + @
+	argvt@ @
+	LGFXBlitBits
+end
+
+fn LGFXBlitBits { bpr fg bg bitd ptr x y w h -- }
 	if (LGDMANode@ 0 ==)
 		auto ndma
 		"/dma" DevTreeWalk ndma!
@@ -199,13 +221,22 @@ procedure LGFXBlitBits { bpr fg bg bitd ptr x y w h -- }
 		LGWidth@ w@ - 2 *
 		0
 		bitd@ bg@ fg@
-		LGDMATransfer@ DCallMethodPtr
+		LGDMATransfer@ DCallMethodPtr drop drop drop
 	DeviceExit
+end
+
+fn private LGFXBlitM { argvt argcn -- out1 out2 out3 }
+	argvt@ 16 + @
+	argvt@ 12 + @
+	argvt@ 8 + @
+	argvt@ 4 + @
+	argvt@ @
+	LGFXBlit
 end
 
 var LGDMAFTransfer 0
 
-procedure LGFXBlit { x y w h ptr -- }
+fn LGFXBlit { x y w h ptr -- }
 	if (LGDMANode@ 0 ==)
 		auto ndma
 		"/dma" DevTreeWalk ndma!
@@ -236,11 +267,11 @@ procedure LGFXBlit { x y w h ptr -- }
 		h@
 		LGWidth@ w@ - 2 *
 		0
-		LGDMAFTransfer@ DCallMethodPtr
+		LGDMAFTransfer@ DCallMethodPtr drop drop drop
 	DeviceExit
 end
 
-procedure private LGFXVBlit { xd yd wd hd xs ys ws hs -- }
+fn private LGFXVBlit { xd yd wd hd xs ys ws hs -- }
 	auto rs
 	InterruptDisable rs!
 
@@ -259,7 +290,17 @@ procedure private LGFXVBlit { xd yd wd hd xs ys ws hs -- }
 	rs@ InterruptRestore
 end
 
-procedure LGFXScroll { x y w h color rows -- }
+fn LGFXScrollM { argvt argcn -- out1 out2 out3 }
+	argvt@ 20 + @
+	argvt@ 16 + @
+	argvt@ 12 + @
+	argvt@ 8 + @
+	argvt@ 4 + @
+	argvt@ @
+	LGFXScroll
+end
+
+fn LGFXScroll { x y w h color rows -- }
 	x@ y@ w@ h@ rows@ - 
 	x@ y@ rows@ + w@ h@ rows@ -
 	LGFXVBlit

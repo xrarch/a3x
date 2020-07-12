@@ -1,11 +1,11 @@
 #include "<df>/dragonfruit.h"
 #include "<inc>/a3x.h"
 
-extern BuildDMA
-extern BuildPBoard
-extern BuildLIMNGFX
+extern BuildDMA { -- }
+extern BuildPBoard { -- }
+extern BuildLIMNGFX { -- }
 
-procedure BuildEBus (* -- *)
+fn BuildEBus { -- }
 	DeviceNew
 		"ebus" DSetName
 
@@ -34,7 +34,7 @@ procedure BuildEBus (* -- *)
 end
 
 (* find first board of id *)
-procedure EBusFindFirstBoard { id -- slot }
+fn EBusFindFirstBoard { id -- slot }
 	auto i
 	0 i!
 
@@ -56,10 +56,14 @@ procedure EBusFindFirstBoard { id -- slot }
 	return
 end
 
-procedure EBusSlotInterruptRegister (* handler slot -- *)
-	0x98 + InterruptRegister
+fn EBusSlotInterruptRegister { handler slot -- }
+	handler@ slot@ 0x98 + InterruptRegister
 end
 
-procedure EBusReset (* -- *)
-	asm "lui rs, 0x80000000"
-end
+asm "
+
+EBusReset:
+	lui rs, 0x80000000
+	ret
+
+"

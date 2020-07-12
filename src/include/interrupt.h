@@ -1,9 +1,9 @@
-extern InterruptRegister (* handler num -- *)
+extern InterruptRegister { handler num -- }
 
-extern InterruptUnregister (* num -- *)
+extern InterruptUnregister { num -- }
 
-extern InterruptEnable (* -- *)
+extern InterruptEnable { -- }
 
-extern InterruptDisable (* -- rs *)
+extern InterruptDisable { -- rs }
 
-extern InterruptRestore (* rs -- *)
+extern InterruptRestore { rs -- }
