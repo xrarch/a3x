@@ -2,50 +2,648 @@
 #include "<inc>/a3x.h"
 
 #include "monitor.h"
+#include "debug-limn2k.h"
 
-struct TrapFrame
-	4 lr
-	4 ers
-	4 epc
+const INSTFNONE 0
+const INSTFT 1 (* triple *)
+const INSTFBI 2 (* byte, int *)
+const INSTFBBB 3 (* byte, byte, byte *)
+const INSTFINVAL -1
 
-	4 r1    4 r2
-	4 r3    4 r4
-	4 r5    4 r6
-	4 r7    4 r8
-	4 r9    4 r10
-	4 r11   4 r12
-	4 r13   4 r14
-	4 r15   4 r16
-	4 r17   4 r18
-	4 r19   4 r20
-	4 r21   4 r22
-	4 r23   4 r24
-	4 r25   4 r26
-	4 at    4 tf
-endstruct
+const OPNONE 0
+const OPREG 1
+const OPIMM8 2
+const OPIMM16 3
+const OPIMM16U 4 (* upper 16 *)
+const OPIMM24A 5 (* pseudo-absolute triple *)
+const OPIMM24P 6 (* pc-relative triple *)
+const OPIMM8P 7 (* pc-relative byte *)
+const OPIMM8L 8 (* long offset byte *)
+const OPIMM8I 9 (* int offset byte *)
+const OPIMM8S 10 (* signed byte *)
 
-table TrapFrame_Names
-	"lr"
-	"ers"
-	"epc"
+table limn2kRegs
+	"zero"
+	"t0" "t1"
+	"t2" "t3"
+	"t4" "a0"
+	"a1" "a2"
+	"a3" "v0"
+	"v1" "s0"
+	"s1" "s2"
+	"s3" "s4"
+	"s5" "s6"
+	"s7" "s8"
+	"s9" "s10"
+	"s11" "s12"
+	"s13" "s14"
+	"at" "tf"
+	"sp" "lr"
+	"pc"
 
-	"t0"    "t1"
-	"t2"    "t3"
-	"t4"    "a0"
-	"a1"    "a2"
-	"a3"    "v0"
-	"v1"    "s0"
-	"s1"    "s2"
-	"s3"    "s4"
-	"s5"    "s6"
-	"s7"    "s7"
-	"s9"    "s10"
-	"s11"   "s12"
-	"s13"   "s14"
-	"at"    "tf"
+	"k0" "k1"
+	"k2" "k3"
+	"rs" "ev"
+	"epc" "ecause"
+	"ers" "timer"
+	"cpuid" "badaddr"
 endtable
 
-const TrapFrameNElem 31
+const limn2kREGBIGGEST 43
+
+fn private DisReg { pc specific op -- shift }
+	8 shift!
+
+	if (op@ limn2kREGBIGGEST >)
+		"\[[94mr?\[[0m" Printf
+		return
+	end
+
+	[op@]limn2kRegs@ "\[[94m%s\[[0m" Printf
+end
+
+fn private DisImm8 { pc specific op -- shift }
+	8 shift!
+
+	"\[[95m" Puts
+
+	if (specific@ OPIMM8 ==)
+		op@ "%d" Printf
+	end elseif (specific@ OPIMM8I ==)
+		op@ 1 << "%d" Printf
+	end elseif (specific@ OPIMM8L ==)
+		op@ 2 << "%d" Printf
+	end elseif (specific@ OPIMM8S ==)
+		if (op@ 0x80 &)
+			op@ ~ 1 + 0xFF & "-%d" Printf
+		end else
+			op@ "%d" Printf
+		end
+	end elseif (specific@ OPIMM8P ==)
+		if (op@ 0x80 &)
+			pc@ op@ ~ 1 + 0xFF & 2 << - "0x%x" Printf
+		end else
+			pc@ op@ 2 << + "0x%x" Printf
+		end
+	end else
+		"byte?" Printf
+	end
+
+	"\[[0m" Puts
+end
+
+fn private DisImm16 { pc specific op -- shift }
+	16 shift!
+
+	"\[[95m" Puts
+
+	if (specific@ OPIMM16 ==)
+		op@ "%d" Printf
+	end elseif (specific@ OPIMM16U ==)
+		op@ 16 << "0x%x" Printf
+	end else
+		"int?" Printf
+	end
+
+	"\[[0m" Puts
+end
+
+fn private DisImm24 { pc specific op -- shift }
+	24 shift!
+
+	"\[[95m" Puts
+
+	if (specific@ OPIMM24P ==)
+		if (op@ 0x800000 &)
+			pc@ op@ ~ 1 + 0xFFFFFF & 2 << - "0x%x" Printf
+		end else
+			pc@ op@ 2 << + "0x%x" Printf
+		end
+	end elseif (specific@ OPIMM24A ==)
+		pc@ 0xFC000000 & op@ 2 << | "0x%x" Printf
+	end else
+		"triple?" Printf
+	end
+
+	"\[[0m" Puts
+end
+
+table opMask
+	0
+	0xFF
+	0xFF
+	0xFFFF
+	0xFFFF
+	0xFFFFFF
+	0xFFFFFF
+	0xFF
+	0xFF
+	0xFF
+	0xFF
+endtable
+
+table opTab
+	0
+	pointerof DisReg
+	pointerof DisImm8
+	pointerof DisImm16
+	pointerof DisImm16
+	pointerof DisImm24
+	pointerof DisImm24
+	pointerof DisImm8
+	pointerof DisImm8
+	pointerof DisImm8
+	pointerof DisImm8
+endtable
+
+table limn2kInstr
+	"nop"
+	INSTFNONE
+	OPNONE OPNONE OPNONE
+
+	"l.b"
+	INSTFBBB
+	OPREG OPREG OPREG
+	"l.i"
+	INSTFBBB
+	OPREG OPREG OPREG
+	"l.l"
+	INSTFBBB
+	OPREG OPREG OPREG
+
+	"lio.b"
+	INSTFBBB
+	OPREG OPREG OPIMM8
+	"lio.i"
+	INSTFBBB
+	OPREG OPREG OPIMM8I
+	"lio.l"
+	INSTFBBB
+	OPREG OPREG OPIMM8L
+
+	"s.b"
+	INSTFBBB
+	OPREG OPREG OPREG
+	"s.i"
+	INSTFBBB
+	OPREG OPREG OPREG
+	"s.l"
+	INSTFBBB
+	OPREG OPREG OPREG
+
+	"si.b"
+	INSTFBBB
+	OPREG OPREG OPIMM8
+	"si.i"
+	INSTFBBB
+	OPREG OPREG OPIMM8
+	"si.l"
+	INSTFBBB
+	OPREG OPREG OPIMM8
+
+	"sio.b"
+	INSTFBBB
+	OPREG OPIMM8 OPREG
+	"sio.i"
+	INSTFBBB
+	OPREG OPIMM8I OPREG
+	"sio.l"
+	INSTFBBB
+	OPREG OPIMM8L OPREG
+
+	"siio.b"
+	INSTFBBB
+	OPREG OPIMM8 OPIMM8
+	"siio.i"
+	INSTFBBB
+	OPREG OPIMM8I OPIMM8
+	"siio.l"
+	INSTFBBB
+	OPREG OPIMM8L OPIMM8
+
+	"li"
+	INSTFBI
+	OPREG OPIMM16 OPNONE
+
+	"si16.i"
+	INSTFBI
+	OPREG OPIMM16 OPNONE
+
+	"si16.l"
+	INSTFBI
+	OPREG OPIMM16 OPNONE
+
+	"lui"
+	INSTFBI
+	OPREG OPIMM16U OPNONE
+
+	"swd.b"
+	INSTFBBB
+	OPREG OPREG OPREG
+	"swd.i"
+	INSTFBBB
+	OPREG OPREG OPREG
+	"swd.l"
+	INSTFBBB
+	OPREG OPREG OPREG
+
+	"swdi.b"
+	INSTFBBB
+	OPREG OPIMM8 OPNONE
+	"swdi.i"
+	INSTFBI
+	OPREG OPIMM8I OPNONE
+	"swdi.l"
+	INSTFBI
+	OPREG OPIMM8L OPNONE
+
+	"lwi.b"
+	INSTFBBB
+	OPREG OPREG OPREG
+	"lwi.i"
+	INSTFBBB
+	OPREG OPREG OPREG
+	"lwi.l"
+	INSTFBBB
+	OPREG OPREG OPREG
+
+	"sgpr"
+	INSTFBBB
+	OPREG OPNONE OPNONE
+	"lgpr"
+	INSTFBBB
+	OPREG OPNONE OPNONE
+
+	"unimpl"
+	INSTFINVAL
+	OPNONE OPNONE OPNONE
+
+	"unimpl"
+	INSTFINVAL
+	OPNONE OPNONE OPNONE
+
+	"beq"
+	INSTFBBB
+	OPREG OPREG OPIMM8P
+	"beqi"
+	INSTFBBB
+	OPREG OPIMM8 OPIMM8P
+
+	"bne"
+	INSTFBBB
+	OPREG OPREG OPIMM8P
+	"bnei"
+	INSTFBBB
+	OPREG OPIMM8 OPIMM8P
+
+	"blt"
+	INSTFBBB
+	OPREG OPREG OPIMM8P
+	"blt.s"
+	INSTFBBB
+	OPREG OPREG OPIMM8P
+
+	"slt"
+	INSTFBBB
+	OPREG OPREG OPREG
+	"slti"
+	INSTFBBB
+	OPREG OPREG OPIMM8S
+
+	"slt.s"
+	INSTFBBB
+	OPREG OPREG OPREG
+	"slti.s"
+	INSTFBBB
+	OPREG OPREG OPIMM8S
+
+	"seqi"
+	INSTFBBB
+	OPREG OPREG OPIMM8
+
+	"sgti"
+	INSTFBBB
+	OPREG OPREG OPIMM8
+	"sgti.s"
+	INSTFBBB
+	OPREG OPREG OPIMM8S
+
+	"snei"
+	INSTFBBB
+	OPREG OPREG OPIMM8
+
+	"seq"
+	INSTFBBB
+	OPREG OPREG OPREG
+
+	"sne"
+	INSTFBBB
+	OPREG OPREG OPREG
+
+	"b"
+	INSTFT
+	OPIMM24P OPNONE OPNONE
+
+	"j"
+	INSTFT
+	OPIMM24A OPNONE OPNONE
+
+	"jal"
+	INSTFT
+	OPIMM24A OPNONE OPNONE
+
+	"jalr"
+	INSTFBBB
+	OPREG OPNONE OPNONE
+
+	"jr"
+	INSTFBBB
+	OPREG OPNONE OPNONE
+
+	"brk"
+	INSTFNONE
+	OPNONE OPNONE OPNONE
+
+	"sys"
+	INSTFNONE
+	OPNONE OPNONE OPNONE
+
+	"add"
+	INSTFBBB
+	OPREG OPREG OPREG
+	"addi"
+	INSTFBBB
+	OPREG OPREG OPIMM8
+	"addi.i"
+	INSTFBI
+	OPREG OPIMM16 OPNONE
+
+	"sub"
+	INSTFBBB
+	OPREG OPREG OPREG
+	"subi"
+	INSTFBBB
+	OPREG OPREG OPIMM8
+	"subi.i"
+	INSTFBI
+	OPREG OPIMM16 OPNONE
+
+	"mul"
+	INSTFBBB
+	OPREG OPREG OPREG
+	"muli"
+	INSTFBBB
+	OPREG OPREG OPIMM8
+	"muli.i"
+	INSTFBI
+	OPREG OPIMM16 OPNONE
+
+	"div"
+	INSTFBBB
+	OPREG OPREG OPREG
+	"divi"
+	INSTFBBB
+	OPREG OPREG OPIMM8
+	"divi.i"
+	INSTFBI
+	OPREG OPIMM16 OPNONE
+
+	"mod"
+	INSTFBBB
+	OPREG OPREG OPREG
+	"modi"
+	INSTFBBB
+	OPREG OPREG OPIMM8
+	"modi.i"
+	INSTFBI
+	OPREG OPIMM16 OPNONE
+
+	"unimpl"
+	INSTFINVAL
+	OPNONE OPNONE OPNONE
+
+	"unimpl"
+	INSTFINVAL
+	OPNONE OPNONE OPNONE
+
+	"not"
+	INSTFBBB
+	OPREG OPREG OPNONE
+
+	"or"
+	INSTFBBB
+	OPREG OPREG OPREG
+	"ori"
+	INSTFBBB
+	OPREG OPREG OPIMM8
+	"ori.i"
+	INSTFBI
+	OPREG OPIMM16 OPNONE
+
+	"xor"
+	INSTFBBB
+	OPREG OPREG OPREG
+	"xori"
+	INSTFBBB
+	OPREG OPREG OPIMM8
+	"xori.i"
+	INSTFBI
+	OPREG OPIMM16 OPNONE
+
+	"and"
+	INSTFBBB
+	OPREG OPREG OPREG
+	"andi"
+	INSTFBBB
+	OPREG OPREG OPIMM8
+	"andi.i"
+	INSTFBI
+	OPREG OPIMM16 OPNONE
+
+	"lsh"
+	INSTFBBB
+	OPREG OPREG OPREG
+	"lshi"
+	INSTFBBB
+	OPREG OPREG OPIMM8
+
+	"rsh"
+	INSTFBBB
+	OPREG OPREG OPREG
+	"rshi"
+	INSTFBBB
+	OPREG OPREG OPIMM8
+
+	"bset"
+	INSTFBBB
+	OPREG OPREG OPREG
+	"bseti"
+	INSTFBBB
+	OPREG OPREG OPIMM8
+
+	"bclr"
+	INSTFBBB
+	OPREG OPREG OPREG
+	"bclri"
+	INSTFBBB
+	OPREG OPREG OPIMM8
+
+	"bget"
+	INSTFBBB
+	OPREG OPREG OPREG
+	"bgeti"
+	INSTFBBB
+	OPREG OPREG OPIMM8
+
+	"bswap"
+	INSTFBBB
+	OPREG OPREG OPNONE
+
+	"unimpl"
+	INSTFINVAL
+	OPNONE OPNONE OPNONE
+
+	"rfe"
+	INSTFNONE
+	OPNONE OPNONE OPNONE
+
+	"hlt"
+	INSTFNONE
+	OPNONE OPNONE OPNONE
+
+	"unimpl"
+	INSTFINVAL
+	OPNONE OPNONE OPNONE
+
+	"unimpl"
+	INSTFINVAL
+	OPNONE OPNONE OPNONE
+
+	"unimpl"
+	INSTFINVAL
+	OPNONE OPNONE OPNONE
+
+	"bt"
+	INSTFT
+	OPIMM24P OPNONE OPNONE
+
+	"bf"
+	INSTFT
+	OPIMM24P OPNONE OPNONE
+endtable
+
+struct InstrFormat
+	4 Name
+	4 Format
+	4 Op1
+	4 Op2
+	4 Op3
+endstruct
+
+const limn2kOPBIGGEST 0x68
+
+fnptr DisasmOper { pc specific op -- shift }
+
+const INSTNAMEPAD 6
+
+fn private DisasmInstr { addr -- }
+	auto instr
+	addr@ @ instr!
+
+	auto opcode
+	instr@ 0xFF & opcode!
+
+	addr@ " %x  " Printf
+
+	if (opcode@ limn2kOPBIGGEST >)
+		"unimpl\n" Printf
+		return
+	end
+
+	auto opt
+	opcode@ InstrFormat_SIZEOF * limn2kInstr + opt!
+
+	auto n
+
+	opt@ InstrFormat_Name + @ n!
+
+	n@ "\[[33m%s\[[0m" Printf
+
+	if (opt@ InstrFormat_Format + @ INSTFINVAL ==)
+		'\n' Putc
+		return
+	end
+
+	auto m
+	n@ strlen m!
+
+	while (m@ INSTNAMEPAD <)
+		' ' Putc
+		1 m +=
+	end
+
+	' ' Putc
+
+	InstrFormat_Op1 opt +=
+
+	8 instr >>=
+
+	auto op
+	0 op!
+
+	auto opk
+
+	while (op@ 3 <)
+		opt@ @ opk!
+
+		if (opk@ OPNONE ==)
+			break
+		end
+
+		if (op@ 0 ~=)
+			", " Printf
+		end
+
+		addr@
+		opk@
+		instr@ [opk@]opMask@ &
+		[opk@]opTab@ DisasmOper
+		instr >>=
+
+		1 op +=
+		4 opt +=
+	end
+
+	'\n' Putc
+end
+
+fn MonitorCommandDisasm { -- }
+	auto ptr
+
+	auto ptrw
+	MonitorParseWord ptrw!
+
+	ptrw@ atoi ptr!
+
+	ptrw@ Free
+
+	if (ptr@ 3 &)
+		"address must be aligned to 32 bits!\n" Printf
+		return
+	end
+
+	ResetLines
+
+	while (1)
+		if (WaitNext ~~)
+			return
+		end
+
+		ptr@ DisasmInstr
+
+		4 ptr +=
+	end
+end
 
 fn private NameToOffset { name -- reg }
 	auto i
@@ -62,6 +660,31 @@ fn private NameToOffset { name -- reg }
 	end
 end
 
+fn MonitorCommandStackTrace { -- }
+	if (MonitorState@ 0 ==)
+		"no state saved\n" Printf
+		return
+	end
+
+	ResetLines
+
+	auto osp
+	MonitorState@ TrapFrame_SIZEOF + osp!
+
+	auto pc
+	MonitorState@ TrapFrame_epc + @ pc!
+
+	while (osp@)
+		if (WaitNext ~~)
+			return
+		end
+
+		pc@ osp@ " (sp=0x%x) 0x%x\n" Printf
+
+		osp@ 4 + @ pc!
+		osp@@ osp!
+	end
+end
 
 fn MonitorCommandDumpstate { -- }
 	if (MonitorState@ 0 ==)

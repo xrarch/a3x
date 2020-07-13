@@ -9,6 +9,8 @@ extern HeapDump { -- }
 extern MonitorCommandDumpstate { -- }
 extern MonitorCommandPrintreg { -- }
 extern MonitorCommandSavereg { -- }
+extern MonitorCommandDisasm { -- }
+extern MonitorCommandStackTrace { -- }
 
 fn MonitorCommandsInit { -- }
 	ListCreate MonitorCommandList!
@@ -146,6 +148,16 @@ fn MonitorCommandsInit { -- }
 	"[path] [property] [value] Set property value in device node."
 	pointerof MonitorCommandSetProp
 	"setprop"
+	MonitorAddCommand
+
+	"[addr] Start disassembling at addr."
+	pointerof MonitorCommandDisasm
+	"disasm"
+	MonitorAddCommand
+
+	"Print stack trace."
+	pointerof MonitorCommandStackTrace
+	"trace"
 	MonitorAddCommand
 
 	0
