@@ -3,19 +3,19 @@ struct TrapFrame
 	4 ers
 	4 epc
 
-	4 r1    4 r2
-	4 r3    4 r4
-	4 r5    4 r6
-	4 r7    4 r8
-	4 r9    4 r10
-	4 r11   4 r12
-	4 r13   4 r14
-	4 r15   4 r16
-	4 r17   4 r18
-	4 r19   4 r20
-	4 r21   4 r22
-	4 r23   4 r24
-	4 r25   4 r26
+	4 t0    4 t1
+	4 t2    4 t3
+	4 t4    4 a0
+	4 a1    4 a2
+	4 a3    4 v0
+	4 v1    4 s0
+	4 s1    4 s2
+	4 s3    4 s4
+	4 s5    4 s6
+	4 s7    4 s8
+	4 s9    4 s10
+	4 s11   4 r12
+	4 s13   4 s14
 	4 at    4 tf
 endstruct
 

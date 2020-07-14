@@ -665,7 +665,7 @@ fn MonitorCommandStackTrace { -- }
 		"no state saved\n" Printf
 		return
 	end
-
+	
 	ResetLines
 
 	auto osp
