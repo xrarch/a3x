@@ -1,4 +1,4 @@
-SFILES := $(shell find . -type f -name '*.s')
+SFILES := $(shell find . -type f -name "*.s")
 OBJ    := ROMHeader.o Reset.o Serial.o Error.o Exception.o POST.o LoadBIOS.o
 
 AS       =  ../../../sdk/asm.sh
