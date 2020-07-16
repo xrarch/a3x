@@ -93,6 +93,7 @@ fn AHDBPartitions { id -- pcount }
 						id@ "satsuma,id" DAddProperty
 						ptr@ AHDB_PTE_Blocks + @ "blocks" DAddProperty
 						offset@ "offset" DAddProperty
+						pc@ "partition#" DAddProperty
 
 						"disk-logical" "deviceType" DAddProperty
 
@@ -100,6 +101,8 @@ fn AHDBPartitions { id -- pcount }
 
 						pointerof AHDBReadM "readBlock" DAddMethod
 						pointerof AHDBWriteM "writeBlock" DAddMethod
+
+						"AISA,satsuma-disk" "model" DAddProperty
 
 						pnt@ "parentDisk" DAddProperty
 
