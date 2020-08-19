@@ -27,5 +27,5 @@ firmware.bin: $(OBJ)
 	$(DC) incdir=./include/ $< $@
 
 cleanup:
-	rm $(OBJ) a3x.LOFF firmware.bin boot.bin
+	rm -f $(OBJ) a3x.LOFF firmware.bin boot.bin
 	$(MAKE) --directory=llfw cleanup

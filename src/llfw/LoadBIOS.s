@@ -36,7 +36,7 @@
 	4 LinkedAddress
 .end-struct
 
-LOFFMagic === 0x4C4F4646
+LOFFMagic === 0x4C4F4632
 LOFFArch === 2
 
 ;outputs:
@@ -50,7 +50,7 @@ LoadBIOS:
 
 	la r6, _data_end ;this is where the BIOS image should be in ROM
 	lio.l r1, r6, LOFF_Magic
-	la r5, 0x4C4F4646
+	la r5, LOFFMagic
 	beq r1, r5, .valid1
 
 	b .notvalid

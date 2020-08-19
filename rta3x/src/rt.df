@@ -1,0 +1,9 @@
+#include "<df>/dragonfruit.h"
+
+fn FPutc { fd c -- }
+	c@ Putc
+end
+
+fn FPuts { fd s -- }
+	s@ Puts	
+end

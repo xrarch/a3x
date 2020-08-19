@@ -107,6 +107,10 @@ fn Putc { c -- }
 	0 c@ rPutc
 end
 
+fn FPutc { fd c -- }
+	c@ Putc
+end
+
 fn Getc { -- c }
 	if (ConsoleInMethod@ 0 ==) ERR c! return end
 
@@ -208,4 +212,8 @@ fn Puts { s -- }
 		s@ gb Putc
 		1 s +=
 	end
+end
+
+fn FPuts { fd s -- }
+	s@ Puts
 end

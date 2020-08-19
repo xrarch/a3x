@@ -17,6 +17,4 @@ llfw.bin: $(OBJ)
 	$(AS) $< $@
 
 cleanup:
-	rm *.LOFF
-	rm *.bin
-	rm *.o
+	rm -f *.LOFF *.bin *.o
