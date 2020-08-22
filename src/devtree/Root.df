@@ -27,6 +27,8 @@ ANTEBDS:
 	.ds$ __DATE
 	.db 0x0
 
+.align 4
+
 .section text
 
 "

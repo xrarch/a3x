@@ -34,6 +34,8 @@ var LGDMATransfer 0
 
 var LGFXDisabled 0
 
+var LGFB 0
+
 fn BuildLIMNGFX { -- }
 	auto slot
 	LGSlotMID EBusFindFirstBoard slot!
@@ -102,6 +104,8 @@ fn BuildLIMNGFX { -- }
 
 	w@ LGWidth!
 	h@ LGHeight!
+
+	fb@ LGFB!
 end
 
 fn LGFXInit { argvt argcn -- out1 out2 out3 }
@@ -200,7 +204,7 @@ fn LGFXRectangle { x y w h color -- }
 	if (LGFXDisabled@)
 		return
 	end
-
+	
 	auto rs
 	InterruptDisable rs!
 
