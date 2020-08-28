@@ -7,7 +7,7 @@ fn BuildLimn2k { -- }
 		
 		"cpu" "deviceType" DAddProperty
 
-		"AISA,limn2k" "model" DAddProperty
+		"limn2k" "model" DAddProperty
 
 		1 "revision" DAddProperty
 

@@ -10,7 +10,7 @@ fn BuildPlatform { -- }
 	DeviceNew
 		"platform" DSetName
 	
-		"LIMNstation,1" "model" DAddProperty
+		"LIMNstation" "model" DAddProperty
 
 		"platform" "deviceType" DAddProperty
 
