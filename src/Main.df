@@ -8,9 +8,12 @@ fn Main { -- }
 	auto cn
 	"/clock" DevTreeWalk cn!
 
+	auto gcn
+	"/gconsole" DevTreeWalk gcn!
+
 	auto fv
 
-	"true" "verbose?" NVRAMDefaultGetVar "true" strcmp fv!
+	"false" "verbose?" NVRAMDefaultGetVar "true" strcmp fv!
 
 	if (fv@ ~~ kbn@ 0 ~= &&)
 		kbn@ DeviceSelectNode
@@ -41,9 +44,16 @@ fn Main { -- }
 		if (cancel@ ~~)
 			auto r
 			AutoBoot r!
-			if (r@ 1 ~=)
-				ConsoleUserOut
+			if (r@ 9 ==) (* if it was a system software error, don't draw the console box *)
+				if (gcn@)
+					gcn@ DeviceSelectNode
+						"nodraw" DCallMethod drop drop drop drop
+					DeviceExit
+				end
 			end
+
+			ConsoleUserOut
+
 			[r@]BootErrors@ "boot: %s\n" Printf
 		end else
 			ConsoleUserOut

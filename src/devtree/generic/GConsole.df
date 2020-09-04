@@ -114,6 +114,7 @@ fn BuildGConsole { -- }
 		"gconsole" DSetName
 
 		pointerof GConsolePutCharM "write" DAddMethod
+		pointerof GConsoleSuppressDrawM "nodraw" DAddMethod
 
 		FontWidth "fontWidth" DAddProperty
 		FontHeight "fontHeight" DAddProperty
@@ -124,6 +125,10 @@ fn BuildGConsole { -- }
 	DeviceExit
 
 	GConsoleDefault
+end
+
+fn private GConsoleSuppressDrawM { argvt argcn -- out1 out2 out3 }
+	GConsoleSuppressDraw
 end
 
 fn GConsoleSuppressDraw { -- }
@@ -303,7 +308,7 @@ end
 
 fn VConsoleDraw { -- }
 	if (GConsoleX@ 80 >= GConsoleY@ 80 >= &&) (* there is at least GConsoleMargin/2 pixels around the edge, do a pretty box *)
-		"ANTECEDENT 3.x Firmware"
+		"LIMNstation"
 		GConsoleX@ 15 -
 		GConsoleY@ 25 -
 		GCWidth@ FontWidth * 30 +
@@ -358,8 +363,6 @@ fn GConsoleSetColor { -- }
 		GCColorDefBG@ GCColorBG!
 
 		0 GCInverted!
-
-		return
 	end elseif ([0]GCEVT@ 7 ==)
 		if (GCInverted@ ~~)
 			GCColorFG@ color!
@@ -368,8 +371,6 @@ fn GConsoleSetColor { -- }
 
 			1 GCInverted!
 		end
-
-		return
 	end elseif ([0]GCEVT@ 39 ==)
 		GCColorDefFG@ GCColorFG!
 	end elseif ([0]GCEVT@ 49 ==)
@@ -397,6 +398,8 @@ fn GConsoleSetColor { -- }
 			[2]GCEVT@ GCColorBG!
 		end
 	end
+
+	GConsoleDrawCur
 end
 
 fn GConsoleClearLine { -- }

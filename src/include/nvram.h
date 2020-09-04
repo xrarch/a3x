@@ -3,7 +3,7 @@ const NVRAMSize 65536
 
 const NVRAMVarCount 255
 
-const NVRAMMagic 0x2C001CA7
+const NVRAMMagic 0x3C001CA7
 
 struct NVRAMHeader
 	4 Magic
