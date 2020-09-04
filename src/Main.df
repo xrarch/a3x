@@ -61,8 +61,6 @@ fn Main { -- }
 			"user cancelled automatic boot\n" Printf
 		end
 	end else
-		ConsoleUserOut
-
 		"auto-boot?=false, not automatically booting\n" Printf
 	end
 
