@@ -32,8 +32,6 @@ var LGFXNeedsInit 1
 
 var LGDMATransfer 0
 
-var LGFXDisabled 0
-
 var LGFB 0
 
 fn BuildLIMNGFX { -- }
@@ -80,27 +78,13 @@ fn BuildLIMNGFX { -- }
 
 		sbe@ "address" DAddProperty
 
-		1 "fwuse" DAddProperty
-
 		1 "revision" DAddProperty
 
 		pointerof LGFXRectangleM "rectangle" DAddMethod
 		pointerof LGFXBlitBitsM "blitBits" DAddMethod
 		pointerof LGFXScrollM "scroll" DAddMethod
-		pointerof LGFXBlitM "blit" DAddMethod
 		pointerof LGFXInit "init" DAddMethod
-
-		pointerof LGFXDisable "disable" DAddMethod
-		pointerof LGFXEnable "enable" DAddMethod
 	DeviceExit
-
-	auto rs
-	InterruptDisable rs!
-
-	0 sbe@ LGRegWrite + !
-	0 sbe@ LGRegRead + !
-
-	rs@ InterruptRestore
 
 	w@ LGWidth!
 	h@ LGHeight!
@@ -116,81 +100,6 @@ fn LGFXInit { argvt argcn -- out1 out2 out3 }
 	end
 end
 
-var WriteDelta 0
-
-fn LGFXDisable { -- }
-	1 LGFXDisabled!
-end
-
-fn LGFXEnable { -- }
-	0 WriteDelta!
-	0 LGFXDisabled!
-end
-
-const TEXSRCDIM   0x01
-const TEXSRCVRAM  0x02
-const TEXDESTDIM  0x03
-const TEXDESTVRAM 0x04
-const ORSRCDIM    0x05
-const ORSRCPOS    0x06
-const ORDESTDIM   0x07
-const ORDESTPOS   0x08
-const OPRECT      0x09
-const BLITRECT    0x0A
-const DRAWLINE    0x0E
-
-const MODECOPY    0x100
-const MODEOR      0x200
-const MODEXOR     0x300
-const MODEAND     0x400
-const MODENOR     0x500
-const MODENAND    0x600
-const MODEXNOR    0x700
-
-const MODECOMB50  0xB00
-const MODECOMB20  0xC00
-const MODECOMB40  0xD00
-const MODECOMB60  0xE00
-const MODECOMB80  0xF00
-
-fn private Go { -- }
-	auto sbe
-	LGSlotBottom@ sbe!
-
-	auto readp
-	sbe@ LGRegRead + readp!
-
-	auto writep
-	sbe@ LGRegWrite + writep!
-
-	WriteDelta@ writep@ +=
-
-	0 WriteDelta!
-
-	while (readp@@ writep@@ ~=) end
-end
-
-fn private Put { cmd -- }
-	auto sbe
-	LGSlotBottom@ sbe!
-
-	auto readp
-	sbe@ LGRegRead + readp!
-
-	auto writep
-	sbe@ LGRegWrite + writep!
-
-	auto nwp
-	writep@@ WriteDelta@ + nwp!
-
-	(* wait until command buf isn't full *)
-	while (nwp@ 64 % readp@@ 64 % 1 - ==) end
-
-	cmd@ nwp@ 64 % 4 * sbe@ LGCommandOffset + + !
-
-	1 WriteDelta +=
-end
-
 fn private LGFXRectangleM { argvt argcn -- out1 out2 out3 }
 	argvt@ 16 + @
 	argvt@ 12 + @
@@ -201,22 +110,27 @@ fn private LGFXRectangleM { argvt argcn -- out1 out2 out3 }
 end
 
 fn LGFXRectangle { x y w h color -- }
-	if (LGFXDisabled@)
-		return
+	auto row
+	0 row!
+
+	auto v
+	color@ 16 << color@ | v!
+
+	auto ptr
+	y@ LGWidth@ * 2 * x@ 2 * + LGFB@ + ptr!
+
+	auto mod
+	LGWidth@ 2 * mod!
+
+	auto rowsz
+	w@ 2 * rowsz!
+
+	while (row@ h@ <)
+		ptr@ rowsz@ v@ memset
+
+		1 row +=
+		mod@ ptr +=
 	end
-	
-	auto rs
-	InterruptDisable rs!
-
-	LGHeight@ 20 << LGWidth@ 8 << | TEXDESTDIM | Put
-	0 TEXDESTVRAM | Put
-	h@ 20 << w@ 8 << | ORDESTDIM | Put
-	y@ 20 << x@ 8 << | ORDESTPOS | Put
-	color@ 12 << MODECOPY | OPRECT | Put
-
-	Go
-
-	rs@ InterruptRestore
 end
 
 fn private LGFXBlitBitsM { argvt argcn -- out1 out2 out3 }
@@ -233,10 +147,6 @@ fn private LGFXBlitBitsM { argvt argcn -- out1 out2 out3 }
 end
 
 fn LGFXBlitBits { bpr fg bg bitd ptr x y w h -- }
-	if (LGFXDisabled@)
-		return
-	end
-
 	if (LGDMANode@ 0 ==)
 		auto ndma
 		"/dma" DevTreeWalk ndma!
@@ -272,75 +182,6 @@ fn LGFXBlitBits { bpr fg bg bitd ptr x y w h -- }
 	DeviceExit
 end
 
-fn private LGFXBlitM { argvt argcn -- out1 out2 out3 }
-	argvt@ 16 + @
-	argvt@ 12 + @
-	argvt@ 8 + @
-	argvt@ 4 + @
-	argvt@ @
-	LGFXBlit
-end
-
-var LGDMAFTransfer 0
-
-fn LGFXBlit { x y w h ptr -- }
-	if (LGFXDisabled@)
-		return
-	end
-
-	if (LGDMANode@ 0 ==)
-		auto ndma
-		"/dma" DevTreeWalk ndma!
-
-		if (ndma@ 0 ~=)
-			ndma@ LGDMANode!
-
-			ndma@ DeviceSelectNode
-				"transfer" DGetMethod LGDMAFTransfer!
-			DeviceExit
-		end else
-			return
-		end
-	end
-
-	if (LGDMAFTransfer@ 0 ==)
-		return
-	end
-
-	auto dest
-	y@ LGWidth@ * 2 * x@ 2 * + LGVRAM@ + dest!
-
-	LGDMANode@ DeviceSelectNode
-		ptr@ dest@
-		1 2 w@ *
-		w@ 2 *
-		0
-		h@
-		LGWidth@ w@ - 2 *
-		0
-		LGDMAFTransfer@ DCallMethodPtr drop drop drop
-	DeviceExit
-end
-
-fn private LGFXVBlit { xd yd wd hd xs ys ws hs -- }
-	auto rs
-	InterruptDisable rs!
-
-	LGHeight@ 20 << LGWidth@ 8 << | TEXDESTDIM | Put
-	LGHeight@ 20 << LGWidth@ 8 << | TEXSRCDIM | Put
-	0 TEXDESTVRAM | Put
-	0 TEXSRCVRAM  | Put
-	hd@ 20 << wd@ 8 << | ORDESTDIM | Put
-	yd@ 20 << xd@ 8 << | ORDESTPOS | Put
-	hs@ 20 << ws@ 8 << | ORSRCDIM  | Put
-	ys@ 20 << xs@ 8 << | ORSRCPOS  | Put
-	MODECOPY BLITRECT | Put
-
-	Go
-
-	rs@ InterruptRestore
-end
-
 fn LGFXScrollM { argvt argcn -- out1 out2 out3 }
 	argvt@ 20 + @
 	argvt@ 16 + @
@@ -352,15 +193,31 @@ fn LGFXScrollM { argvt argcn -- out1 out2 out3 }
 end
 
 fn LGFXScroll { x y w h color rows -- }
-	if (LGFXDisabled@)
-		return
+	auto row
+	0 row!
+
+	auto dest
+	y@ LGWidth@ * 2 * x@ 2 * + LGFB@ + dest!
+
+	auto src
+	y@ rows@ + LGWidth@ * 2 * x@ 2 * + LGFB@ + src!
+
+	auto mod
+	LGWidth@ 2 * mod!
+
+	auto rowsz
+	w@ 2 * rowsz!
+
+	auto rh
+	h@ rows@ - rh!
+
+	while (row@ rh@ <)
+		dest@ src@ rowsz@ memcpy
+
+		1 row +=
+		mod@ src +=
+		mod@ dest +=
 	end
 
-	x@ y@ w@ h@ rows@ - 
-	x@ y@ rows@ + w@ h@ rows@ -
-	LGFXVBlit
-
-	if (color@ -1 ~=)
-		x@ y@ h@ rows@ - + w@ rows@ color@ LGFXRectangle
-	end
+	x@ y@ h@ + rows@ - w@ rows@ color@ LGFXRectangle
 end

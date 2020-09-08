@@ -286,14 +286,22 @@ fn GConsoleBack { -- }
 	GCCurX@ 1 - GCCurX!
 end
 
+fn private Box { x y w h color -- }
+	x@ y@ w@ 1 color@ GConsoleRRect
+	x@ y@ h@ + 1 - w@ 1 color@ GConsoleRRect
+
+	x@ y@ 1 + 1 h@ 2 - color@ GConsoleRRect
+	x@ w@ + 1 - y@ 1 + 1 h@ 2 - color@ GConsoleRRect
+end
+
 fn GConsoleUIBox { title x y w h -- }
-	x@ y@ w@ h@ 0x7FFF GConsoleRRect
-	x@ 1 + y@ 1 + w@ h@ 0x4210 GConsoleRRect
+	x@ y@ w@ h@ 0x7FFF Box
+	x@ 1 + y@ 1 + w@ h@ 0x4210 Box
 	x@ 1 + y@ 1 + w@ 1 - h@ 1 - 0x6318 GConsoleRRect
-	x@ 10 + y@ 20 + w@ 18 - h@ 28 - 0x7FFF GConsoleRRect
-	x@ 10 + y@ 20 + w@ 19 - h@ 29 - 0x4210 GConsoleRRect
-	x@ 11 + y@ 21 + w@ 21 - h@ 31 - 0x7FFF GConsoleRRect
-	x@ 12 + y@ 22 + w@ 22 - h@ 32 - 0x6318 GConsoleRRect
+	x@ 10 + y@ 20 + w@ 18 - h@ 28 - 0x7FFF Box
+	x@ 10 + y@ 20 + w@ 19 - h@ 29 - 0x4210 Box
+	x@ 11 + y@ 21 + w@ 21 - h@ 31 - 0x7FFF Box
+	x@ 12 + y@ 22 + w@ 22 - h@ 32 - 0x6318 Box
 
 	auto tw
 	title@ strlen FontWidth * tw!
