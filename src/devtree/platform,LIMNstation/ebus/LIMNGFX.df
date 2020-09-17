@@ -219,5 +219,7 @@ fn LGFXScroll { x y w h color rows -- }
 		mod@ dest +=
 	end
 
-	x@ y@ h@ + rows@ - w@ rows@ color@ LGFXRectangle
+	if (color@ -1 ~=)
+		x@ y@ h@ + rows@ - w@ rows@ color@ LGFXRectangle
+	end
 end

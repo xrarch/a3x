@@ -210,41 +210,71 @@ fn GConsoleRect { x y w h color -- }
 end
 
 fn GConsoleScroll { rows -- }
-	GCScreenNode@ DeviceSelectNode
-		GConsoleX@ GConsoleY@
-		GConsoleLongestLine FontWidth *
-		FontHeight GCHeight@ *
-		GCColorDefBG@
-		rows@ FontHeight *
-		GCScrollP@ DCallMethodPtr drop drop drop
-	DeviceExit
-
-	auto k
-	GCHeight@ k!
+	auto i
+	0 i!
 
 	auto gclb
 	GCLineLenBuf@ gclb!
 
-	auto r
-	gclb@ r!
+	auto k
+	GCHeight@ 1 - k!
 
-	auto max
-	GCHeight@ rows@ - 4 * gclb@ + max!
+	auto y
+	GConsoleY@ y!
 
-	while (r@ max@ <)
-		r@ rows@ 4 * + @ r@ !
-		4 r +=
+	auto gcx
+	GConsoleX@ gcx!
+
+	auto bg
+	GCColorDefBG@ bg!
+
+	auto scrollp
+	GCScrollP@ scrollp!
+
+	auto tll
+	auto nll
+
+	auto h
+	GCHeight@ h!
+
+	GCScreenNode@ DeviceSelectNode
+
+	while (i@ k@ <)
+		gclb@@ tll!
+		gclb@ 4 + @ nll!
+
+		gcx@ y@
+		tll@ nll@ max FontWidth *
+		FontHeight rows@ 1 + *
+		-1
+		rows@ FontHeight *
+		scrollp@ DCallMethodPtr drop drop drop
+
+		if (tll@ nll@ >)
+			gcx@ nll@ FontWidth * + y@
+			tll@ nll@ - FontWidth *
+			FontHeight
+			bg@
+			GConsoleRRect
+		end
+
+		rows@ FontHeight * y +=
+		1 i +=
+
+		nll@ gclb@!
+
+		4 gclb +=
 	end
 
-	GCHeight@ rows@ - 4 * gclb@ + r!
-	GCHeight@ 4 * gclb@ + max!
+	DeviceExit
 
-	while (r@ max@ <)
-		0 r@ !
-		4 r +=
-	end
+	GCLineLenBuf@ gclb!
 
-	1 GConsoleModified!
+	GConsoleX@
+	GConsoleY@ h@ FontHeight * + FontHeight -
+	GCHeight@ 1 - 4 * gclb@ + @ FontWidth * FontHeight bg@ GConsoleRRect
+
+	0 GCHeight@ 1 - 4 * gclb@ + !
 end
 
 fn GConsoleDoCur { color -- }

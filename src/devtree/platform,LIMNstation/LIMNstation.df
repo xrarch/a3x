@@ -3,7 +3,6 @@
 
 extern BuildEBus { -- }
 extern BuildLimn2k { -- }
-extern BuildMemory { -- }
 extern BuildLSIC { -- }
 
 fn BuildPlatform { -- }
@@ -15,8 +14,6 @@ fn BuildPlatform { -- }
 		"platform" "deviceType" DAddProperty
 
 		BuildLimn2k
-
-		BuildMemory
 
 		BuildEBus
 
@@ -72,7 +69,7 @@ fn PlatformInit { -- }
 	"/platform/ebus/limngfx" PlatformScreenPath!
 	"/platform/ebus/platformboard/citron/serial" PlatformSerialPath!
 	"/platform/limn2k" PlatformCPUPath!
-	"/platform/memory" PlatformMemoryPath!
+	"/platform/ebus/ram" PlatformMemoryPath!
 	"/platform/ebus" PlatformBusPath!
 	"/platform/lsic" PlatformInterruptPath!
 

@@ -1,0 +1,18 @@
+#include "<df>/dragonfruit.h"
+#include "<inc>/a3x.h"
+
+fn BuildSNVRAM { -- }
+	DeviceNew
+		"nvram" DSetName
+
+		"nvram" "deviceType" DAddProperty
+
+		"AISA,nvram" "model" DAddProperty
+
+		1 "revision" DAddProperty
+
+		NVRAMBase "address" DAddProperty
+
+		NVRAMSize "size" DAddProperty
+	DeviceExit
+end

@@ -4,6 +4,8 @@
 extern BuildDMA { -- }
 extern BuildPBoard { -- }
 extern BuildLIMNGFX { -- }
+extern BuildSNVRAM { -- }
+extern BuildMemory { -- }
 
 fn BuildEBus { -- }
 	DeviceNew
@@ -24,6 +26,10 @@ fn BuildEBus { -- }
 		EBusSlotSpace "ebus,slotSize" DAddProperty
 
 		EBusSlots "ebus,slotCount" DAddProperty
+
+		BuildSNVRAM
+
+		BuildMemory
 
 		BuildDMA
 

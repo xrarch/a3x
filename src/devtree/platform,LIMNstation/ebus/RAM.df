@@ -3,7 +3,7 @@
 
 fn BuildMemory { -- }
 	DeviceNew
-		"memory" DSetName
+		"ram" DSetName
 
 		"memory" "deviceType" DAddProperty
 
