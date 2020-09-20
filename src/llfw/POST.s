@@ -9,7 +9,7 @@
 PBVersion === 0xF8000800
 
 ExpectedPBVersion === 0x2
-ExpectedCPUVersion === 0x3
+ExpectedCPUVersion === 0x4
 
 POST:
 .global POST
