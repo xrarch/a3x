@@ -21,7 +21,7 @@ endstruct
 fn HeapInit { -- }
 	pointerof _bss_end dup KHeapStart! KHeapLast!
 
-	0x40000 KHeapStart@ - KHeapSize!
+	pointerof _text 0x40000 + KHeapStart@ - KHeapSize!
 
 	KHeapSize@ KHeapStart@ KHeapHeader_size + !
 	0 KHeapStart@ KHeapHeader_last + !
@@ -178,7 +178,7 @@ fn private Malloc1 { endp startp sz -- ptr }
 		ptr@ KHeapHeader_next + @ ptr!
 	end
 
-	if (ptr@ iserr ~~)
+	if (ptr@ ERR ~=)
 		ptr@ KHeapLast!
 
 		1 ptr@ KHeapHeader_allocated + !
@@ -196,13 +196,13 @@ fn Malloc { size -- ptr }
 
 	0 KHeapLast@ size@ Malloc1 ptr!
 
-	if (ptr@ iserr ~~)
+	if (ptr@ ERR ~=)
 		return
 	end
 
 	KHeapLast@ 0 size@ Malloc1 ptr!
 
-	if (ptr@ iserr ~~)
+	if (ptr@ ERR ~=)
 		return
 	end
 
@@ -212,7 +212,7 @@ end
 fn Calloc { size -- ptr }
 	size@ Malloc ptr!
 
-	if (ptr@ iserr)
+	if (ptr@ ERR ==)
 		return
 	end
 
@@ -220,7 +220,7 @@ fn Calloc { size -- ptr }
 end
 
 fn Free { ptr -- }
-	if (ptr@ 0 == ptr@ iserr ||)
+	if (ptr@ 0 == ptr@ ERR == ||)
 		ptr@ "tried to free 0x%x!\n" Problem
 	end
 
