@@ -1,96 +1,78 @@
 SerialPortA === 0xF8000040
 SerialPortB === 0xF8000044
 
-;r1 - str
+;a0 - str
 Puts:
 .global Puts
 	push lr
-	push r2
 
 .loop:
-	l.b r2, r1, zero
-	beq r2, zero, .out
+	l.b t0, a0, zero
+	beq t0, zero, .out
 
-	push r1
-	mov r1, r2
+	push a0
+	mov a0, t0
 	jal Putc
-	pop r1
+	pop a0
 
-	addi r1, r1, 1
+	addi a0, a0, 1
 	b .loop
 
 .out:
-	pop r2
 	pop lr
 	ret
 
 ;outputs:
-;r1 - char
+;v0 - char
 Getc:
 .global Getc
-	push r2
-	push r3
-	push r4
-	la r2, SerialPortA
-
-	li r4, 0xFFFF
+	la t0, SerialPortA
+	li t1, 0xFFFF
 	
 .busy:
-	l.b r3, r2, zero
-	bne r3, zero, .busy
+	l.b t2, t0, zero
+	bne t2, zero, .busy
 
-	si.b r2, zero, 2
-	lio.i r1, r2, 4
+	si.b t0, zero, 2
+	lio.i t3, t0, 4
 
-	beq r1, r4, .busy
+	beq t3, t1, .busy
 
-	pop r4
-	pop r3
-	pop r2
 	ret 
 
-;r1 - char
+;a0 - char
 Putc:
 .global Putc
-	push r2
-	push r3
-	la r2, SerialPortA
+	la t0, SerialPortA
 
 .wait:
-	l.b r3, r2, zero
-	bne r3, zero, .wait
+	l.b t1, t0, zero
+	bne t1, zero, .wait
 
-	sio.l r2, 4, r1
-	si.l r2, zero, 1
+	sio.l t0, 4, a0
+	si.l t0, zero, 1
 
-	pop r3
-	pop r2
 	ret
 
-;r1 - number
+;a0 - number
 Putn:
 .global Putn
 	push lr
-	push r1
-	push r2
-	push r3
 
-	mov r3, r1
-	rshi r1, r1, 4
-	modi r2, r3, 16
-	beq r1, zero, .ldigit
+	mov t0, a0
+	rshi a0, a0, 4
+	modi t1, t0, 16
+	beq a0, zero, .ldigit
 
+	push t1
 	jal Putn
+	pop t1
 
 .ldigit:
-	la r3, IntegerChars
-	l.b r1, r3, r2
-
+	la t0, IntegerChars
+	l.b a0, t0, t1
 	jal Putc
 
-	pop r3
-	pop r2
-	pop r1
 	pop lr
 	ret
 

@@ -4,11 +4,15 @@
 
 .extern Puts
 
+.extern FindFB
+
 .extern POST
 
 .extern LoadBIOS
 
 .extern Putn
+
+.extern Putc
 
 RAMSlotZero === 0x10000004
 
@@ -17,10 +21,10 @@ Reset:
 	lui rs, 0x80000000 ;reset ebus
 	li ev, 0 ;clear exception vector
 
-	la r1, RAMSlotZero
-	l.l r1, r1, zero
-	la r2, _bss_size
-	bge r1, r2, .goodRAM ;continue if there's at least enough RAM to fit our bss section
+	la t0, RAMSlotZero
+	l.l a0, t0, zero
+	la t1, _bss_size
+	bge a0, t1, .goodRAM ;continue if there's at least enough RAM to fit our bss section
 
 	b Hang ;otherwise hang
 
@@ -30,39 +34,41 @@ Reset:
 	la ev, ExceptionVector ;set exception vector
 
 	;zero out bss
-	la r2, _bss
-	la r3, _bss_size
-	add r4, r2, r3
+	la t0, _bss
+	la t1, _bss_size
+	add t3, t0, t1
 
 .zero:
-	beq r2, r4, .zdone
+	beq t0, t3, .zdone
 
-	s.l r2, zero, zero
+	s.l t0, zero, zero
 
-	addi r2, r2, 4
+	addi t0, t0, 4
 	b .zero
 
 .zdone:
-	push r1
-	la r1, HiString
+	push a0
+	jal FindFB
+
+	la a0, HiString
 	jal Puts
-	pop r1
+	pop a0
 
 	jal POST ;self test
 
 	jal LoadBIOS ;load bios image
 
-	push r1
-	la r1, HLRString
+	push v0
+	la a0, HLRString
 	jal Puts
-	pop r1
+	pop v0
 
 	;pointer to last frame as defined by limn2k abi
 	subi sp, sp, 8
 	si.l sp, zero, 0 ;zero
 	siio.l sp, 4, 0
 
-	jalr r1
+	jalr v0
 
 Hang:
 	b Hang

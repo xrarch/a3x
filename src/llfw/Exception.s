@@ -11,27 +11,27 @@ ExceptionVector:
 	push ers
 	push lr
 
-	la r1, EPCName
-	mov r2, epc
+	la a0, EPCName
+	mov a1, epc
 	jal PrintInfo
 
-	la r1, ERSName
-	mov r2, ers
+	la a0, ERSName
+	mov a1, ers
 	jal PrintInfo
 
-	la r1, ECAUSEName
-	mov r2, ecause
+	la a0, ECAUSEName
+	mov a1, ecause
 	jal PrintInfo
 
-	la r1, BADADDRName
-	mov r2, badaddr
+	la a0, BADADDRName
+	mov a1, badaddr
 	jal PrintInfo
 
 	li badaddr, 0
 
-	lui r2, 0x02000000
-	or r2, r2, ecause
-	la r1, ExceptionString
+	lui a1, 0x02000000
+	or a1, a1, ecause
+	la a0, ExceptionString
 	jal Error
 
 	pop lr
@@ -41,22 +41,26 @@ ExceptionVector:
 	addi.i sp, 112
 	rfe
 
-;r1 - name
-;r2 - value
+;a0 - name
+;a1 - value
 PrintInfo:
 	push lr
+	push s0
 
 	jal Puts
 
-	la r1, InfoString
+	mov s0, a1
+
+	la a0, InfoString
 	jal Puts
 
-	mov r1, r2
+	mov a0, s0
 	jal Putn
 
-	li r1, 0xA
+	li a0, 0xA
 	jal Putc
 
+	pop s0
 	pop lr
 	ret
 

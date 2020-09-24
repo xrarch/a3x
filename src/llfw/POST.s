@@ -11,51 +11,55 @@ PBVersion === 0xF8000800
 ExpectedPBVersion === 0x2
 ExpectedCPUVersion === 0x4
 
+;a0: RAM size
 POST:
 .global POST
 	push lr
+	push s0
 
-	push r1
-	la r1, POSTString
-	jal Puts
-	pop r1
+	mov s0, a0
 
-	lui r2, 0x40000
-	blt r1, r2, .noRAM
-
-	la r1, POSTPassed
+	la a0, POSTString
 	jal Puts
 
-	la r1, PBVersion
-	l.l r1, r1, zero
-	rshi r1, r1, 16
-	bnei r1, ExpectedPBVersion, .badPB
+	lui t0, 0x40000
+	blt s0, t0, .noRAM
 
-	rshi r1, cpuid, 16
-	andi.i r1, 0x7FFF
-	bnei r1, ExpectedCPUVersion, .badCPU
+	la t0, PBVersion
+	l.l t0, t0, zero
+	rshi t0, t0, 16
+	bnei t0, ExpectedPBVersion, .badPB
 
+	rshi t0, cpuid, 16
+	andi.i t0, 0x7FFF
+	bnei t0, ExpectedCPUVersion, .badCPU
+
+	la a0, POSTPassed
+	jal Puts
+
+	pop s0
 	pop lr
 	ret
 
 .noRAM:
-	lui r2, 0x01000000
-	or r2, r2, r1
-	la r1, POSTNoRAM
+	lui a1, 0x01000000
+	rshi s0, s0, 12
+	or a1, a1, s0
+	la a0, POSTNoRAM
 	jal Error
 	j Reset
 
 .badPB:
-	lui r2, 0x03000000
-	or r2, r2, r1
-	la r1, BadPBString
+	lui a1, 0x03000000
+	or a1, a1, s0
+	la a0, BadPBString
 	jal Error
 	j Reset
 
 .badCPU:
-	lui r2, 0x04000000
-	or r2, r2, r1
-	la r1, BadCPUString
+	lui a1, 0x04000000
+	or a1, a1, s0
+	la a0, BadCPUString
 	jal Error
 	j Reset
 

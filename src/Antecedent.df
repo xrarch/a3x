@@ -55,7 +55,7 @@ asm "
 Reset:
 .global Reset
 	li ev, 0
-	div r1, r1, zero
+	div t0, t0, zero
 .wait:
 	b .wait
 

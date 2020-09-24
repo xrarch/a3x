@@ -40,118 +40,119 @@ LOFFMagic === 0x4C4F4632
 LOFFArch === 2
 
 ;outputs:
-;r1 - entry point
+;v0 - entry point
 LoadBIOS:
 .global LoadBIOS
 	push lr
-	push r4
-	push r5
-	push r6
+	push s0
 
-	la r6, _data_end ;this is where the BIOS image should be in ROM
-	lio.l r1, r6, LOFF_Magic
-	la r5, LOFFMagic
-	beq r1, r5, .valid1
+	la s0, _data_end ;this is where the BIOS image should be in ROM
+	lio.l t0, s0, LOFF_Magic
+	la t1, LOFFMagic
+	beq t0, t1, .valid1
 
 	b .notvalid
 
 .valid1:
-	lio.l r1, r6, LOFF_Architecture
-	beqi r1, LOFFArch, .valid
+	lio.l t0, s0, LOFF_Architecture
+	beqi t0, LOFFArch, .valid
 
 	b .notvalid
 
 .valid:
-	la r1, LoadString
+	la a0, LoadString
 	jal Puts
 
-	lio.l r1, r6, LOFF_TextHeader
-	add r1, r1, r6
+	mov a1, s0
+
+	lio.l a0, s0, LOFF_TextHeader
+	add a0, a0, s0
 	jal CopySection
 
-	lio.l r1, r6, LOFF_DataHeader
-	add r1, r1, r6
+	lio.l a0, s0, LOFF_DataHeader
+	add a0, a0, s0
 	jal CopySection
 
-	lio.l r1, r6, LOFF_BSSHeader
-	add r1, r1, r6
-	lio.l r5, r1, Header_SectionSize
-	lio.l r4, r1, Header_LinkedAddress
+	lio.l t0, s0, LOFF_BSSHeader
+	add t0, t0, s0
+	lio.l t1, t0, Header_SectionSize
+	lio.l t2, t0, Header_LinkedAddress
 
-	add r5, r4, r5
+	add t1, t2, t1
 
 .zero:
-	beq r4, r5, .zdone
+	beq t2, t1, .zdone
 
-	s.l r4, zero, zero
+	s.l t2, zero, zero
 
-	addi r4, r4, 4
+	addi t2, t2, 4
 	b .zero
 
 .zdone:
-	lio.l r1, r6, LOFF_EntrySymbol
-	la r5, 0xFFFFFFFF
-	beq r1, r5, .notvalid
+	lio.l t0, s0, LOFF_EntrySymbol
+	la t1, 0xFFFFFFFF
+	beq t0, t1, .notvalid
 
-	lio.l r5, r6, LOFF_SymbolTableOffset
-	add r5, r5, r6
+	lio.l t1, s0, LOFF_SymbolTableOffset
+	add t1, t1, s0
 
-	muli r1, r1, Symbol_sizeof
-	add r1, r1, r5
+	muli t0, t0, Symbol_sizeof
+	add t0, t0, t1
 
-	lio.l r5, r1, Symbol_Section
-	bnei r5, 1, .notvalid
+	lio.l t1, t0, Symbol_Section
+	bnei t1, 1, .notvalid
 
-	lio.l r1, r1, Symbol_Value
+	lio.l t0, t0, Symbol_Value
 
-	lio.l r5, r6, LOFF_TextHeader
-	add r5, r5, r6
-	lio.l r4, r5, Header_LinkedAddress
+	lio.l t1, s0, LOFF_TextHeader
+	add t1, t1, s0
+	lio.l t2, t1, Header_LinkedAddress
 
-	add r1, r1, r4
+	add v0, t0, t2
 
-	pop r6
-	pop r5
-	pop r4
+	push v0
+	la a0, EntryString
+	jal Puts
+	pop a0
+	push a0
+	jal Putn
+	li a0, 0xA
+	jal Putc
+	pop v0
+
+	pop s0
 	pop lr
 	ret
 
 .notvalid:
-	lui r2, 0x05000000
-	la r1, InvalidString
+	lui a1, 0x05000000
+	la a0, InvalidString
 	jal Error
 
 	j Reset
 
-;r1 - section header
-;r6 - image offset
+;a0 - section header
+;a1 - image offset
 CopySection:
-	push r2
-	push r3
-	push r4
+	lio.l t0, a0, Header_SectionOffset
+	add t0, t0, a1 ;t0 now contains the section's address
 
-	lio.l r2, r1, Header_SectionOffset
-	add r2, r2, r6 ;r2 now contains the section's address
+	lio.l t1, a0, Header_SectionSize
+	lio.l t2, a0, Header_LinkedAddress
 
-	lio.l r3, r1, Header_SectionSize
-	lio.l r4, r1, Header_LinkedAddress
-
-	add r3, r4, r3
+	add t1, t2, t1
 
 .loop:
-	beq r4, r3, .out
+	beq t2, t1, .out
 
-	l.l r1, zero, r2
-	s.l r4, zero, r1
+	l.l t3, t0, zero
+	s.l t2, zero, t3
 
-	addi r2, r2, 4
-	addi r4, r4, 4
+	addi t0, t0, 4
+	addi t2, t2, 4
 	b .loop
 
 .out:
-	pop r4
-	pop r3
-	pop r2
 	ret
 
 .section data
@@ -169,8 +170,12 @@ BSSName:
 	.db 0x0
 
 LoadString:
-	.ds Loading BIOS image...
-	.db 0xA, 0x0
+	.ds Loading BIOS image... 
+	.db 0x0
+
+EntryString:
+	.ds entry @ 0x
+	.db 0x0
 
 InvalidString:
 	.ds Payload isn't a valid LOFF image!
