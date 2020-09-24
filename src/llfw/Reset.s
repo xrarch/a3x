@@ -20,6 +20,7 @@ Reset:
 .global Reset
 	lui rs, 0x80000000 ;reset ebus
 	li ev, 0 ;clear exception vector
+	li tlbv, 0
 
 	la t0, RAMSlotZero
 	l.l a0, t0, zero
@@ -32,6 +33,7 @@ Reset:
 	la sp, LLFWStackTop ;set stack
 
 	la ev, ExceptionVector ;set exception vector
+	la tlbv, ExceptionVector
 
 	;zero out bss
 	la t0, _bss

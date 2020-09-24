@@ -28,9 +28,9 @@ fn AntecedentEntry { -- }
 
 	PlatformInit
 
-	InterruptsInit
-
 	DeviceInit
+
+	InterruptsInit
 
 	FirmwareBanner
 
