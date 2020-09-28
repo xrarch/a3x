@@ -200,8 +200,14 @@ fn Malloc1 { ac endp startp sz -- ptr }
 			auto newblockp
 			ptr@ mysize@ + newblockp!
 
-			ptr@ KHeapHeader_next + @ newblockp@ KHeapHeader_next + !
-			newblockp@ ptr@ KHeapHeader_next + @ KHeapHeader_last + !
+			auto link
+			ptr@ KHeapHeader_next + @ link!
+
+			link@ newblockp@ KHeapHeader_next + !
+
+			if (link@)
+				newblockp@ link@ KHeapHeader_last + !
+			end
 
 			mysize@ ptr@ KHeapHeader_size + !
 			newblockp@ ptr@ KHeapHeader_next + !
