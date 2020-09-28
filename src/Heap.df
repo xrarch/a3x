@@ -162,11 +162,6 @@ fn Malloc1 { ac endp startp sz -- ptr }
 	startp@ ptr!
 
 	while (ptr@)
-		if (ptr@ 0 ==)
-			ERR ptr!
-			break
-		end
-
 		if (ptr@ 3 &)
 			ptr@ "Malloc: unaligned block %x\n" Problem
 		end
@@ -220,6 +215,11 @@ fn Malloc1 { ac endp startp sz -- ptr }
 		end
 
 		ptr@ KHeapHeader_next + @ ptr!
+	end
+
+	if (ptr@ 0 ==)
+		ERR ptr!
+		return
 	end
 
 	if (ptr@ ERR ~=)
