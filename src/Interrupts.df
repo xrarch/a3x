@@ -56,7 +56,7 @@ table ExceptionNames
 	"Unknown"
 	"Interrupt"
 	"Syscall"
-	"MMU fault"
+	"TLB refill"
 	"Bus error"
 	"Timer"
 	"Breakpoint"
@@ -65,6 +65,7 @@ table ExceptionNames
 	"Unaligned address"
 	"Unaligned PC"
 	"Division by zero"
+	"Page fault"
 endtable
 const ExceptionCount 12
 
