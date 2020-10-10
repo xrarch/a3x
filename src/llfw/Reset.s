@@ -14,6 +14,8 @@
 
 .extern Putc
 
+.extern memset
+
 RAMSlotZero === 0x10000004
 
 Reset:
@@ -23,9 +25,9 @@ Reset:
 	li tlbv, 0
 
 	la t0, RAMSlotZero
-	l.l a0, t0, zero
+	l.l s0, t0, zero
 	la t1, _bss_size
-	bge a0, t1, .goodRAM ;continue if there's at least enough RAM to fit our bss section
+	bge s0, t1, .goodRAM ;continue if there's at least enough RAM to fit our bss section
 
 	b Hang ;otherwise hang
 
@@ -36,26 +38,17 @@ Reset:
 	la tlbv, ExceptionVector
 
 	;zero out bss
-	la t0, _bss
-	la t1, _bss_size
-	add t3, t0, t1
+	li a0, 0
+	la a1, _bss_size
+	la a2, _bss
+	jal memset
 
-.zero:
-	beq t0, t3, .zdone
-
-	s.l t0, zero, zero
-
-	addi t0, t0, 4
-	b .zero
-
-.zdone:
-	push a0
 	jal FindFB
 
 	la a0, HiString
 	jal Puts
-	pop a0
 
+	mov a0, s0
 	jal POST ;self test
 
 	jal LoadBIOS ;load bios image

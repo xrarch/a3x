@@ -10,12 +10,7 @@ fn NVRAMCheck { -- ok }
 end
 
 fn NVRAMFormat { -- }
-	auto i
-	0 i!
-	while (i@ NVRAMSize <)
-		0 i@ NVRAMOffset !
-		4 i +=
-	end
+	NVRAMBase NVRAMSize 0 memset
 
 	NVRAMMagic NVRAMHeader_Magic NVRAMOffset !
 end

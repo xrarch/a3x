@@ -1,5 +1,5 @@
 SFILES := $(shell find . -type f -name "*.s")
-OBJ    := ROMHeader.o Reset.o Serial.o Error.o Exception.o POST.o LoadBIOS.o Framebuffer.o
+OBJ    := ROMHeader.o Reset.o Serial.o Error.o Exception.o POST.o LoadBIOS.o Framebuffer.o Copy.o
 
 AS       =  ../../../sdk/asm.sh
 OBJTOOL  =  ../../../sdk/link.sh

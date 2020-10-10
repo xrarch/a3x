@@ -5,6 +5,8 @@ LIMNGFXSlotMID === 0x4B494E34
 LGVRAMOffset === 0x100000
 LGRegScreen === 0x3000
 
+.extern memset
+
 FindFB:
 .global FindFB
 	lui t0, EBusSlotsStart
@@ -171,101 +173,6 @@ FBClear:
 	jal memset
 
 	pop lr
-	ret
-
-
-;a0 - word
-;a1 - size
-;a2 - ptr
-memset:
-.global memset
-	bne a1, zero, .gzero
-
-	ret
-
-.gzero:
-	xori t1, a2, 3
-	addi t1, t1, 1
-	andi t1, t1, 3
-
-	beq t1, zero, .fdone
-
-	mov t2, a0
-
-	blt t1, a1, .goodlen
-
-	mov t1, a1
-
-.goodlen:
-	sub a1, a1, t1
-
-.fu:
-	s.b a2, zero, t2
-
-	rshi t2, t2, 8
-
-	addi a2, a2, 1
-	subi t1, t1, 1
-	bne t1, zero, .fu
-
-.fdone:
-	;ptr is now aligned
-
-	rshi t1, a1, 6 ;do 64 bytes each loop
-
-	beq t1, zero, .b64done
-
-.b64:
-	s.l   a2, zero, a0
-	sio.l a2, 4,    a0
-	sio.l a2, 8,    a0
-	sio.l a2, 12,   a0
-	sio.l a2, 16,   a0
-	sio.l a2, 20,   a0
-	sio.l a2, 24,   a0
-	sio.l a2, 28,   a0
-	sio.l a2, 32,   a0
-	sio.l a2, 36,   a0
-	sio.l a2, 40,   a0
-	sio.l a2, 44,   a0
-	sio.l a2, 48,   a0
-	sio.l a2, 52,   a0
-	sio.l a2, 56,   a0
-	sio.l a2, 60,   a0
-
-	addi a2, a2, 64
-	subi t1, t1, 1
-	bne t1, zero, .b64
-
-.b64done:
-	andi t1, a1, 63
-
-	rshi t1, t1, 2 ;do 4 bytes each loop
-
-	beq t1, zero, .b4done
-
-.b4:
-	s.l a2, zero, a0
-
-	addi a2, a2, 4
-	subi t1, t1, 1
-	bne t1, zero, .b4
-
-.b4done:
-	andi t1, a1, 3 ;do 1 byte each loop
-
-	beq t1, zero, .b1done
-
-.b1:
-	s.b a2, zero, a0
-
-	rshi a0, a0, 8
-
-	addi a2, a2, 1
-	subi t1, t1, 1
-	bne t1, zero, .b1
-
-.b1done:
 	ret
 
 .section data

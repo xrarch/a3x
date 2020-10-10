@@ -6,6 +6,9 @@
 
 .extern Reset
 
+.extern memcpy
+.extern memset
+
 .struct LOFF
 	4 Magic
 	4 SymbolTableOffset
@@ -64,11 +67,11 @@ LoadBIOS:
 	jal Puts
 
 	mov a1, s0
-
 	lio.l a0, s0, LOFF_TextHeader
 	add a0, a0, s0
 	jal CopySection
 
+	mov a1, s0
 	lio.l a0, s0, LOFF_DataHeader
 	add a0, a0, s0
 	jal CopySection
@@ -78,15 +81,10 @@ LoadBIOS:
 	lio.l t1, t0, Header_SectionSize
 	lio.l t2, t0, Header_LinkedAddress
 
-	add t1, t2, t1
-
-.zero:
-	beq t2, t1, .zdone
-
-	s.l t2, zero, zero
-
-	addi t2, t2, 4
-	b .zero
+	li a0, 0
+	mov a1, t1
+	mov a2, t2
+	jal memset
 
 .zdone:
 	lio.l t0, s0, LOFF_EntrySymbol
@@ -140,17 +138,12 @@ CopySection:
 	lio.l t1, a0, Header_SectionSize
 	lio.l t2, a0, Header_LinkedAddress
 
-	add t1, t2, t1
-
-.loop:
-	beq t2, t1, .out
-
-	l.l t3, t0, zero
-	s.l t2, zero, t3
-
-	addi t0, t0, 4
-	addi t2, t2, 4
-	b .loop
+	push lr
+	mov a0, t1
+	mov a1, t0
+	mov a2, t2
+	jal memcpy
+	pop lr
 
 .out:
 	ret
