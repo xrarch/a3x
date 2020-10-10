@@ -91,7 +91,14 @@ fn BootNode { devnode args -- ok }
 	brecord@ BootRecord_BootBlockStart + @ bblock!
 	brecord@ BootRecord_BootBlockCount + @ bbc!
 
-	args@ brecord@ BootRecord_OSLabel + "\[[33mbooting: \[[0m\[[94m%s (%s)\[[0m\n" Printf
+	auto pa
+	if (args@)
+		args@ pa!
+	end else
+		"" pa!
+	end
+
+	pa@ brecord@ BootRecord_OSLabel + "\[[33mbooting: \[[0m\[[94m%s (%s)\[[0m\n" Printf
 
 	brecord@ Free
 
