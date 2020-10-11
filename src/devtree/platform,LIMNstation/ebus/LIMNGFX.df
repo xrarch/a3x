@@ -171,12 +171,13 @@ fn LGFXBlitBits { bpr fg bg bitd ptr x y w h -- }
 
 	LGDMANode@ DeviceSelectNode
 		ptr@ dest@
-		1 2 w@ *
-		w@ 8 /
+		1
+		2 w@ * 16 min
+		bpr@
 		0
-		h@ bpr@ *
-		LGWidth@ w@ - 2 *
-		0
+		h@
+		LGWidth@ 2 *
+		bpr@
 		bitd@ bg@ fg@
 		LGDMATransfer@ DCallMethodPtr drop drop drop
 	DeviceExit

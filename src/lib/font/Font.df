@@ -13,6 +13,8 @@ Font:
 .global Font
 	.static font-terminus.bmp
 
+.align 4
+
 .section text
 
 "
