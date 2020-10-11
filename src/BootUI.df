@@ -172,9 +172,11 @@ fn private DrawInitial { index -- }
 		plabel@ -1 0x7FFF FontDrawString
 	end
 
-	x@ TILEWIDTH 2 / + disklabel@ strlen FontWidth * 2 / -
-	y@ 70 + FontHeight +
-	disklabel@ -1 0x7FFF FontDrawString
+	if (disklabel@)
+		x@ TILEWIDTH 2 / + disklabel@ strlen FontWidth * 2 / -
+		y@ 70 + FontHeight +
+		disklabel@ -1 0x7FFF FontDrawString
+	end
 end
 
 fn private DrawAll { -- }
