@@ -166,10 +166,47 @@ fn DeviceCloneWalk { path -- }
 	end
 end
 
+fn DSetPath { -- }
+	"DSetPath" DevTreeCheck
+
+	auto path
+	"path" DGetProperty path!
+
+	if (path@)
+		return
+	end
+
+	auto ppath
+
+	DeviceParent
+		"path" DGetProperty ppath!
+	DeviceExit
+
+	if (ppath@ 0 ==)
+		"parent has no path\n" Problem
+	end
+
+	auto ppl
+	ppath@ strlen ppl!
+
+	auto mpl
+	DGetName strlen mpl!
+
+	ppl@ mpl@ + 2 + Calloc path!
+
+	path@ ppath@ strcpy
+	'/' path@ ppl@ + sb
+	path@ ppl@ + 1 + DGetName strcpy
+
+	path@ "path" DAddProperty
+end
+
 fn DSetName { name -- }
 	"DSetName" DevTreeCheck
 
 	name@ DevCurrent@ TreeNodeValue DeviceNode_Name + !
+
+	DSetPath
 end
 
 fn DAddMethodFull { board method auc name -- }
@@ -362,6 +399,8 @@ fn private BuildDeviceTree { -- }
 	TreeCreate DevTree!
 
 	DeviceNNew DevTree@ TreeSetRoot DevCurrent!
+
+	"" "path" DAddProperty
 
 	DevRootBuild
 end

@@ -1,0 +1,295 @@
+#include "<df>/dragonfruit.h"
+#include "<inc>/a3x.h"
+
+var BUIScreen 0
+var BUIScreenWidth 0
+var BUIScreenHeight 0
+var BUIKbd 0
+var BUIBBP 0
+var BUIGetScan 0
+var BUIRectP 0
+var BUIBGColor 0
+
+fn private BlitBits { bpr fg bg bitd bmp x y w h -- }
+	BUIScreen@ DeviceSelectNode
+		bpr@ fg@ bg@ bitd@ bmp@ x@ y@ w@ h@ BUIBBP@ DCallMethodPtr drop drop drop
+	DeviceExit
+end
+
+fn private GetScan { -- scan }
+	BUIKbd@ DeviceSelectNode
+		BUIGetScan@ DCallMethodPtr drop drop scan!
+	DeviceExit
+end
+
+var BUISelected 0
+
+const TILEWIDTH 120
+const TILEHEIGHT 64
+const DEVPERROW 8
+
+fn private DrawBadge { index s -- x y }
+	auto dev
+	[index@]BootableDevs@ dev!
+
+	auto pw
+	NumBootableDevs@ TILEWIDTH * pw!
+
+	if (pw@ BUIScreenWidth@ TILEWIDTH - >)
+		BUIScreenWidth@ TILEWIDTH - pw!
+	end
+
+	auto ph
+	NumBootableDevs@ DEVPERROW / TILEHEIGHT * ph!
+
+	auto sw
+	BUIScreenWidth@ 2 / pw@ 2 / - sw!
+
+	auto sh
+	BUIScreenHeight@ 2 / ph@ 2 / - sh!
+
+	index@ DEVPERROW / TILEHEIGHT * sh@ + 32 - y!
+
+	index@ DEVPERROW % TILEWIDTH * sw@ + x!
+
+	if (s@)
+		0x03FF s!
+	end else
+		0x6F78 s!
+	end
+
+	auto badge
+	dev@ DeviceSelectNode
+		"osBadge" DGetProperty badge!
+	DeviceExit
+
+	8
+	s@
+	-1
+	0
+	badge@
+	x@ TILEWIDTH 2 / + 32 - y@ 64 64 BlitBits
+end
+
+fn private Box { x y w h color -- }
+	x@ y@ w@ 1 color@ BUIRect
+	x@ y@ h@ + 1 - w@ 1 color@ BUIRect
+
+	x@ y@ 1 + 1 h@ 2 - color@ BUIRect
+	x@ w@ + 1 - y@ 1 + 1 h@ 2 - color@ BUIRect
+end
+
+fn private BUIBox { bbx bby boxw boxh -- }
+	bbx@ bby@ boxw@ boxh@ 0x7FFF Box
+	bbx@ 1 + bby@ 1 + boxw@ boxh@ 0x4210 Box
+	bbx@ 1 + bby@ 1 + boxw@ 1 - boxh@ 1 - 0x6318 BUIRect
+	bbx@ 10 + bby@ 20 + boxw@ 18 - boxh@ 28 - 0x7FFF Box
+	bbx@ 10 + bby@ 20 + boxw@ 19 - boxh@ 29 - 0x4210 Box
+	bbx@ 11 + bby@ 21 + boxw@ 21 - boxh@ 31 - 0x7FFF Box
+	bbx@ 12 + bby@ 22 + boxw@ 22 - boxh@ 32 - 0x6318 Box
+
+	auto title
+	"Bootable Disks" title!
+
+	auto tw
+	title@ strlen FontWidth * tw!
+
+	bbx@ boxw@ 2 / tw@ 2 / - + bby@ 3 + title@ -1 0 FontDrawString
+end
+
+fn BUIRect { x y w h color -- }
+	BUIScreen@ DeviceSelectNode
+		x@
+		y@
+		w@ h@
+		color@
+		BUIRectP@ DCallMethodPtr drop drop drop
+	DeviceExit
+end
+
+fn private BeSpecific { t -- }
+	auto y
+	BUIScreenHeight@ 2 / y!
+
+	y@ 2 / FontHeight - y +=
+
+	auto dev
+	[BUISelected@]BootableDevs@ dev!
+
+	auto path
+	auto osname
+	dev@ DeviceSelectNode
+		"path" DGetProperty path!
+		"osLabel" DGetProperty osname!
+	DeviceExit
+
+	if (t@)
+		BUIScreenWidth@ 2 / osname@ strlen FontWidth * 2 / -
+		y@
+		osname@ -1 0x7FFF FontDrawString
+
+		BUIScreenWidth@ 2 / path@ strlen FontWidth * 2 / -
+		y@ FontHeight +
+		path@ -1 0x7FFF FontDrawString
+	end else
+		BUIScreenWidth@ 2 / osname@ strlen FontWidth * 2 / -
+		y@
+		osname@ strlen FontWidth *
+		FontHeight
+		BUIBGColor@
+		BUIRect
+
+		BUIScreenWidth@ 2 / path@ strlen FontWidth * 2 / -
+		y@ FontHeight +
+		path@ strlen FontWidth *
+		FontHeight
+		BUIBGColor@
+		BUIRect
+	end
+end
+
+fn private DrawInitial { index -- }
+	auto x
+	auto y
+	index@ index@ 0 == DrawBadge y! x!
+
+	auto dev
+	[index@]BootableDevs@ dev!
+
+	auto plabel
+	auto disklabel
+	dev@ DeviceSelectNode
+		DeviceParent
+			"diskLabel" DGetProperty plabel!
+		DeviceExit
+
+		"diskLabel" DGetProperty disklabel!
+	DeviceExit
+
+	if (plabel@)
+		x@ TILEWIDTH 2 / + plabel@ strlen FontWidth * 2 / -
+		y@ 70 +
+		plabel@ -1 0x7FFF FontDrawString
+	end
+
+	x@ TILEWIDTH 2 / + disklabel@ strlen FontWidth * 2 / -
+	y@ 70 + FontHeight +
+	disklabel@ -1 0x7FFF FontDrawString
+end
+
+fn private DrawAll { -- }
+	auto i
+	0 i!
+
+	auto boxw
+	NumBootableDevs@ TILEWIDTH * boxw!
+
+	auto boxh
+	TILEHEIGHT boxh!
+
+	auto bbx
+	BUIScreenWidth@ 2 / boxw@ 2 / - bbx!
+
+	auto bby
+	BUIScreenHeight@ 2 / boxh@ 2 / - bby!
+
+	FontHeight 2 * 13 + boxh +=
+
+	bbx@ 15 - bby@ 35 - boxw@ 30 + boxh@ 50 + BUIBox
+
+	bbx@ 4 -
+	bby@ 14 -
+	boxw@ 10 +
+	boxh@ 20 +
+	0x394C
+	BUIRect
+
+	while (i@ NumBootableDevs@ <)
+		i@ DrawInitial
+
+		1 i +=
+	end
+end
+
+var Shift 0
+var Ctrl 0
+
+fn BootUI { -- node }
+	0 node!
+
+	"/screen" DevTreeWalk BUIScreen!
+	if (BUIScreen@ ~~)
+		return
+	end
+
+	"/keyboard" DevTreeWalk BUIKbd!
+	if (BUIKbd@ ~~)
+		return
+	end
+
+	BUIScreen@ DeviceSelectNode
+		"width" DGetProperty BUIScreenWidth!
+		"height" DGetProperty BUIScreenHeight!
+		"blitBits" DGetMethod BUIBBP!
+		"rectangle" DGetMethod BUIRectP!
+
+		"init" DCallMethod drop drop drop drop
+	DeviceExit
+
+	BUIKbd@ DeviceSelectNode
+		"readScan" DGetMethod BUIGetScan!
+	DeviceExit
+
+	"screen-bg" NVRAMGetVarNum BUIBGColor!
+
+	DrawAll
+
+	1 BeSpecific
+
+	while (1)
+		auto scan
+		GetScan scan!
+
+		if (scan@ 53 ==) (* escape *)
+			return
+		end elseif (scan@ 54 ==) (* left arrow *)
+			0 BeSpecific
+
+			BUISelected@ 0 DrawBadge drop drop
+			if (BUISelected@ 0 ~=)
+				1 BUISelected -=
+			end
+			BUISelected@ 1 DrawBadge drop drop
+
+			1 BeSpecific
+		end elseif (scan@ 55 ==) (* right arrow *)
+			0 BeSpecific
+
+			BUISelected@ 0 DrawBadge drop drop
+			if (BUISelected@ NumBootableDevs@ 1 - ~=)
+				1 BUISelected +=
+			end
+			BUISelected@ 1 DrawBadge drop drop
+
+			1 BeSpecific
+		end elseif (scan@ 50 ==) (* return *)
+			[BUISelected@]BootableDevs@ node!
+
+			if (Ctrl@ Shift@ &&)
+				node@ DeviceSelectNode
+					"path" DGetProperty "boot-dev" NVRAMSetVar
+				DeviceExit
+			end
+
+			return
+		end elseif (scan@ 80 ==) (* ctrl *)
+			1 Ctrl!
+		end elseif (scan@ 32848 ==)
+			0 Ctrl!
+		end elseif (scan@ 82 ==) (* shift *)
+			1 Shift!
+		end elseif (scan@ 32850 ==)
+			0 Shift!
+		end
+	end
+end

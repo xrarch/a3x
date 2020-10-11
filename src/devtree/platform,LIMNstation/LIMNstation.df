@@ -64,13 +64,13 @@ var PlatformName 0
 public PlatformName
 
 fn PlatformInit { -- }
-	"/platform/ebus/platformboard/citron/clock" PlatformClockPath!
-	"/platform/ebus/platformboard/citron/dks" PlatformDiskBusPath!
+	"/platform/ebus/pboard/citron/clock" PlatformClockPath!
+	"/platform/ebus/pboard/citron/dks" PlatformDiskBusPath!
 	"/platform/ebus/dma" PlatformDMAPath!
-	"/platform/ebus/platformboard/citron/amanatsu/kbd/0" PlatformKeyboardPath!
-	"/platform/ebus/platformboard/citron/amanatsu/mouse/0" PlatformMousePath!
+	"/platform/ebus/pboard/citron/amanatsu/kbd/0" PlatformKeyboardPath!
+	"/platform/ebus/pboard/citron/amanatsu/mouse/0" PlatformMousePath!
 	"/platform/ebus/limngfx" PlatformScreenPath!
-	"/platform/ebus/platformboard/citron/serial" PlatformSerialPath!
+	"/platform/ebus/pboard/citron/serial" PlatformSerialPath!
 	"/platform/limn2k" PlatformCPUPath!
 	"/platform/ebus/ram" PlatformMemoryPath!
 	"/platform/ebus" PlatformBusPath!

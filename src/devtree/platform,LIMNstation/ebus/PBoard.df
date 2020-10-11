@@ -5,7 +5,7 @@ extern BuildCitron { -- }
 
 fn BuildPBoard { -- }
 	DeviceNew
-		"platformboard" DSetName
+		"pboard" DSetName
 
 		"AISA,platformboard" "model" DAddProperty
 

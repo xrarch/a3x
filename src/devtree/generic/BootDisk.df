@@ -6,7 +6,12 @@
 var SBootDiskNode 0
 
 fn GBootDiskDefault { -- bn defaultnode }
-	"/disks/0/a" "boot-dev" NVRAMDefaultGetVar bn!
+	"boot-dev" NVRAMGetVar bn!
+
+	if (bn@ 0 ==)
+		0 defaultnode!
+		return
+	end
 
 	bn@ DevTreeWalk defaultnode!
 end
@@ -21,10 +26,9 @@ fn BuildGBootDisk { -- }
 			"bootdisk" DSetName
 
 			SBootDiskNode@ "bootAlias" DAddProperty
-
-			bn@ strdup "bootPath" DAddProperty
 		DeviceExit
 	end else
-		"boot-dev phony or not found, 'bootdisk' node will be absent\n" Printf
+		"boot-dev" NVRAMDeleteVar
+		(* "boot-dev phony or not found, 'bootdisk' node will be absent\n" Printf *)
 	end
 end

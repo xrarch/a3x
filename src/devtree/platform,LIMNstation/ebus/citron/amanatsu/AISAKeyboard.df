@@ -30,6 +30,8 @@ fn AKeyboardPoll { -- }
 
 					pointerof AKeyboardReadM "read" DAddMethod
 
+					pointerof AKeyboardReadScanM "readScan" DAddMethod
+
 					pointerof AKeyboardIsDownM "isDown" DAddMethod
 
 					pointerof AKeyboardWaitKeyM "waitKey" DAddMethod
@@ -184,6 +186,22 @@ fn AKeyboardRead { -- c }
 		[code@]AKeyboardLayoutCtrl@ c!
 	end else
 		[code@]AKeyboardLayout@ c!
+	end
+end
+
+fn private AKeyboardReadScanM { argvt argcn -- out1 out2 out3 }
+	AKeyboardReadScan out1!
+end
+
+fn AKeyboardReadScan { -- scan }
+	auto id
+	"amanatsu,unit" DGetProperty id!
+
+	id@ AKeyboardPopCode scan!
+
+	if (scan@ 0xFFFF ==)
+		ERR scan!
+		return
 	end
 end
 

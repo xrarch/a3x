@@ -15,6 +15,25 @@ table BootErrors
 endtable
 public BootErrors
 
+table BootableDevs[5]
+public BootableDevs
+
+var NumBootableDevs 0
+public NumBootableDevs
+
+fn AddBootable { -- }
+	if (NumBootableDevs@ 5 >=)
+		return
+	end
+
+	auto dev
+	DGetCurrent dev!
+
+	dev@ [NumBootableDevs@]BootableDevs!
+
+	1 NumBootableDevs +=
+end
+
 fn DevBootable { devnode -- bootable }
 	devnode@ DevBootableR swap drop bootable!
 end
@@ -53,17 +72,32 @@ fn DevBootableR { devnode -- brecord bootable }
 	return
 end
 
+fn GetBootNode { -- node }
+	"/bootdisk" DevTreeWalk node!
+
+	if (node@ 0 ==)
+		if (NumBootableDevs@ 0 ==)
+			return
+		end elseif (NumBootableDevs@ 1 ==)
+			[0]BootableDevs@ node!
+			return
+		end else
+			BootUI node!
+		end
+	end
+end
+
 fn AutoBoot { -- ok }
 	auto bootnode
 
-	"/bootdisk" DevTreeWalk bootnode!
+	GetBootNode bootnode!
 
 	if (bootnode@ 0 ==)
 		7 ok! return
 	end
 
 	bootnode@ DeviceSelectNode
-		"bootPath" DGetProperty "\[[33mautoboot:\[[0m \[[94m%s\[[0m\n" Printf
+		"path" DGetProperty "\[[33mautoboot:\[[0m \[[94m%s\[[0m\n" Printf
 	DeviceExit
 
 	'\n' Putc

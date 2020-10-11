@@ -22,8 +22,7 @@ endstruct
 struct AHDB_PTE
 	8 Label
 	4 Blocks
-	1 Status
-	3 Unused
+	4 Status
 endstruct
 
 fn private AHDBTransferBlock { src dest -- }
@@ -40,6 +39,15 @@ fn AHDBBootable { part id -- }
 			(* yes, it's bootable *)
 
 			brecord@ BootRecord_OSLabel + strdup "osLabel" DAddProperty
+
+			auto badge
+			512 Malloc badge!
+
+			badge@ brecord@ BootRecord_BadgeBitmap + 512 memcpy
+
+			badge@ "osBadge" DAddProperty
+
+			AddBootable
 		end
 	end else
 		auto pc
@@ -77,7 +85,7 @@ fn AHDBPartitions { id -- pcount }
 				auto ptr
 				AHDB_PTE_SIZEOF i@ * vdbuf@ + ptr!
 
-				if (ptr@ AHDB_PTE_Status + gb 0 ~=)
+				if (ptr@ AHDB_PTE_Status + @ 0 ~=)
 					auto char
 					2 Calloc char!
 					'a' pc@ + char@ sb
