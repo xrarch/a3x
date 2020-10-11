@@ -4,7 +4,7 @@
 extern BuildTree { -- }
 
 fn DevRootBuild { -- }
-	"antecedent" DSetName
+	"a3x" DSetName
 
 	pointerof ANTEBDS "buildDate" DAddProperty
 	"3.5.5" "version" DAddProperty

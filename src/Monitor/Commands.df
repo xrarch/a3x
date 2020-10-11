@@ -166,8 +166,6 @@ fn MonitorCommandsInit { -- }
 	MonitorAddCommand
 end
 
-const ConsoleAssumedHeight 22
-
 var UsedLines 0
 var AllLines 0
 
@@ -183,7 +181,7 @@ fn WaitNext { -- result }
 		return
 	end
 
-	if (UsedLines@ ConsoleAssumedHeight >)
+	if (UsedLines@ MonitorHeight@ 1 - >=)
 		"\[[7m(any) for more, (a) for all, (p) for a page, (q) to quit\[[0m" Printf
 		auto c
 		-1 c!
@@ -403,7 +401,15 @@ fn MonitorCommandDinfo { -- }
 	dev@ DeviceSelectNode
 		'\n' Putc
 
+		if (WaitNext ~~)
+			return
+		end
+
 		"\[[33m[properties]\[[0m\n" Printf
+
+		if (WaitNext ~~)
+			return
+		end
 
 		auto plist
 		DGetProperties plist!
@@ -426,7 +432,15 @@ fn MonitorCommandDinfo { -- }
 
 		'\n' Putc
 
+		if (WaitNext ~~)
+			return
+		end
+
 		"\[[33m[methods]\[[0m\n" Printf
+
+		if (WaitNext ~~)
+			return
+		end
 
 		auto mlist
 		DGetMethods mlist!
@@ -565,6 +579,10 @@ fn MonitorCommandLs { -- }
 	dev@ DeviceSelectNode
 		DGetName "\[[33m[%s]:\[[0m\n" Printf
 	DeviceExit
+
+	if (WaitNext ~~)
+		return
+	end
 
 	1 dev@ MonitorLsH drop
 end

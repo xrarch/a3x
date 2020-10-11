@@ -33,3 +33,5 @@ extern NVRAMGetVar { name -- ptr }
 extern NVRAMGetVarNum { var -- n }
 
 extern NVRAMDefaultGetVar { default name -- ptr }
+
+extern NVRAMDefaultGetVarNum { default var -- n }

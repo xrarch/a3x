@@ -70,13 +70,12 @@ fn AmanatsuReadB { -- long }
 	AmaPortB DCitronInl long!
 end
 
-fn AmanatsuSetInterrupt { handler dev -- num }
-	handler@ AmaLastInterrupt@ InterruptRegister
-	AmaLastInterrupt@ dev@ 1 AmanatsuSpecialCMD
+fn AmanatsuSetInterrupt { dev -- }
+	0 dev@ 1 AmanatsuSpecialCMD
+end
 
-	AmaLastInterrupt@ num!
-
-	1 AmaLastInterrupt +=
+fn AmanatsuClearInterrupt { dev -- }
+	0 dev@ 3 AmanatsuSpecialCMD
 end
 
 fn AmanatsuSpecialCMD { a b cmd -- }

@@ -11,7 +11,7 @@ extern PlatformInit { -- }
 
 extern Main { -- }
 
-fn AntecedentEntry { -- }
+fn BIOSEntry { -- }
 	HeapInit
 
 	ConsoleEarlyInit
@@ -19,14 +19,14 @@ fn AntecedentEntry { -- }
 
 	LinkInfo
 
-	"Welcome to ANTECEDENT 3.x\n" Printf
-
 	if (NVRAMCheck ~~)
 		"nvram corrupted! formatting\n" Printf
 		NVRAMFormat
 	end
 
 	PlatformInit
+
+	PlatformName@ "\nWelcome to %s\n\n" Printf
 
 	DeviceInit
 
@@ -43,7 +43,7 @@ end
 
 asm "
 
-.entry AntecedentEntry
+.entry BIOSEntry
 
 "
 
@@ -84,7 +84,7 @@ fn FirmwareBanner { -- }
 	'\n' Putc
 
 	"/" DeviceSelect
-		"author" DGetProperty "version" DGetProperty DGetName "Implementation details: %s %s written by %s\n" Printf
+		"author" DGetProperty "version" DGetProperty DGetName "%s %s by %s\n" Printf
 		"buildDate" DGetProperty "build" DGetProperty "Build %s, built on %s\n" Printf
 	DeviceExit
 

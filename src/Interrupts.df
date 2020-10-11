@@ -1,7 +1,7 @@
 #include "<df>/dragonfruit.h"
 #include "<inc>/a3x.h"
 
-var InterruptsVT 0
+table InterruptHandlers[64]
 
 var SavedState 0
 public SavedState
@@ -10,8 +10,6 @@ extern setvector { -- }
 
 fn InterruptsInit { -- }
 	setvector
-
-	64 4 * Calloc InterruptsVT!
 end
 
 asm "
@@ -85,7 +83,7 @@ fn Exception { state ecause epc ers badaddr -- }
 
 		while (int@)
 			auto h
-			int@ 4 * InterruptsVT@ + @ h!
+			[int@]InterruptHandlers@ h!
 
 			if (h@)
 				h@ IntHandler
@@ -125,11 +123,11 @@ fn Exception { state ecause epc ers badaddr -- }
 end
 
 fn InterruptRegister { handler num -- }
-	handler@ num@ 4 * InterruptsVT@ + !
+	handler@ [num@]InterruptHandlers!
 end
 
 fn InterruptUnregister { num -- }
-	0 num@ 4 * InterruptsVT@ + !
+	0 [num@]InterruptHandlers!
 end
 
 asm "

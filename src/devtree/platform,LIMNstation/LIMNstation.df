@@ -60,6 +60,9 @@ public PlatformBusPath
 var PlatformInterruptPath 0
 public PlatformInterruptPath
 
+var PlatformName 0
+public PlatformName
+
 fn PlatformInit { -- }
 	"/platform/ebus/platformboard/citron/clock" PlatformClockPath!
 	"/platform/ebus/platformboard/citron/dks" PlatformDiskBusPath!
@@ -72,6 +75,8 @@ fn PlatformInit { -- }
 	"/platform/ebus/ram" PlatformMemoryPath!
 	"/platform/ebus" PlatformBusPath!
 	"/platform/lsic" PlatformInterruptPath!
+
+	"LIMNstation" PlatformName!
 
 	"14784" PlatformDefaultScreenBG!
 	"32767" PlatformDefaultScreenFG!

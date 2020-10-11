@@ -115,3 +115,17 @@ fn NVRAMGetVarNum { var -- n }
 		n@ atoi n!
 	end
 end
+
+fn NVRAMDefaultGetVarNum { default var -- n }
+	auto qb
+	16 Malloc qb!
+	default@ qb@ itoa
+
+	qb@ var@ NVRAMDefaultGetVar n!
+
+	qb@ Free
+
+	if (n@)
+		n@ atoi n!
+	end
+end

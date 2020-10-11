@@ -7,6 +7,8 @@ externptr MonitorLinePoint (* var *)
 
 externptr MonitorState (* var *)
 
+externptr MonitorHeight (* var *)
+
 struct MonitorCommand
 	4 Name
 	4 Callback

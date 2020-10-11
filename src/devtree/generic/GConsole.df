@@ -39,6 +39,8 @@ var GConsoleModified 0
 
 var GCInverted 0
 
+var GCFancy 0
+
 table ColorIndex
 	0
 	0x14
@@ -67,26 +69,41 @@ fn GConsoleDefault { -- }
 		"height" DGetProperty GCGHeight!
 	DeviceExit
 
-	(* "screen-bg" NVRAMGetVarNum dup *) GConsoleBG dup GCColorDefBG! GCColorBG!
-	(* "screen-fg" NVRAMGetVarNum dup *) GConsoleFG dup GCColorDefFG! GCColorFG!
+	if ("true" "fancy?" NVRAMDefaultGetVar "true" strcmp)
+		1 GCFancy!
 
-	if ("console-rows" NVRAMGetVar 0 ==)
-		34 "console-rows" NVRAMSetVarNum
+		(* "screen-bg" NVRAMGetVarNum dup *) GConsoleBG dup GCColorDefBG! GCColorBG!
+		(* "screen-fg" NVRAMGetVarNum dup *) GConsoleFG dup GCColorDefFG! GCColorFG!
+
+		if ("console-rows" NVRAMGetVar 0 ==)
+			34 "console-rows" NVRAMSetVarNum
+		end
+		if ("console-cols" NVRAMGetVar 0 ==)
+			80 "console-cols" NVRAMSetVarNum
+		end
+
+		auto crows
+		"console-rows" NVRAMGetVarNum crows!
+		auto ccols
+		"console-cols" NVRAMGetVarNum ccols!
+
+		GCGWidth@ FontWidth / ccols@ min GCWidth!
+		GCGHeight@ FontHeight / crows@ min GCHeight!
+
+		GCGWidth@ 2 / GCWidth@ FontWidth * 2 / - GConsoleX!
+		GCGHeight@ 2 / GCHeight@ FontHeight * 2 / - GConsoleY!
+	end else
+		0 GCFancy!
+
+		GCGWidth@ FontWidth / GCWidth!
+		GCGHeight@ FontHeight / GCHeight!
+
+		0x0000 dup GCColorDefBG! GCColorBG!
+		0x7FFF dup GCColorDefFG! GCColorFG!
+
+		0 GConsoleX!
+		0 GConsoleY!
 	end
-	if ("console-cols" NVRAMGetVar 0 ==)
-		80 "console-cols" NVRAMSetVarNum
-	end
-
-	auto crows
-	"console-rows" NVRAMGetVarNum crows!
-	auto ccols
-	"console-cols" NVRAMGetVarNum ccols!
-
-	GCGWidth@ FontWidth / ccols@ min GCWidth!
-	GCGHeight@ FontHeight / crows@ min GCHeight!
-
-	GCGWidth@ 2 / GCWidth@ FontWidth * 2 / - GConsoleX!
-	GCGHeight@ 2 / GCHeight@ FontHeight * 2 / - GConsoleY!
 
 	0 GCCurX!
 	0 GCCurY!
@@ -110,6 +127,8 @@ fn BuildGConsole { -- }
 		"scroll" DGetMethod GCScrollP!
 	DeviceExit
 
+	GConsoleDefault
+
 	DeviceNew
 		"gconsole" DSetName
 
@@ -122,9 +141,10 @@ fn BuildGConsole { -- }
 		"serial" "deviceType" DAddProperty
 
 		"a3x,gconsole" "model" DAddProperty
-	DeviceExit
 
-	GConsoleDefault
+		GCWidth@ "width" DAddProperty
+		GCHeight@ "height" DAddProperty
+	DeviceExit
 end
 
 fn private GConsoleSuppressDrawM { argvt argcn -- out1 out2 out3 }
@@ -345,7 +365,11 @@ fn GConsoleUIBox { title x y w h -- }
 end
 
 fn VConsoleDraw { -- }
-	if (GConsoleX@ 80 >= GConsoleY@ 80 >= &&) (* there is at least GConsoleMargin/2 pixels around the edge, do a pretty box *)
+	if (GConsoleX@ 80 >= GConsoleY@ 80 >= && GCFancy@ &&) (* there is at least GConsoleMargin/2 pixels around the edge, do a pretty box *)
+		GCScreenNode@ DeviceSelectNode
+			"init" DCallMethod drop drop drop drop
+		DeviceExit
+
 		"LIMNstation"
 		GConsoleX@ 15 -
 		GConsoleY@ 25 -
@@ -360,16 +384,12 @@ fn VConsoleDraw { -- }
 		GConsoleBG
 		GConsoleRRect
 	end else (* un-pretty box *)
-		0 0 GCGWidth@ GCGHeight@ GConsoleBG GConsoleRRect
+		0 0 GCGWidth@ GCGHeight@ GCColorDefBG@ GConsoleRRect
 	end
 end
 
 fn GConsoleDraw { -- }
 	if (GCInitialConfig@)
-		GCScreenNode@ DeviceSelectNode
-			"init" DCallMethod drop drop drop drop
-		DeviceExit
-
 		VConsoleDraw
 	end
 end

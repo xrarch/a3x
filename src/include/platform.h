@@ -23,3 +23,5 @@ externptr PlatformDefaultScreenFG (* var *)
 externptr PlatformBusPath (* var *)
 
 externptr PlatformInterruptPath (* var *)
+
+externptr PlatformName (* var *)

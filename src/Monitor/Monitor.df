@@ -18,6 +18,9 @@ public MonitorLinePoint
 var MonitorState 0
 public MonitorState
 
+var MonitorHeight 0
+public MonitorHeight
+
 extern MonitorCommandsInit { -- }
 
 extern MonitorCommandBanner { -- }
@@ -25,6 +28,16 @@ extern MonitorCommandBanner { -- }
 fn DebugMonitor { state -- }
 	if (MonitorCommandList@ 0 ==)
 		MonitorCommandsInit
+	end
+
+	if (ConsoleOut@)
+		ConsoleOut@ DeviceSelectNode
+			"height" DGetProperty MonitorHeight!
+		DeviceExit
+
+		if (MonitorHeight@ 0 ==)
+			25 MonitorHeight!
+		end
 	end
 
 	auto savestate

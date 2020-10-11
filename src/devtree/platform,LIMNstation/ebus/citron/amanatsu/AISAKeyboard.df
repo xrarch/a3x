@@ -4,7 +4,9 @@
 var AKeyboardDev 0
 var AKeyboardCount 0
 
-const AKeyboardMID 0x8FC48FC4
+var AKeyboardID 0
+
+const AKeyboardMID 0x8FC48FC5
 
 fn AKeyboardPoll { -- }
 	auto i
@@ -19,7 +21,6 @@ fn AKeyboardPoll { -- }
 			5 Calloc hmm!
 
 			AKeyboardDev@ DeviceSelectNode
-
 				DeviceNew
 					AKeyboardCount@ hmm@ itoa
 
@@ -37,7 +38,7 @@ fn AKeyboardPoll { -- }
 
 					"AISA,keyboard" "model" DAddProperty
 
-					1 "revision" DAddProperty
+					2 "revision" DAddProperty
 
 					i@ 4 + "interrupt#" DAddProperty
 
@@ -141,34 +142,47 @@ fn private AKeyboardReadM { argvt argcn -- out1 out2 out3 }
 	AKeyboardRead out1!
 end
 
+var Shift 0
+var Ctrl 0
+
 fn AKeyboardRead { -- c }
 	auto id
 	"amanatsu,unit" DGetProperty id!
 
 	auto code
-
 	id@ AKeyboardPopCode code!
 
+	ERR c!
+
 	if (code@ 0xFFFF ==)
-		ERR c!
 		return
 	end
 
-	if (code@ 0xF0 ==) (* shift *)
-		id@ AKeyboardPopCode code!
+	if (code@ 80 ==)
+		1 Ctrl!
+		return
+	end elseif (code@ 82 ==)
+		1 Shift!
+		return
+	end elseif (code@ 32848 ==)
+		0 Ctrl!
+		return
+	end elseif (code@ 32850 ==)
+		0 Shift!
+		return
+	end
 
-		if (code@ 50 >=) code@ AKeyboardSpecial c! return end
+	if (code@ 80 >=)
+		return
+	end
 
+	if (code@ 50 >=) code@ AKeyboardSpecial c! return end
+
+	if (Shift@)
 		[code@]AKeyboardLayoutShift@ c!
-	end elseif (code@ 0xF1 ==) (* ctrl *)
-		id@ AKeyboardPopCode code!
-
-		if (code@ 50 >=) code@ AKeyboardSpecial c! return end
-
+	end elseif (Ctrl@)
 		[code@]AKeyboardLayoutCtrl@ c!
 	end else
-		if (code@ 50 >=) code@ AKeyboardSpecial c! return end
-
 		[code@]AKeyboardLayout@ c!
 	end
 end

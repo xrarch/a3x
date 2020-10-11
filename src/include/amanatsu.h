@@ -22,6 +22,8 @@ extern AmanatsuReadA { -- long }
 
 extern AmanatsuReadB { -- long }
 
-extern AmanatsuSetInterrupt { handler dev -- num }
+extern AmanatsuSetInterrupt { dev -- }
+
+extern AmanatsuClearInterrupt { dev -- }
 
 extern AmanatsuSpecialCMD { a b cmd -- }
