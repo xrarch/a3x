@@ -83,7 +83,7 @@ fn AHDBPartitions { id -- pcount }
 
 			while (i@ 8 <)
 				auto ptr
-				AHDB_PTE_SIZEOF i@ * vdbuf@ + ptr!
+				AHDB_PTE_SIZEOF i@ * vdbuf@ + AHDB_VDB_PartitionTable + ptr!
 
 				if (ptr@ AHDB_PTE_Status + @ 0 ~=)
 					auto char
