@@ -6,7 +6,7 @@ var AKeyboardCount 0
 
 var AKeyboardID 0
 
-const AKeyboardMID 0x8FC48FC5
+const AKeyboardMID 0x8FC48FC4
 
 fn AKeyboardPoll { -- }
 	auto i

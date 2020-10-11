@@ -26,7 +26,7 @@ fn BIOSEntry { -- }
 
 	PlatformInit
 
-	PlatformName@ "\nWelcome to %s\n\n" Printf
+	PlatformName@ "\nWelcome to %s\n" Printf
 
 	DeviceInit
 
