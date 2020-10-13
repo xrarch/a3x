@@ -477,7 +477,7 @@ fn MonitorCommandListenv { -- }
 				return
 			end
 
-			sp@ NVRAMVariable_Contents + NVRAMOffset sp@ NVRAMOffset " \[[33m%16s\[[0m\[[94m%s\[[0m\n" Printf
+			sp@ NVRAMVariable_Contents + NVRAMOffset sp@ NVRAMOffset " \[[33m%15s\[[0m \[[94m%s\[[0m\n" Printf
 		end
 
 		NVRAMVariable_SIZEOF sp +=
