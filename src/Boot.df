@@ -9,7 +9,7 @@ table BootErrors
 	"no system software found on disk"
 	"I/O error while reading boot program"
 	"invalid boot program"
-	"no such device"
+	"no boot device selected"
 	"not enough memory"
 	"system software error"
 endtable

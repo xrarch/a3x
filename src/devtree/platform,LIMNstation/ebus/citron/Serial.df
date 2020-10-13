@@ -7,9 +7,19 @@ const SerialDataPort 0x11
 const SerialCmdWrite 1
 const SerialCmdRead 2
 
-fn BuildCSerial { -- }
+var SerialPortA 0
+var SerialPortB 0
+
+fn BuildSerialPort { num -- }
 	DeviceNew
-		"serial" DSetName
+		auto qb
+		6 Calloc qb!
+
+		num@ qb@ itoa
+		qb@ DSetName
+
+		SerialCmdPort num@ 2 * + "serial,cmdPort" DAddProperty
+		SerialDataPort num@ 2 * + "serial,dataPort" DAddProperty
 
 		pointerof SerialWriteM "write" DAddMethod
 		pointerof SerialReadM "read" DAddMethod
@@ -20,10 +30,22 @@ fn BuildCSerial { -- }
 
 		1 "revision" DAddProperty
 
-		0x3 "interrupt#" DAddProperty
+		if (num@ 0 ==)
+			0x3 "interrupt#" DAddProperty
+			DevCurrent@ SerialPortA!
+		end else
+			0x18 "interrupt#" DAddProperty
+			DevCurrent@ SerialPortB!
+		end
+	DeviceExit
+end
 
-		SerialCmdPort "serial,cmdPort" DAddProperty
-		SerialDataPort "serial,dataPort" DAddProperty
+fn BuildCSerial { -- }
+	DeviceNew
+		"serial" DSetName
+
+		0 BuildSerialPort
+		1 BuildSerialPort
 	DeviceExit
 end
 
@@ -33,11 +55,17 @@ fn private SerialWriteM { argvt argcn -- out1 out2 out3 }
 end
 
 fn SerialWrite { c -- }
+	auto cmd
+	auto data
+
+	"serial,dataPort" DGetProperty data!
+	"serial,cmdPort" DGetProperty cmd!
+
 	auto rs
 	InterruptDisable rs!
 
-	c@ SerialDataPort DCitronOutb
-	SerialCmdWrite SerialCmdPort DCitronCommand
+	c@ data@ DCitronOutb
+	SerialCmdWrite cmd@ DCitronCommand
 
 	rs@ InterruptRestore
 end
@@ -47,11 +75,17 @@ fn private SerialReadM { argvt argcn -- out1 out2 out3 }
 end
 
 fn SerialRead { -- c }
+	auto cmd
+	auto data
+
+	"serial,dataPort" DGetProperty data!
+	"serial,cmdPort" DGetProperty cmd!
+
 	auto rs
 	InterruptDisable rs!
 
-	SerialCmdRead SerialCmdPort DCitronCommand
-	SerialDataPort DCitronIni c!
+	SerialCmdRead cmd@ DCitronCommand
+	data@ DCitronIni c!
 
 	rs@ InterruptRestore
 
