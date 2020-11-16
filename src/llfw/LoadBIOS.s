@@ -39,7 +39,7 @@
 	4 LinkedAddress
 .end-struct
 
-LOFFMagic === 0x4C4F4632
+LOFFMagic === 0x4C4F4633
 LOFFArch === 2
 
 ;outputs:
