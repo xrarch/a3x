@@ -554,7 +554,9 @@ fn MonitorLsH { tabs dev -- cont }
 		pnode@ TreeNodeValue DeviceNode_Alias + @ alias!
 
 		if (alias@ 0 ~=)
-			alias@ "-> %x\n" Printf
+			alias@ DeviceSelectNode
+				"path" DGetProperty "-> %s\n" Printf
+			DeviceExit
 		end else
 			'\n' Putc
 

@@ -98,6 +98,7 @@ fn AHDBPartitions { id -- pcount }
 					DeviceNew
 						char@ DSetName
 
+						4096 "blockSize" DAddProperty
 						id@ "satsuma,id" DAddProperty
 						ptr@ AHDB_PTE_Blocks + @ "blocks" DAddProperty
 						offset@ "offset" DAddProperty
@@ -163,6 +164,7 @@ fn BuildSatsuma { -- }
 					i@ lilbuf@ itoa
 					lilbuf@ DSetName
 
+					4096 "blockSize" DAddProperty
 					i@ "satsuma,id" DAddProperty
 					blocks@ "blocks" DAddProperty
 					0 "offset" DAddProperty
