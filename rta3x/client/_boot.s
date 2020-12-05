@@ -1,5 +1,5 @@
 .ds ANTE
-.dl Entry
+.dl _a3xEntry
 
 .extern a3xEntry
 
@@ -7,17 +7,20 @@
 
 .extern a3xFwctx
 
-Entry:
-mov t0, sp
-subi sp, sp, 8
-s.l sp, zero, t0
-sio.l sp, 4, lr
+_a3xEntry:
+.global _a3xEntry
+	mov t0, sp
+	subi sp, sp, 8
+	s.l sp, zero, t0
+	sio.l sp, 4, lr
 
-la at, a3xFwctx
-s.l at, zero, sp
+	la at, a3xFwctx
+	s.l at, zero, sp
 
-jal a3xEntry
+	jal a3xEntry
 
-mov a0, v0
+	mov a0, v0
 
-j a3xReturn
+	j a3xReturn
+
+.entry _a3xEntry
