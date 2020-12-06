@@ -29,6 +29,7 @@
 	4 Section
 	4 Type
 	4 Value
+	4 ImportIndex
 .end-struct
 
 .struct Header
@@ -39,7 +40,7 @@
 	4 LinkedAddress
 .end-struct
 
-LOFFMagic === 0x4C4F4633
+LOFFMagic === 0x4C4F4634
 LOFFArch === 2
 
 ;outputs:
