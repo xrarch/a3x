@@ -15,7 +15,7 @@ fn BuildDMA { -- }
 
 		DMABase "address" DAddProperty
 
-		0x27 "interrupt#" DAddProperty
+		0x3E "interrupt#" DAddProperty
 
 		pointerof DMATransferM "transfer" DAddMethod
 		pointerof DMABitTransferM "bitTransfer" DAddMethod

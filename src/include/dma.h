@@ -1,19 +1,19 @@
-const DMABase              0x38000000
+const DMABase              0xF0000000
 
-const DMARegisterSource    0x38000000
-const DMARegisterDest      0x38000004
-const DMARegisterSInc      0x38000008
-const DMARegisterDInc      0x3800000C
-const DMARegisterCount     0x38000010
-const DMARegisterMode      0x38000014
-const DMARegisterStatus    0x38000018
-const DMARegisterLines     0x3800001C
-const DMARegisterDestMod   0x38000020
-const DMARegisterSrcMod    0x38000024
-const DMARegisterBitMode   0x38000028
-const DMARegisterSetByte   0x3800002C
-const DMARegisterClearByte 0x38000030
-const DMARegisterDirection 0x38000034
+const DMARegisterSource    0xF0000000
+const DMARegisterDest      0xF0000004
+const DMARegisterSInc      0xF0000008
+const DMARegisterDInc      0xF000000C
+const DMARegisterCount     0xF0000010
+const DMARegisterMode      0xF0000014
+const DMARegisterStatus    0xF0000018
+const DMARegisterLines     0xF000001C
+const DMARegisterDestMod   0xF0000020
+const DMARegisterSrcMod    0xF0000024
+const DMARegisterBitMode   0xF0000028
+const DMARegisterSetByte   0xF000002C
+const DMARegisterClearByte 0xF0000030
+const DMARegisterDirection 0xF0000034
 
 extern DMAWaitUnbusy { -- }
 

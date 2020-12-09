@@ -87,6 +87,16 @@ fn ConsoleSetOut { dn -- }
 	DeviceExit
 end
 
+asm "
+
+CPUOut:
+	.dl 0xFF
+	ret
+
+"
+
+extern CPUOut { c -- }
+
 fn rPutc { de c -- }
 	if (de@ ~~)
 		if (ConInit@ 0 == UserOut@ 0 == ||)
@@ -95,6 +105,8 @@ fn rPutc { de c -- }
 	end
 
 	if (ConsoleOutMethod@ 0 ==)
+		c@ CPUOut
+
 		return
 	end
 
