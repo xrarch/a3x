@@ -8,7 +8,7 @@ extern BuildLSIC { -- }
 fn BuildPlatform { -- }
 	DeviceNew
 		"platform" DSetName
-	
+
 		"LIMNstation" "model" DAddProperty
 
 		"platform" "deviceType" DAddProperty
