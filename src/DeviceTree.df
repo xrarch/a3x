@@ -36,14 +36,12 @@ fn DevTreeWalk { path -- cnode }
 	DevTree@ TreeRoot cnode!
 
 	auto pcomp
-	256 Calloc pcomp!
+	256 alloc pcomp!
 
 	while (path@ 0 ~=)
 		path@ pcomp@ '/' 255 strntok path!
 
 		if (pcomp@ strlen 0 ==)
-			pcomp@ Free
-
 			return
 		end
 
@@ -68,7 +66,6 @@ fn DevTreeWalk { path -- cnode }
 		end
 
 		if (nnode@ 0 ==)
-			pcomp@ Free
 			0 cnode!
 
 			return
@@ -76,8 +73,6 @@ fn DevTreeWalk { path -- cnode }
 
 		nnode@ cnode!
 	end
-
-	pcomp@ Free
 end
 
 fn DeviceParent { -- }

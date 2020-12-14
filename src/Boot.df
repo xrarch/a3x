@@ -35,7 +35,13 @@ fn AddBootable { -- }
 end
 
 fn DevBootable { devnode -- bootable }
-	devnode@ DevBootableR swap drop bootable!
+	auto brecord
+
+	devnode@ DevBootableR bootable! brecord!
+
+	if (bootable@ 1 ==)
+		brecord@ Free
+	end
 end
 
 fn DevBootableR { devnode -- brecord bootable }
