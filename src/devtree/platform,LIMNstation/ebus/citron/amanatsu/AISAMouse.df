@@ -55,7 +55,7 @@ fn AMousePoll { -- }
 
 					1 "revision" DAddProperty
 
-					i@ 4 + "interrupt#" DAddProperty
+					i@ 48 + "interrupt#" DAddProperty
 
 					1 AMouseCount +=
 				DeviceExit

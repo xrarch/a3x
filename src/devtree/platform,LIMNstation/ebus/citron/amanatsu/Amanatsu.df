@@ -27,9 +27,6 @@ fn BuildAmanatsu { -- }
 	DeviceExit
 end
 
-(* start assigning interrupts at 0x40 *)
-var AmaLastInterrupt 0x40
-
 (* disabling and restoring interrupts is up to the user of these functions *)
 
 fn AmanatsuPoll { num -- mid }

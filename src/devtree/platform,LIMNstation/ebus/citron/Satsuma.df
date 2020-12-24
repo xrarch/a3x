@@ -147,7 +147,7 @@ fn BuildSatsuma { -- }
 
 		1 "revision" DAddProperty
 
-		0x2 "interrupt#" DAddProperty
+		0x3 "interrupt#" DAddProperty
 
 		auto i
 		0 i!

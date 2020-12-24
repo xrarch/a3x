@@ -11,6 +11,8 @@ fn Main { -- }
 	auto gcn
 	"/gconsole" DevTreeWalk gcn!
 
+	auto r
+
 	auto fv
 
 	"false" "verbose?" NVRAMDefaultGetVar "true" strcmp fv!
@@ -18,7 +20,10 @@ fn Main { -- }
 	if (fv@ ~~ kbn@ 0 ~= &&)
 		kbn@ DeviceSelectNode
 			5 "isDown" DCallMethod drop drop drop fv!
-			80 "isDown" DCallMethod drop drop drop fv@ && fv!
+
+			80 "isDown" DCallMethod drop drop drop r!
+
+			r@ fv@ && fv!
 		DeviceExit
 	end
 
@@ -42,7 +47,6 @@ fn Main { -- }
 		end
 
 		if (cancel@ ~~)
-			auto r
 			AutoBoot r!
 			if (r@ 9 ==) (* if it was a system software error, don't draw the console box *)
 				if (gcn@)
