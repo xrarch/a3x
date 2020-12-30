@@ -10,12 +10,15 @@ LD  =  ../../sdk/link.sh link
 all: obj/cia3x.o obj/rta3x.o obj/_boot.o
 
 obj/cia3x.o: src/a3x.o
+	mkdir -p obj
 	cp src/a3x.o obj/cia3x.o
 
 obj/rta3x.o: $(OBJ) $(SOBJ)
+	mkdir -p obj
 	$(LD) -f obj/rta3x.o L/dfrt/dfrt.f.o $(OBJ) $(SOBJ)
 
 obj/_boot.o: ./client/_boot.s
+	mkdir -p obj
 	$(AS) ./client/_boot.s obj/_boot.o
 
 %.o: %.df
@@ -25,4 +28,4 @@ obj/_boot.o: ./client/_boot.s
 	$(AS) $< $@
 
 cleanup:
-	rm $(OBJ) $(SOBJ) obj/rta3x.o obj/_boot.o
+	rm -f $(OBJ) $(SOBJ) obj/rta3x.o obj/_boot.o
