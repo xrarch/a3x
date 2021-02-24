@@ -6,10 +6,12 @@
 
 .extern Reset
 
-PBVersion === 0xF8000800
+.define PBVersion 0xF8000800
 
-ExpectedPBVersion === 0x2
-ExpectedCPUVersion === 0x4
+.define ExpectedPBVersion  0x2
+.define ExpectedCPUVersion 0x4
+
+.section text
 
 ;a0: RAM size
 POST:
@@ -26,13 +28,13 @@ POST:
 	blt s0, t0, .noRAM
 
 	la t0, PBVersion
-	l.l t0, t0, zero
-	rshi t0, t0, 16
-	bnei t0, ExpectedPBVersion, .badPB
+	mov t0, long [t0]
+	rsh t0, t0, 16
+	bne t0, ExpectedPBVersion, .badPB
 
-	rshi t0, cpuid, 16
-	andi.i t0, 0x7FFF
-	bnei t0, ExpectedCPUVersion, .badCPU
+	rsh t0, cpuid, 16
+	and t0, 0x7FFF
+	bne t0, ExpectedCPUVersion, .badCPU
 
 	la a0, POSTPassed
 	jal Puts
@@ -43,7 +45,7 @@ POST:
 
 .noRAM:
 	lui a1, 0x01000000
-	rshi s0, s0, 12
+	rsh s0, s0, 12
 	or a1, a1, s0
 	la a0, POSTNoRAM
 	jal Error
@@ -66,23 +68,16 @@ POST:
 .section data
 
 BadCPUString:
-	.ds Incompatible CPU type!
-	.db 0xA, 0x0
+	.ds "Incompatible CPU type!\n\0"
 
 BadPBString:
-	.ds Incompatible motherboard!
-	.db 0xA, 0x0
+	.ds "Incompatible motherboard!\n\0"
 
 POSTString:
-	.ds Basic self-test...
-	.db 0xA, 0x0
+	.ds "Basic self-test...\n\0"
 
 POSTPassed:
-	.ds Self-test passed.
-	.db 0xA, 0x0
+	.ds "Self-test passed.\n\0"
 
 POSTNoRAM:
-	.ds Insufficient RAM to run this firmware, at least 256KB must be
-	.db 0xA
-	.ds installed in slot 0.
-	.db 0xA, 0x0
+	.ds "Insufficient RAM to run this firmware, at least 256KB must be\ninstalled in slot 0.\n\0"

@@ -1,3 +1,5 @@
+.section text
+
 .ds ANTE
 .dl _a3xEntry
 
@@ -10,12 +12,12 @@
 _a3xEntry:
 .global _a3xEntry
 	mov t0, sp
-	subi sp, sp, 8
-	s.l sp, zero, t0
-	sio.l sp, 4, lr
+	sub sp, sp, 8
+	mov long [sp], t0
+	mov long [sp + 4], lr
 
 	la at, a3xFwctx
-	s.l at, zero, sp
+	mov long [at], sp
 
 	jal a3xEntry
 

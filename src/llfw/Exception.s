@@ -3,9 +3,11 @@
 .extern Putn
 .extern Error
 
+.section text
+
 ExceptionVector:
 .global ExceptionVector
-	subi.i sp, 112
+	sub sp, 112
 	sgpr sp
 	push epc
 	push ers
@@ -38,7 +40,7 @@ ExceptionVector:
 	pop ers
 	pop epc
 	lgpr sp
-	addi.i sp, 112
+	add sp, 112
 	rfe
 
 ;a0 - name
@@ -67,28 +69,22 @@ PrintInfo:
 .section data
 
 EPCName:
-	.ds EPC
-	.db 0x0
+	.ds "EPC\0"
 
 ERSName:
-	.ds ERS
-	.db 0x0
+	.ds "ERS\0"
 
 ECAUSEName:
-	.ds ECAUSE
-	.db 0x0
+	.ds "ECAUSE\0"
 
 BADADDRName:
-	.ds BADADDR
-	.db 0x0
+	.ds "BADADDR\0"
 
 InfoString:
-	.ds : 
-	.db 0x0
+	.ds ": \0"
 
 ExceptionString:
-	.ds An unexpected exception occurred.
-	.db 0xA, 0x0
+	.ds "An unexpected exception occurred.\n\0"
 
 .section bss
 

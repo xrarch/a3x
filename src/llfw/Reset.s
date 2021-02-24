@@ -16,7 +16,9 @@
 
 .extern memset
 
-RAMSlotZero === 0x10000004
+.define RAMSlotZero 0x10000004
+
+.section text
 
 Reset:
 .global Reset
@@ -25,9 +27,11 @@ Reset:
 	li tlbv, 0
 
 	la t0, RAMSlotZero
-	l.l s0, t0, zero
+	mov s0, long [t0]
+
 	la t1, _bss_size
-	bge s0, t1, .goodRAM ;continue if there's at least enough RAM to fit our bss section
+	slt at, s0, t1
+	beq at, zero, .goodRAM ;continue if there's at least enough RAM to fit our bss section
 
 	b Hang ;otherwise hang
 
@@ -59,11 +63,11 @@ Reset:
 	pop v0
 
 	;pointer to last frame as defined by limn2k abi
-	subi sp, sp, 8
-	si.l sp, zero, 0 ;zero
-	siio.l sp, 4, 0
+	sub sp, sp, 8
+	mov long [sp], 0
+	mov long [sp + 4], 0
 
-	jalr v0
+	jal v0
 
 Hang:
 	b Hang
@@ -71,17 +75,10 @@ Hang:
 .section data
 
 HiString:
-	.db 0xA
-	.ds =============================
-	.db 0xA
-	.ds low-level firmware for limn2k
-	.db 0xA
-	.ds =============================
-	.db 0xA, 0x0
+	.ds "\n=============================\nlow-level firmware for limn2k\n=============================\n\0"
 
 HLRString:
-	.ds Jumping to high-level firmware!
-	.db 0xA, 0xA, 0x0
+	.ds "Jumping to high-level firmware!\n\n\0"
 
 .section bss
 

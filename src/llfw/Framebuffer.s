@@ -1,11 +1,13 @@
-EBusSlotsStart === 0xC0000000
-EBusSlotSpace === 0x8000000
+.define EBusSlotsStart 0xC0000000
+.define EBusSlotSpace  0x8000000
 
-LIMNGFXSlotMID === 0x4B494E34
-LGVRAMOffset === 0x100000
-LGRegScreen === 0x3000
+.define LIMNGFXSlotMID 0x4B494E34
+.define LGVRAMOffset   0x100000
+.define LGRegScreen    0x3000
 
 .extern memset
+
+.section text
 
 FindFB:
 .global FindFB
@@ -15,11 +17,11 @@ FindFB:
 	lui t3, EBusSlotSpace
 
 .loop:
-	lio.l t4, t0, 4
+	mov t4, long [t0 + 4]
 	beq t4, t2, .found
 
 	add t0, t0, t3
-	subi t1, t1, 1
+	sub t1, t1, 1
 
 	bne t1, zero, .loop
 
@@ -29,23 +31,23 @@ FindFB:
 	lui t1, LGVRAMOffset
 	add t1, t0, t1
 	la t2, FBAddress
-	s.l t2, zero, t1
+	mov long [t2], t1
 
 	li t2, LGRegScreen
-	l.l t1, t0, t2
+	mov t1, long [t0 + t2]
 	li t3, 0xFFF
 	and t2, t1, t3
 	la t0, FBWidth
-	s.l t0, zero, t2
+	mov long [t0], t2
 
-	rshi t3, t1, 12
+	rsh t3, t1, 12
 	la t0, FBHeight
-	s.l t0, zero, t3
+	mov long [t0], t3
 
 	mul t2, t2, t3
-	lshi t2, t2, 1
+	lsh t2, t2, 1
 	la t0, FBSize
-	s.l t0, zero, t2
+	mov long [t0], t2
 
 .out:
 	ret
@@ -57,7 +59,7 @@ FBDisplayCode:
 	push s0
 
 	la t0, FBAddress
-	l.l s0, t0, zero
+	mov s0, long [t0]
 	beq s0, zero, .out
 
 	push a0
@@ -65,27 +67,27 @@ FBDisplayCode:
 	pop a0
 
 	la t0, FBWidth
-	l.l t0, t0, zero
+	mov t0, long [t0]
 
 	la t1, FBHeight
-	l.l t1, t1, zero
+	mov t1, long [t1]
 
-	rshi t2, t0, 1
-	subi t2, t2, 32
+	rsh t2, t0, 1
+	sub t2, t2, 32
 
-	rshi t1, t1, 1
-	subi t1, t1, 8
+	rsh t1, t1, 1
+	sub t1, t1, 8
 
 	mul t1, t1, t0
 	add t1, t1, t2
 
-	lshi t1, t1, 1
+	lsh t1, t1, 1
 	add s0, s0, t1
 
-	addi s0, s0, 112
+	add s0, s0, 112
 
-	lshi t0, t0, 1
-	subi a1, t0, 16 ;width of a character
+	lsh t0, t0, 1
+	sub a1, t0, 16 ;width of a character
 
 	mov a2, s0
 
@@ -103,14 +105,14 @@ FBPutx:
 	push lr
 
 	mov t0, a0
-	rshi a0, a0, 4
-	modi t1, t0, 16
+	rsh a0, a0, 4
+	and t1, t0, 15
 	beq a0, zero, .ldigit
 
 	push t1
 	push a1
 	push a2
-	subi a2, a2, 16
+	sub a2, a2, 16
 	jal FBPutx
 	pop a2
 	pop a1
@@ -118,7 +120,7 @@ FBPutx:
 
 .ldigit:
 	la t0, ErrorcodeFont
-	lshi t1, t1, 4 ;multiply by 16 to get offset in font
+	lsh t1, t1, 4 ;multiply by 16 to get offset in font
 	add a0, t0, t1
 	jal FBDrawGlyph
 
@@ -134,26 +136,26 @@ FBDrawGlyph:
 	li t4, 0x7FFF
 
 .yloop:
-	subi t0, t0, 1
+	sub t0, t0, 1
 
 	li t1, 8
 
-	l.b t2, a0, zero
+	mov t2, byte [a0]
 
 .xloop:
-	subi t1, t1, 1
+	sub t1, t1, 1
 
 	rsh t3, t2, t1
-	andi t3, t3, 1
+	and t3, t3, 1
 	beq t3, zero, .nopix
 
-	s.i a2, zero, t4
+	mov int [a2], t4
 
 .nopix:
-	addi a2, a2, 2
+	add a2, a2, 2
 	bne t1, zero, .xloop
 
-	addi a0, a0, 1
+	add a0, a0, 1
 	add a2, a2, a1
 	bne t0, zero, .yloop
 
@@ -163,10 +165,10 @@ FBClear:
 	push lr
 
 	la a2, FBAddress
-	l.l a2, a2, zero
+	mov a2, long [a2]
 
 	la a1, FBSize
-	l.l a1, a1, zero
+	mov a1, long [a1]
 
 	la a0, 0x082E082E
 

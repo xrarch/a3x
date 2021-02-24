@@ -19,17 +19,17 @@ setvector:
 	ret
 
 exception_limn2k:
-	subi.i sp, 112
+	sub sp, 112
 	sgpr sp
 	push epc
 	push ers
 	push lr
 
 	mov t0, sp
-	subi.i sp, 12
-	sio.l sp, 8, t0
-	siio.l sp, 4, 0
-	s.l sp, zero, zero
+	sub sp, 12
+	mov long [sp + 8], t0
+	mov long [sp + 4], 0
+	mov long [sp], 0
 
 	mov a3, ecause
 	mov a2, epc
@@ -37,7 +37,7 @@ exception_limn2k:
 	mov a0, badaddr
 	jal Exception
 
-	addi.i sp, 12
+	add sp, 12
 
 	li badaddr, 0
 
@@ -45,7 +45,7 @@ exception_limn2k:
 	pop ers
 	pop epc
 	lgpr sp
-	addi.i sp, 112
+	add sp, 112
 	rfe
 
 "
@@ -134,14 +134,14 @@ asm "
 
 InterruptEnable:
 .global InterruptEnable
-	bseti rs, rs, 1
+	bset rs, rs, 1
 	ret
 
 InterruptDisable:
 .global InterruptDisable
 	mov v0, rs
-	bclri rs, rs, 3
-	bclri rs, rs, 1
+	bclr rs, rs, 3
+	bclr rs, rs, 1
 	ret
 
 InterruptRestore:

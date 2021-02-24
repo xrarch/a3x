@@ -1,5 +1,7 @@
-SerialPortA === 0xF8000040
-SerialPortB === 0xF8000044
+.define SerialPortA 0xF8000040
+.define SerialPortB 0xF8000044
+
+.section text
 
 ;a0 - str
 Puts:
@@ -7,7 +9,7 @@ Puts:
 	push lr
 
 .loop:
-	l.b t0, a0, zero
+	mov t0, byte [a0]
 	beq t0, zero, .out
 
 	push a0
@@ -15,7 +17,7 @@ Puts:
 	jal Putc
 	pop a0
 
-	addi a0, a0, 1
+	add a0, a0, 1
 	b .loop
 
 .out:
@@ -30,11 +32,11 @@ Getc:
 	li t1, 0xFFFF
 	
 .busy:
-	l.b t2, t0, zero
+	mov t2, byte [t0]
 	bne t2, zero, .busy
 
-	si.b t0, zero, 2
-	lio.i t3, t0, 4
+	mov byte [t0], 2
+	mov t3, int [t0 + 4]
 
 	beq t3, t1, .busy
 
@@ -46,11 +48,11 @@ Putc:
 	la t0, SerialPortA
 
 .wait:
-	l.b t1, t0, zero
+	mov t1, byte [t0]
 	bne t1, zero, .wait
 
-	sio.l t0, 4, a0
-	si.l t0, zero, 1
+	mov long [t0 + 4], a0
+	mov long [t0], 1
 
 	ret
 
@@ -60,8 +62,8 @@ Putn:
 	push lr
 
 	mov t0, a0
-	rshi a0, a0, 4
-	modi t1, t0, 16
+	rsh a0, a0, 4
+	and t1, t0, 15
 	beq a0, zero, .ldigit
 
 	push t1
@@ -70,7 +72,7 @@ Putn:
 
 .ldigit:
 	la t0, IntegerChars
-	l.b a0, t0, t1
+	mov a0, byte [t0 + t1]
 	jal Putc
 
 	pop lr
@@ -79,4 +81,4 @@ Putn:
 .section data
 
 IntegerChars:
-	.ds 0123456789ABCDEF
+	.ds "0123456789ABCDEF"

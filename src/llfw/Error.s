@@ -10,6 +10,8 @@
 
 .extern FBDisplayCode
 
+.section text
+
 ;a0 - error string
 ;a1 - error code
 Error:
@@ -43,8 +45,8 @@ Error:
 	jal FBDisplayCode
 
 	jal Getc
-	beqi v0, "c", .out
-	bnei v0, "x", .reset
+	beq v0, 'c', .out
+	bne v0, 'x', .reset
 
 	li t0, 0
 	lui t1, 0x100000
@@ -52,9 +54,9 @@ Error:
 .clear:
 	beq t0, t1, .reset
 
-	si.l t0, zero, 0
+	mov long [t0], 0
 
-	addi t0, t0, 4
+	add t0, t0, 4
 	b .clear
 
 .reset:
@@ -73,19 +75,16 @@ Error:
 
 LLFWTermClear:
 	.db 0x1B
-	.ds [c
-	.db 0x0
+	.ds "[c\0"
 
 LLFWErrorString:
-	.db 0xA
-	.ds FATAL ERROR! Cannot continue initialization:
-	.db 0xA, 0x9, 0x0
+	.ds "\nFATAL ERROR! Cannot continue initialization:\n"
+	.db 0x9
+	.db 0x0
 
 LLFWErrorStringB:
 	.db 0x9
-	.ds EC: 
-	.db 0x0
+	.ds "EC: \0"
 
 LLFWErrorStringC:
-	.ds Resetting on console input, or press 'c' to continue.
-	.db 0xA, 0x0
+	.ds "Resetting on console input, or press 'c' to continue.\n\0"

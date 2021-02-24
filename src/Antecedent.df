@@ -45,10 +45,6 @@ asm "
 
 .entry BIOSEntry
 
-"
-
-asm "
-
 ;set exception vector to zero and immediately cause an exception
 ;this forces the CPU to reset and do whatever it needs to do that cleanly
 

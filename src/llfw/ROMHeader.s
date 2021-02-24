@@ -1,6 +1,8 @@
 .extern Reset
 
+.section text
+
 ;reset vector
 .dl Reset
 
-.ds limn2k BootROM, by Will
+.ds "limn2k BootROM, by Will"
