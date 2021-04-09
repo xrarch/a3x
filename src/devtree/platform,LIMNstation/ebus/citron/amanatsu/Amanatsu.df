@@ -86,7 +86,3 @@ end
 fn AmanatsuReset { -- }
 	0 0 2 AmanatsuSpecialCMD
 end
-
-
-
-
