@@ -3,3 +3,263 @@
 fn _DumpStack { -- }
 	"_DumpStack: unimplemented\n" Printf
 end
+
+#include "<inc>/list.h"
+#include "<inc>/tree.h"
+
+(* stolen and ported to dragonfruit from toaruos tree.c *)
+
+fn TreeNodes { tree -- nodes }
+	tree@ Tree_Nodes + @ nodes!
+end
+
+fn TreeRoot { tree -- root }
+	tree@ Tree_Root + @ root!
+end
+
+fn TreeNodeValue { node -- value }
+	node@ TreeNode_Value + @ value!
+end
+
+fn TreeNodeParent { node -- parent }
+	node@ TreeNode_Parent + @ parent!
+end
+
+fn TreeNodeChildren { node -- children }
+	node@ TreeNode_Children + @ children!
+end
+
+fn TreeCreate { -- tree }
+	Tree_SIZEOF Calloc tree!
+
+	0 tree@ Tree_Nodes + !
+	0 tree@ Tree_Root + !
+end
+
+fn TreeSetRoot { value tree -- root }
+	value@ TreeNodeCreate root!
+
+	root@ tree@ Tree_Root + !
+	1 tree@ Tree_Nodes + !
+end
+
+fn TreeNodeDestroy { node -- }
+	auto n
+	node@ TreeNode_Children + @ List_Head + @ n!
+	while (n@ 0 ~=)
+		n@ ListNode_Value + @ TreeNodeDestroy
+
+		n@ ListNode_Next + @ n!
+	end
+
+	node@ TreeNode_Value + @ Free
+end
+
+fn TreeDestroy { tree -- }
+	if (tree@ Tree_Root + @ 0 ~=)
+		tree@ Tree_Root + @ TreeNodeDestroy
+	end
+end
+
+fn TreeNodeFree { node -- }
+	if (node@ 0 ==)
+		return
+	end
+
+	auto n
+	node@ TreeNode_Children + @ List_Head + @ n!
+	while (n@ 0 ~=)
+		n@ ListNode_Value + @ TreeNodeFree
+
+		n@ ListNode_Next + @ n!
+	end
+
+	node@ Free
+end
+
+fn TreeFree { tree -- }
+	tree@ Tree_Root + @ TreeNodeFree
+end
+
+fn TreeNodeCreate { value -- node }
+	TreeNode_SIZEOF Calloc node!
+
+	value@ node@ TreeNode_Value + !
+	ListCreate node@ TreeNode_Children + !
+	0 node@ TreeNode_Parent + !
+end
+
+fn TreeInsertChildNode { node parent tree -- }
+	node@ parent@ TreeNode_Children + @ ListInsert
+	parent@ node@ TreeNode_Parent + !
+	1 tree@ Tree_Nodes + +=
+end
+
+fn TreeInsertChild { value parent tree -- node }
+	value@ TreeNodeCreate node!
+	node@ parent@ tree@ TreeInsertChildNode
+end
+
+fn TreeNodeGetValue { node -- value }
+	node@ TreeNode_Value + @ value!
+end
+
+(* stolen and ported to dragonfruit from toaruos list.c *)
+
+fn ListLength { list -- length }
+	list@ List_Length + @ length!
+end
+
+fn ListHead { list -- head }
+	list@ List_Head + @ head!
+end
+
+fn ListTail { list -- tail }
+	list@ List_Tail + @ tail!
+end
+
+fn ListNodeOwner { node -- owner }
+	node@ ListNode_Owner + @ owner!
+end
+
+fn ListNodePrev { node -- prev }
+	node@ ListNode_Prev + @ prev!
+end
+
+fn ListNodeNext { node -- next }
+	node@ ListNode_Next + @ next!
+end
+
+fn ListNodeValue { node -- value }
+	node@ ListNode_Value + @ value!
+end
+
+fn ListDestroy { list -- }
+	auto n
+	list@ List_Head + @ n!
+
+	while (n@ 0 ~=)
+		n@ ListNode_Value + @ Free
+		n@ ListNode_Next + @ n!
+	end
+end
+
+fn ListFree { list -- }
+	auto n
+	list@ List_Head + @ n!
+
+	while (n@ 0 ~=)
+		auto s
+		n@ ListNode_Next + @ s!
+		n@ Free
+		s@ n!
+	end
+end
+
+fn ListAppend { node list -- }
+	0 node@ ListNode_Next + !
+	list@ node@ ListNode_Owner + !
+
+	if (list@ List_Length + @ 0 ==)
+		node@ list@ List_Head + !
+		node@ list@ List_Tail + !
+		0 node@ ListNode_Prev + !
+		0 node@ ListNode_Next + !
+		1 list@ List_Length + !
+		return
+	end
+
+	node@ list@ List_Tail + @ ListNode_Next + !
+	list@ List_Tail + @ node@ ListNode_Prev + !
+	node@ list@ List_Tail + !
+	1 list@ List_Length + +=
+end
+
+fn ListInsert1 { item list -- node }
+	ListNode_SIZEOF Malloc node!
+	item@ node@ ListNode_Value + !
+	0 node@ ListNode_Next + !
+	0 node@ ListNode_Prev + !
+	0 node@ ListNode_Owner + !
+	node@ list@ ListAppend
+end
+
+fn ListInsert { item list -- }
+	item@ list@ ListInsert1 drop
+end
+
+fn ListCreate { -- list }
+	List_SIZEOF Malloc list!
+
+	0 list@ List_Head + !
+	0 list@ List_Tail + !
+	0 list@ List_Length + !
+end
+
+fn ListTakeHead { list -- head }
+	0 list@ ListRemoveRR head!
+end
+
+fn ListRemoveRR { index list -- ref }
+	if (index@ list@ List_Length + @ >) ERR ref! return end
+
+	auto n
+	list@ List_Head + @ n!
+
+	auto i
+	0 i!
+
+	while (i@ index@ <)
+		n@ ListNode_Next + @ n!
+		1 i +=
+	end
+
+	n@ list@ ListDelete
+
+	n@ ref!
+end
+
+fn ListRemove { index list -- }
+	index@ list@ ListRemoveRR Free
+end
+
+fn ListDelete { node list -- }
+	if (node@ list@ List_Head + @ ==)
+		node@ ListNode_Next + @ list@ List_Head + !
+	end
+	if (node@ list@ List_Tail + @ ==)
+		node@ ListNode_Prev + @ list@ List_Tail + !
+	end
+	if (node@ ListNode_Prev + @ 0 ~=)
+		node@ ListNode_Next + @
+		node@ ListNode_Prev + @ ListNode_Next + !
+	end
+	if (node@ ListNode_Next + @ 0 ~=)
+		node@ ListNode_Prev + @
+		node@ ListNode_Next + @ ListNode_Prev + !
+	end
+
+	0 node@ ListNode_Prev + !
+	0 node@ ListNode_Next + !
+	0 node@ ListNode_Owner + !
+
+	list@ List_Length + dup @ 1 - swap !
+end
+
+fn ListFind { value list -- item }
+	auto n
+	list@ List_Head + @ n!
+
+	0 item!
+
+	while (n@ 0 ~=)
+		if (n@ ListNode_Value + @ value@ ==)
+			return
+		end
+
+		1 item +=
+		n@ ListNode_Next + @ n!
+	end
+
+	-1 item!
+end

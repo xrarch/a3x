@@ -1,3 +1,5 @@
+#include "<inc>/list.h"
+#include "<inc>/tree.h"
 #include "<inc>/console.h"
 #include "<inc>/devtree.h"
 #include "<inc>/font.h"
