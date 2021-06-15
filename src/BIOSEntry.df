@@ -58,17 +58,13 @@ Reset:
 "
 
 fn LinkInfo { -- }
-	pointerof _text "_text = %x " Printf
-	pointerof _text_size "_text_size = %x " Printf
-	pointerof _text_end "_text_end = %x\n" Printf
-
-	pointerof _data "_data = %x " Printf
-	pointerof _data_size "_data_size = %x " Printf
-	pointerof _data_end "_data_end = %x\n" Printf
-
-	pointerof _bss "_bss = %x " Printf
-	pointerof _bss_size "_bss_size = %x " Printf
-	pointerof _bss_end "_bss_end = %x\n" Printf
+	"SECTION  BASE     SIZE     END\n" Printf
+	pointerof _text_end pointerof _text_size pointerof _text_end
+	"   text  %08x %08x %08x\n" Printf
+	pointerof _data_end pointerof _data_size pointerof _data_end
+	"   data  %08x %08x %08x\n" Printf
+	pointerof _bss_end pointerof _bss_size pointerof _bss_end
+	"    bss  %08x %08x %08x\n" Printf
 end
 
 fn LateReset { -- }
@@ -80,8 +76,8 @@ fn FirmwareBanner { -- }
 	'\n' Putc
 
 	"/" DeviceSelect
-		"author" DGetProperty "version" DGetProperty DGetName "%s %s by %s\n" Printf
-		"buildDate" DGetProperty "build" DGetProperty "Build %s, built on %s\n" Printf
+		"buildDate" DGetProperty "build" DGetProperty
+		"author" DGetProperty "version" DGetProperty DGetName "Firmware: %s %s by %s (build %s %s)\n" Printf
 	DeviceExit
 
 	"/platform" DeviceSelect
@@ -89,11 +85,11 @@ fn FirmwareBanner { -- }
 	DeviceExit
 
 	"/cpu" DeviceSelect
-		"model" DGetProperty "CPU: %s\n" Printf
+		"model" DGetProperty "     CPU: %s\n" Printf
 	DeviceExit
-
+	
 	"/memory" DeviceSelect
-		"totalRAM" DGetProperty 1024 / "RAM: %dkb\n" Printf
+		"totalRAM" DGetProperty 1024 / "     RAM: %dkb\n" Printf
 	DeviceExit
 
 	'\n' Putc

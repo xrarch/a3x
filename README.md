@@ -1,4 +1,4 @@
-# ANTECEDENT 3.x firmware
+# ARCSECOND 3.x firmware
 
 Abbreviated frequently as a3x.
 
