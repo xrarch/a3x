@@ -1,7 +1,26 @@
 #include "<df>/dragonfruit.h"
 #include "<inc>/a3x.h"
 
+struct MemoryDescriptor
+	4 BaseAddress
+	4 Size
+	4 Type
+
+	4 Next
+endstruct
+
+const RAM256DescSpace 0x10000000
+
+const RAM256SlotSz    0x2000000
+
+// the firmware memory descriptor will be the first link in the descriptor list
+buffer FWMemDescriptor MemoryDescriptor_SIZEOF
+
 fn BuildMemory { -- }
+	FWSTART        FWMemDescriptor MemoryDescriptor_BaseAddress + !
+	FWEND          FWMemDescriptor MemoryDescriptor_Size + !
+	MEMORYRESERVED FWMemDescriptor MemoryDescriptor_Type + !
+
 	DeviceNew
 		"ram" DSetName
 
@@ -10,6 +29,12 @@ fn BuildMemory { -- }
 		"AISA,memory" "model" DAddProperty
 
 		1 "revision" DAddProperty
+
+		pointerof RAM256NextDescriptorM "nextDescriptor" DAddMethod
+		pointerof RAM256DescriptorInfoM "getDescriptorInfo" DAddMethod
+
+		auto memdesc
+		FWMemDescriptor memdesc!
 
 		auto max
 		RAM256Slots max!
@@ -21,7 +46,40 @@ fn BuildMemory { -- }
 		0 sz!
 
 		while (i@ max@ <)
-			sz@ i@ RAM256SlotSize + sz!
+			auto thissize
+
+			i@ RAM256SlotSize thissize!
+
+			thissize@ sz +=
+
+			if (memdesc@ MemoryDescriptor_Size + @ RAM256SlotSz <)
+				// only make a new descriptor if not contiguous
+
+				if (thissize@)
+					// create a descriptor for this RAM slot
+
+					auto memdescr
+					memdesc@ memdescr!
+
+					MemoryDescriptor_SIZEOF Malloc memdesc!
+
+					memdesc@ memdescr@ MemoryDescriptor_Next + !
+
+					if (i@ 0 ==)
+						FWEND memdesc@ MemoryDescriptor_BaseAddress + !
+						FWEND thissize -=
+					end else
+						i@ RAM256SlotSz * memdesc@ MemoryDescriptor_BaseAddress + !
+					end
+
+					thissize@  memdesc@ MemoryDescriptor_Size + !
+					MEMORYFREE memdesc@ MemoryDescriptor_Type + !
+				end
+			end else
+				// extend last descriptor
+
+				thissize@ memdesc@ MemoryDescriptor_Size + +=
+			end
 
 			1 i +=
 		end
@@ -30,7 +88,31 @@ fn BuildMemory { -- }
 	DeviceExit
 end
 
-const RAM256DescSpace 0x10000000
+fn private RAM256NextDescriptorM { argvt argcn -- out1 out2 out3 }
+	argvt@ @
+	RAM256NextDescriptor out1!
+end
+
+fn RAM256NextDescriptor { desc -- next }
+	desc@ "%x\n" Printf
+
+	if (desc@ -1 ==)
+		FWMemDescriptor next!
+	end else
+		desc@ MemoryDescriptor_Next + @ next!
+	end
+end
+
+fn private RAM256DescriptorInfoM { argvt argcn -- out1 out2 out3 }
+	argvt@ @
+	RAM256DescriptorInfo out3! out2! out1!
+end
+
+fn RAM256DescriptorInfo { desc -- addr size type }
+	desc@ MemoryDescriptor_BaseAddress + @ addr!
+	desc@ MemoryDescriptor_Size + @ size!
+	desc@ MemoryDescriptor_Type + @ type!
+end
 
 fn RAM256Slots { -- slots }
 	RAM256DescSpace@ slots!

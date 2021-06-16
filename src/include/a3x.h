@@ -22,3 +22,11 @@ extern DebugMonitor { state -- }
 extern Problem { ... fmt -- }
 
 externptr PlatformInited
+
+const MEMORYFREE     1
+const MEMORYRESERVED 2
+const MEMORYBAD      3
+
+// make sure to update link values if you change this
+const FWSTART 0x4000
+const FWEND   0x40000
