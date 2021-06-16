@@ -94,8 +94,6 @@ fn private RAM256NextDescriptorM { argvt argcn -- out1 out2 out3 }
 end
 
 fn RAM256NextDescriptor { desc -- next }
-	desc@ "%x\n" Printf
-
 	if (desc@ -1 ==)
 		FWMemDescriptor next!
 	end else
