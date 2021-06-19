@@ -61,138 +61,161 @@ a3xReturn:
 ; buffer maxchars --
 a3xGets:
 .global a3xGets
+	li   t0, _a3xCIC_Gets
 	fwc  _a3xCIC_Gets
 	ret
 
 ; char -- 
 a3xPutc:
 .global a3xPutc
+	li   t0, _a3xCIC_Putc
 	fwc _a3xCIC_Putc
 	ret
 
 ; -- char
 a3xGetc:
 .global a3xGetc
+	li   t0, _a3xCIC_Getc
 	fwc _a3xCIC_Getc
 	ret
 
 ; str --
 a3xPuts:
 .global a3xPuts
+	li   t0, _a3xCIC_Puts
 	fwc _a3xCIC_Puts
 	ret
 
 ; -- root dcp
 a3xAPIDevTree:
 .global a3xAPIDevTree
+	li   t0, _a3xCIC_DevTree
 	fwc _a3xCIC_DevTree
 	ret
 
 ; sz -- ptr
 a3xMalloc:
 .global a3xMalloc
+	li  t0, _a3xCIC_Malloc
 	fwc _a3xCIC_Malloc
 	ret
 
 ; sz -- ptr
 a3xCalloc:
 .global a3xCalloc
+	li  t0, _a3xCIC_Calloc
 	fwc _a3xCIC_Calloc
 	ret
 
 ; ptr -- 
 a3xFree:
 .global a3xFree
+	li  t0, _a3xCIC_Free
 	fwc _a3xCIC_Free
 	ret
 
 ; path -- node
 a3xDevTreeWalk:
 .global a3xDevTreeWalk
+	li  t0, _a3xCIC_DevTreeWalk
 	fwc _a3xCIC_DevTreeWalk
 	ret
 
 ; --
 a3xDeviceParent:
 .global a3xDeviceParent
+	li  t0, _a3xCIC_DeviceParent
 	fwc _a3xCIC_DeviceParent
 	ret
 
 ; node -- 
 a3xDeviceSelectNode:
 .global a3xDeviceSelectNode
+	li  t0, _a3xCIC_DeviceSelectNode
 	fwc _a3xCIC_DeviceSelectNode
 	ret
 
 ; path -- 
 a3xDeviceSelect:
 .global a3xDeviceSelect
+	li  t0, _a3xCIC_DeviceSelect
 	fwc _a3xCIC_DeviceSelect
 	ret
 
 ; name -- value
 a3xDGetProperty:
 .global a3xDGetProperty
+	li  t0, _a3xCIC_DeviceDGetProperty
 	fwc _a3xCIC_DeviceDGetProperty
 	ret
 
 ; name -- ptr
 a3xDGetMethod:
 .global a3xDGetMethod
+	li  t0, _a3xCIC_DeviceDGetMethod
 	fwc _a3xCIC_DeviceDGetMethod
 	ret
 
 ; name -- success
 a3xDCallMethod:
 .global a3xDCallMethod
+	li  t0, _a3xCIC_DeviceDCallMethod
 	fwc _a3xCIC_DeviceDCallMethod
 	ret
 
 ; -- 
 a3xDeviceExit:
 .global a3xDeviceExit
+	li  t0, _a3xCIC_DeviceExit
 	fwc _a3xCIC_DeviceExit
 	ret
 
 ; prop name --
 a3xDSetProperty:
 .global a3xDSetProperty
+	li  t0, _a3xCIC_DeviceDSetProperty
 	fwc _a3xCIC_DeviceDSetProperty
 	ret
 
 ; ptr --
 a3xDCallMethodPtr:
 .global a3xDCallMethodPtr
+	li  t0, _a3xCIC_DeviceDCallMethodPtr
 	fwc _a3xCIC_DeviceDCallMethodPtr
 	ret
 
 ; -- iter
 a3xDevIteratorInit:
 .global a3xDevIteratorInit
+	li  t0, _a3xCIC_DevIteratorInit
 	fwc _a3xCIC_DevIteratorInit
 	ret
 
 ; iter -- iter
 a3xDevIterate:
 .global a3xDevIterate
+	li  t0, _a3xCIC_DevIterate
 	fwc _a3xCIC_DevIterate
 	ret
 
 ; -- name
 a3xDGetName:
 .global a3xDGetName
+	li  t0, _a3xCIC_DeviceDGetName
 	fwc _a3xCIC_DeviceDGetName
 	ret
 
 ; --
 a3xConsoleUserOut:
 .global a3xConsoleUserOut
+	li  t0, _a3xCIC_ConsoleUserOut
 	fwc _a3xCIC_ConsoleUserOut
 	ret
 
 ; -- current
 a3xDGetCurrent:
 .global a3xDGetCurrent
+	li  t0, _a3xCIC_DGetCurrent
 	fwc _a3xCIC_DGetCurrent
 	ret
 

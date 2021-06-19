@@ -43,15 +43,9 @@ savedfwcallLR:
 	.dl 0
 
 firmware_call:
-	la   t0, savedfwcallLR
-	mov  long [t0], lr
-
-	mfcr t0, epc
-	subi t0, t0, 4
-	mov  t0, long [t0]
-	rshi t0, t0, 6
-	la   t1, 0x3FFFFF
-	and  t0, t0, t1
+.global firmware_call
+	la   t1, savedfwcallLR
+	mov  long [t1], lr
 
 	la   t1, API
 	mov  t0, long [t1 + t0 LSH 2]

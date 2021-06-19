@@ -34,10 +34,16 @@ fn BuildMemory { -- }
 		pointerof RAM256DescriptorInfoM "getDescriptorInfo" DAddMethod
 
 		auto memdesc
+		auto memdescr
+
+		FWMemDescriptor memdescr!
 		FWMemDescriptor memdesc!
 
 		auto max
 		RAM256Slots max!
+
+		auto lastsize
+		0 lastsize!
 
 		auto i
 		0 i!
@@ -52,13 +58,14 @@ fn BuildMemory { -- }
 
 			thissize@ sz +=
 
-			if (memdesc@ MemoryDescriptor_Size + @ RAM256SlotSz <)
+			if (lastsize@ RAM256SlotSz <)
 				// only make a new descriptor if not contiguous
+
+				thissize@ lastsize!
 
 				if (thissize@)
 					// create a descriptor for this RAM slot
 
-					auto memdescr
 					memdesc@ memdescr!
 
 					MemoryDescriptor_SIZEOF Malloc memdesc!
@@ -76,9 +83,11 @@ fn BuildMemory { -- }
 					MEMORYFREE memdesc@ MemoryDescriptor_Type + !
 				end
 			end else
+				thissize@ lastsize!
+
 				// extend last descriptor
 
-				thissize@ memdesc@ MemoryDescriptor_Size + +=
+				thissize@ memdescr@ MemoryDescriptor_Size + +=
 			end
 
 			1 i +=
