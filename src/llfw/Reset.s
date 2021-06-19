@@ -18,64 +18,75 @@
 
 .define RAMSlotZero 0x10000004
 
+.define PBoardReset 0xF8800000
+.define PBoardResetMagic 0xAABBCCDD
+
 .section text
 
 Reset:
 .global Reset
-	lui rs, 0x80000000 ;reset ebus
-	li ev, 0 ;clear exception vector
-	li tlbv, 0
+	la   t0, PBoardResetMagic
+	la   t1, PBoardReset
+	mov  long [t1], t0 ;reset ebus
 
-	la t0, RAMSlotZero
-	mov s0, long [t0]
+	mtcr evec,  zero ;clear exception vectors
+	mtcr fwvec, zero
 
-	la t1, _bss_size
-	slt at, s0, t1
-	beq at, zero, .goodRAM ;continue if there's at least enough RAM to fit our bss section
+	la   t0, RAMSlotZero
+	mov  s0, long [t0]
 
-	b Hang ;otherwise hang
+	la   t1, _bss_size
+	slt  t0, s0, t1
+	beq  t0, zero, .goodRAM ;continue if there's at least enough RAM to fit our bss section
+
+	j    Hang ;otherwise hang
 
 .goodRAM:
-	la sp, LLFWStackTop ;set stack
+	la   sp, LLFWStackTop ;set stack
 
-	la ev, ExceptionVector ;set exception vector
-	la tlbv, ExceptionVector
+	la   t0, ExceptionVector
+	mtcr evec,  t0 ;set exception vectors
+	mtcr fwvec, t0
 
 	;zero out bss
-	li a0, 0
-	la a1, _bss_size
-	la a2, _bss
-	jal memset
+	li   a0, 0
+	la   a1, _bss_size
+	la   a2, _bss
+	jal  memset
 
-	jal FindFB
+	jal  FindFB
 
-	la a0, HiString
-	jal Puts
+	la   a0, HiString
+	jal  Puts
 
-	mov a0, s0
-	jal POST ;self test
+	mov  a0, s0
+	jal  POST ;self test
 
-	jal LoadBIOS ;load bios image
+	jal  LoadBIOS ;load bios image into RAM
 
-	push v0
-	la a0, HLRString
-	jal Puts
-	pop v0
+	mov  s0, a0
 
-	;pointer to last frame as defined by limn2k abi
-	sub sp, sp, 8
-	mov long [sp], 0
-	mov long [sp + 4], 0
+	la   a0, HLRString
+	jal  Puts
 
-	jal v0
+	;make phony pointer to last frame as defined by limn2500 abi
+	;for the benefit of stack traces
+
+	subi sp, sp, 8
+	mov  long [sp], 0
+	mov  long [sp + 4], 0
+
+	jalr lr, s0, 0 ;jump into bios entry point
 
 Hang:
-	b Hang
+	b    Hang
+
+.ds "limn2500 BootROM, by Will"
 
 .section data
 
 HiString:
-	.ds "\n=============================\nlow-level firmware for limn2k\n=============================\n\0"
+	.ds "\n============================\nlow-level firmware for limn2500\n============================\n\0"
 
 HLRString:
 	.ds "Jumping to high-level firmware!\n\n\0"

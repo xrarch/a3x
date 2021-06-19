@@ -2,68 +2,61 @@
 .extern Putc
 .extern Putn
 .extern Error
+.extern Reset
 
 .section text
 
 ExceptionVector:
 .global ExceptionVector
-	sub sp, 112
-	sgpr sp
-	push epc
-	push ers
-	push lr
+	la   a0, EPCName
+	mfcr a1, epc
+	jal  PrintInfo
 
-	la a0, EPCName
-	mov a1, epc
-	jal PrintInfo
+	la   a0, ERSName
+	mfcr a1, ers
+	jal  PrintInfo
 
-	la a0, ERSName
-	mov a1, ers
-	jal PrintInfo
+	la   a0, ECAUSEName
+	mfcr a1, ecause
+	jal  PrintInfo
 
-	la a0, ECAUSEName
-	mov a1, ecause
-	jal PrintInfo
+	la   a0, BADADDRName
+	mfcr a1, ebadaddr
+	jal  PrintInfo
 
-	la a0, BADADDRName
-	mov a1, badaddr
-	jal PrintInfo
+	mtcr ebadaddr, zero
 
-	li badaddr, 0
+	lui  a1, zero, 0x02000000
+	mfcr t0, ecause
+	or   a1, a1, t0
+	la   a0, ExceptionString
+	jal  Error
 
-	lui a1, 0x02000000
-	or a1, a1, ecause
-	la a0, ExceptionString
-	jal Error
-
-	pop lr
-	pop ers
-	pop epc
-	lgpr sp
-	add sp, 112
-	rfe
+	j    Reset
 
 ;a0 - name
 ;a1 - value
 PrintInfo:
-	push lr
-	push s0
+	subi sp, sp, 8
+	mov  long [sp], lr
+	mov  long [sp + 4], s0
 
-	jal Puts
+	jal  Puts
 
-	mov s0, a1
+	mov  s0, a1
 
-	la a0, InfoString
-	jal Puts
+	la   a0, InfoString
+	jal  Puts
 
-	mov a0, s0
-	jal Putn
+	mov  a0, s0
+	jal  Putn
 
-	li a0, 0xA
-	jal Putc
+	li   a0, 0xA
+	jal  Putc
 
-	pop s0
-	pop lr
+	mov  s0, long [sp + 4]
+	mov  lr, long [sp]
+	addi sp, sp, 8
 	ret
 
 .section data

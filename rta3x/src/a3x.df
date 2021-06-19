@@ -24,224 +24,176 @@ asm "
 
 a3xReturn:
 .global a3xReturn
-	la at, a3xFwctx
-	mov sp, long [at]
+	la   t0, a3xFwctx
+	mov  sp, long [t0]
 
-	mov v0, a0
-
-	mov lr, long [sp + 4]
-	add sp, sp, 8
+	mov  lr, long [sp + 4]
+	addi sp, sp, 8
 	ret
 
 .define _a3xCIC_Putc 0
-.define _a3xCIC_Getc 4
-.define _a3xCIC_Gets 8
-.define _a3xCIC_Puts 12
-.define _a3xCIC_DevTree 16
-.define _a3xCIC_Malloc 20
-.define _a3xCIC_Calloc 24
-.define _a3xCIC_Free 28
+.define _a3xCIC_Getc 1
+.define _a3xCIC_Gets 2
+.define _a3xCIC_Puts 3
+.define _a3xCIC_DevTree 4
+.define _a3xCIC_Malloc 5
+.define _a3xCIC_Calloc 6
+.define _a3xCIC_Free 7
 
-.define _a3xCIC_DevTreeWalk 32
-.define _a3xCIC_DeviceParent 36
-.define _a3xCIC_DeviceSelectNode 40
-.define _a3xCIC_DeviceSelect 44
-.define _a3xCIC_DeviceDGetProperty 48
-.define _a3xCIC_DeviceDGetMethod 52
-.define _a3xCIC_DeviceDCallMethod 56
-.define _a3xCIC_DeviceExit 60
-.define _a3xCIC_DeviceDSetProperty 64
-.define _a3xCIC_DeviceDCallMethodPtr 68
-.define _a3xCIC_DevIteratorInit 72
-.define _a3xCIC_DevIterate 76
-.define _a3xCIC_DeviceDGetName 80
+.define _a3xCIC_DevTreeWalk 8
+.define _a3xCIC_DeviceParent 9
+.define _a3xCIC_DeviceSelectNode 10
+.define _a3xCIC_DeviceSelect 11
+.define _a3xCIC_DeviceDGetProperty 12
+.define _a3xCIC_DeviceDGetMethod 13
+.define _a3xCIC_DeviceDCallMethod 14
+.define _a3xCIC_DeviceExit 15
+.define _a3xCIC_DeviceDSetProperty 16
+.define _a3xCIC_DeviceDCallMethodPtr 17
+.define _a3xCIC_DevIteratorInit 18
+.define _a3xCIC_DevIterate 19
+.define _a3xCIC_DeviceDGetName 20
 
-.define _a3xCIC_ConsoleUserOut 84
+.define _a3xCIC_ConsoleUserOut 21
 
-.define _a3xCIC_DGetCurrent 88
+.define _a3xCIC_DGetCurrent 22
 
 ; buffer maxchars --
 a3xGets:
 .global a3xGets
-	la t0, a3xCIPtr
-	mov t0, long [t0]
-	mov t0, long [t0 + _a3xCIC_Gets]
-	j t0
+	fwc  _a3xCIC_Gets
+	ret
 
 ; char -- 
 a3xPutc:
 .global a3xPutc
-	la t0, a3xCIPtr
-	mov t0, long [t0]
-	mov t0, long [t0 + _a3xCIC_Putc]
-	j t0
+	fwc _a3xCIC_Putc
+	ret
 
 ; -- char
 a3xGetc:
 .global a3xGetc
-	la t0, a3xCIPtr
-	mov t0, long [t0]
-	mov t0, long [t0 + _a3xCIC_Getc]
-	j t0
+	fwc _a3xCIC_Getc
+	ret
 
 ; str --
 a3xPuts:
 .global a3xPuts
-	la t0, a3xCIPtr
-	mov t0, long [t0]
-	mov t0, long [t0 + _a3xCIC_Puts]
-	j t0
+	fwc _a3xCIC_Puts
+	ret
 
 ; -- root dcp
 a3xAPIDevTree:
 .global a3xAPIDevTree
-	la t0, a3xCIPtr
-	mov t0, long [t0]
-	mov t0, long [t0 + _a3xCIC_DevTree]
-	j t0
+	fwc _a3xCIC_DevTree
+	ret
 
 ; sz -- ptr
 a3xMalloc:
 .global a3xMalloc
-	la t0, a3xCIPtr
-	mov t0, long [t0]
-	mov t0, long [t0 + _a3xCIC_Malloc]
-	j t0
+	fwc _a3xCIC_Malloc
+	ret
 
 ; sz -- ptr
 a3xCalloc:
 .global a3xCalloc
-	la t0, a3xCIPtr
-	mov t0, long [t0]
-	mov t0, long [t0 + _a3xCIC_Calloc]
-	j t0
+	fwc _a3xCIC_Calloc
+	ret
 
 ; ptr -- 
 a3xFree:
 .global a3xFree
-	la t0, a3xCIPtr
-	mov t0, long [t0]
-	mov t0, long [t0 + _a3xCIC_Free]
-	j t0
+	fwc _a3xCIC_Free
+	ret
 
 ; path -- node
 a3xDevTreeWalk:
 .global a3xDevTreeWalk
-	la t0, a3xCIPtr
-	mov t0, long [t0]
-	mov t0, long [t0 + _a3xCIC_DevTreeWalk]
-	j t0
+	fwc _a3xCIC_DevTreeWalk
+	ret
 
 ; --
 a3xDeviceParent:
 .global a3xDeviceParent
-	la t0, a3xCIPtr
-	mov t0, long [t0]
-	mov t0, long [t0 + _a3xCIC_DeviceParent]
-	j t0
+	fwc _a3xCIC_DeviceParent
+	ret
 
 ; node -- 
 a3xDeviceSelectNode:
 .global a3xDeviceSelectNode
-	la t0, a3xCIPtr
-	mov t0, long [t0]
-	mov t0, long [t0 + _a3xCIC_DeviceSelectNode]
-	j t0
+	fwc _a3xCIC_DeviceSelectNode
+	ret
 
 ; path -- 
 a3xDeviceSelect:
 .global a3xDeviceSelect
-	la t0, a3xCIPtr
-	mov t0, long [t0]
-	mov t0, long [t0 + _a3xCIC_DeviceSelect]
-	j t0
+	fwc _a3xCIC_DeviceSelect
+	ret
 
 ; name -- value
 a3xDGetProperty:
 .global a3xDGetProperty
-	la t0, a3xCIPtr
-	mov t0, long [t0]
-	mov t0, long [t0 + _a3xCIC_DeviceDGetProperty]
-	j t0
+	fwc _a3xCIC_DeviceDGetProperty
+	ret
 
 ; name -- ptr
 a3xDGetMethod:
 .global a3xDGetMethod
-	la t0, a3xCIPtr
-	mov t0, long [t0]
-	mov t0, long [t0 + _a3xCIC_DeviceDGetMethod]
-	j t0
+	fwc _a3xCIC_DeviceDGetMethod
+	ret
 
 ; name -- success
 a3xDCallMethod:
 .global a3xDCallMethod
-	la t0, a3xCIPtr
-	mov t0, long [t0]
-	mov t0, long [t0 + _a3xCIC_DeviceDCallMethod]
-	j t0
+	fwc _a3xCIC_DeviceDCallMethod
+	ret
 
 ; -- 
 a3xDeviceExit:
 .global a3xDeviceExit
-	la t0, a3xCIPtr
-	mov t0, long [t0]
-	mov t0, long [t0 + _a3xCIC_DeviceExit]
-	j t0
+	fwc _a3xCIC_DeviceExit
+	ret
 
 ; prop name --
 a3xDSetProperty:
 .global a3xDSetProperty
-	la t0, a3xCIPtr
-	mov t0, long [t0]
-	mov t0, long [t0 + _a3xCIC_DeviceDSetProperty]
-	j t0
+	fwc _a3xCIC_DeviceDSetProperty
+	ret
 
 ; ptr --
 a3xDCallMethodPtr:
 .global a3xDCallMethodPtr
-	la t0, a3xCIPtr
-	mov t0, long [t0]
-	mov t0, long [t0 + _a3xCIC_DeviceDCallMethodPtr]
-	j t0
+	fwc _a3xCIC_DeviceDCallMethodPtr
+	ret
 
 ; -- iter
 a3xDevIteratorInit:
 .global a3xDevIteratorInit
-	la t0, a3xCIPtr
-	mov t0, long [t0]
-	mov t0, long [t0 + _a3xCIC_DevIteratorInit]
-	j t0
+	fwc _a3xCIC_DevIteratorInit
+	ret
 
 ; iter -- iter
 a3xDevIterate:
 .global a3xDevIterate
-	la t0, a3xCIPtr
-	mov t0, long [t0]
-	mov t0, long [t0 + _a3xCIC_DevIterate]
-	j t0
+	fwc _a3xCIC_DevIterate
+	ret
 
 ; -- name
 a3xDGetName:
 .global a3xDGetName
-	la t0, a3xCIPtr
-	mov t0, long [t0]
-	mov t0, long [t0 + _a3xCIC_DeviceDGetName]
-	j t0
+	fwc _a3xCIC_DeviceDGetName
+	ret
 
 ; --
 a3xConsoleUserOut:
 .global a3xConsoleUserOut
-	la t0, a3xCIPtr
-	mov t0, long [t0]
-	mov t0, long [t0 + _a3xCIC_ConsoleUserOut]
-	j t0
+	fwc _a3xCIC_ConsoleUserOut
+	ret
 
 ; -- current
 a3xDGetCurrent:
 .global a3xDGetCurrent
-	la t0, a3xCIPtr
-	mov t0, long [t0]
-	mov t0, long [t0 + _a3xCIC_DGetCurrent]
-	j t0
+	fwc _a3xCIC_DGetCurrent
+	ret
 
 "

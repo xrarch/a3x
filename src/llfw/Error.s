@@ -16,59 +16,66 @@
 ;a1 - error code
 Error:
 .global Error
-	push lr
-	push s0
-	push s1
+	subi sp, sp, 12
+	mov  long [sp], lr
+	mov  long [sp + 4], s0
+	mov  long [sp + 8], s1
 
-	mov s0, a0
-	mov s1, a1
+	mov  s0, a0
+	mov  s1, a1
 
-	la a0, LLFWErrorString
-	jal Puts
+	la   a0, LLFWErrorString
+	jal  Puts
 
-	mov a0, s0
-	jal Puts
+	mov  a0, s0
+	jal  Puts
 
-	la a0, LLFWErrorStringB
-	jal Puts
+	la   a0, LLFWErrorStringB
+	jal  Puts
 
-	mov a0, s1
-	jal Putn
+	mov  a0, s1
+	jal  Putn
 
-	li a0, 0xA
-	jal Putc
+	li   a0, 0xA
+	jal  Putc
 
-	la a0, LLFWErrorStringC
-	jal Puts
+	la   a0, LLFWErrorStringC
+	jal  Puts
 
-	mov a0, s1
-	jal FBDisplayCode
+	mov  a0, s1
+	jal  FBDisplayCode
 
-	jal Getc
-	beq v0, 'c', .out
-	bne v0, 'x', .reset
+	jal  Getc
+	
+	li   t0, 'c'
+	beq  a0, t0, .out
 
-	li t0, 0
-	lui t1, 0x100000
+	li   t0, 'x'
+	bne  a0, t0, .reset
+
+	li   t0, 0
+	lui  t1, zero, 0x100000
 
 .clear:
-	beq t0, t1, .reset
+	beq  t0, t1, .reset
 
-	mov long [t0], 0
+	mov  long [t0], 0
 
-	add t0, t0, 4
-	b .clear
+	addi t0, t0, 4
+	b    .clear
 
 .reset:
-	la a0, LLFWTermClear
-	jal Puts
+	la   a0, LLFWTermClear
+	jal  Puts
 
-	j Reset
+	j    Reset
 
 .out:
-	pop s1
-	pop s0
-	pop lr
+	mov  s1, long [sp + 8]
+	mov  s0, long [sp + 4]
+	mov  lr, long [sp]
+	addi sp, sp, 12
+
 	ret
 
 .section data

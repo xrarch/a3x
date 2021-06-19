@@ -2,7 +2,7 @@
 #include "<inc>/a3x.h"
 
 extern BuildEBus { -- }
-extern BuildLimn2k { -- }
+extern BuildLimn2500 { -- }
 extern BuildLSIC { -- }
 
 fn BuildPlatform { -- }
@@ -13,7 +13,7 @@ fn BuildPlatform { -- }
 
 		"platform" "deviceType" DAddProperty
 
-		BuildLimn2k
+		BuildLimn2500
 
 		BuildEBus
 
@@ -71,7 +71,7 @@ fn PlatformInit { -- }
 	"/platform/ebus/pboard/citron/amanatsu/mouse/0" PlatformMousePath!
 	"/platform/ebus/limngfx" PlatformScreenPath!
 	"/platform/ebus/pboard/citron/serial/0" PlatformSerialPath!
-	"/platform/limn2k" PlatformCPUPath!
+	"/platform/limn2500" PlatformCPUPath!
 	"/platform/ebus/ram" PlatformMemoryPath!
 	"/platform/ebus" PlatformBusPath!
 	"/platform/lsic" PlatformInterruptPath!

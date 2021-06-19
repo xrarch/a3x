@@ -21,6 +21,8 @@ extern DebugMonitor { state -- }
 
 extern Problem { ... fmt -- }
 
+extern Halt { -- }
+
 externptr PlatformInited
 
 const MEMORYFREE     1

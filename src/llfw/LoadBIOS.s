@@ -41,111 +41,119 @@
 .end-struct
 
 .define LOFFMagic 0x4C4F4635
-.define LOFFArch  2
+.define LOFFArch  4
 
 .section text
 
 ;outputs:
-;v0 - entry point
+;a0 - entry point
 LoadBIOS:
 .global LoadBIOS
-	push lr
-	push s0
+	subi sp, sp, 8
+	mov  long [sp], lr
+	mov  long [sp + 4], s0
 
-	la s0, _data_end ;this is where the BIOS image should be in ROM
-	mov t0, long [s0 + LOFF_Magic]
-	la t1, LOFFMagic
-	beq t0, t1, .valid1
+	la   s0, _data_end ;this is where the BIOS image should be in ROM
+	mov  t0, long [s0 + LOFF_Magic]
+	la   t1, LOFFMagic
+	beq  t0, t1, .valid1
 
-	b .notvalid
+	b    .notvalid
 
 .valid1:
-	mov t0, long [s0 + LOFF_Architecture]
-	beq t0, LOFFArch, .valid
+	mov  t0, long [s0 + LOFF_Architecture]
+	beqi t0, LOFFArch, .valid
 
-	b .notvalid
+	b    .notvalid
 
 .valid:
-	la a0, LoadString
-	jal Puts
+	la   a0, LoadString
+	jal  Puts
 
-	mov a1, s0
-	mov a0, long [s0 + LOFF_TextHeader]
-	add a0, a0, s0
-	jal CopySection
+	mov  a1, s0
+	mov  a0, long [s0 + LOFF_TextHeader]
+	add  a0, a0, s0
+	jal  CopySection
 
-	mov a1, s0
-	mov a0, long [s0 + LOFF_DataHeader]
-	add a0, a0, s0
-	jal CopySection
+	mov  a1, s0
+	mov  a0, long [s0 + LOFF_DataHeader]
+	add  a0, a0, s0
+	jal  CopySection
 
-	mov t0, long [s0 + LOFF_BSSHeader]
-	add t0, t0, s0
-	mov t1, long [t0 + Header_SectionSize]
-	mov t2, long [t0 + Header_LinkedAddress]
+	mov  t0, long [s0 + LOFF_BSSHeader]
+	add  t0, t0, s0
+	mov  t1, long [t0 + Header_SectionSize]
+	mov  t2, long [t0 + Header_LinkedAddress]
 
-	li a0, 0
-	mov a1, t1
-	mov a2, t2
-	jal memset
+	li   a0, 0
+	mov  a1, t1
+	mov  a2, t2
+	jal  memset
 
 .zdone:
-	mov t0, long [s0 + LOFF_EntrySymbol]
-	la t1, 0xFFFFFFFF
-	beq t0, t1, .notvalid
+	mov  t0, long [s0 + LOFF_EntrySymbol]
+	subi t1, zero, 1 ;load constant 0xFFFFFFFF
+	beq  t0, t1, .notvalid
 
-	mov t1, long [s0 + LOFF_SymbolTableOffset]
-	add t1, t1, s0
+	mov  t1, long [s0 + LOFF_SymbolTableOffset]
+	add  t1, t1, s0
 
-	mul t0, t0, Symbol_sizeof
-	add t0, t0, t1
+	li   t2, Symbol_sizeof
+	mul  t0, t0, t2
+	add  t0, t0, t1
 
-	mov t1, long [t0 + Symbol_Section]
-	bne t1, 1, .notvalid
+	mov  t1, long [t0 + Symbol_Section]
+	bnei t1, 1, .notvalid
 
-	mov t0, long [t0 + Symbol_Value]
-	mov t1, long [s0 + LOFF_TextHeader]
-	add t1, t1, s0
-	mov t2, long [t1 + Header_LinkedAddress]
+	mov  t0, long [t0 + Symbol_Value]
+	mov  t1, long [s0 + LOFF_TextHeader]
+	add  t1, t1, s0
+	mov  t2, long [t1 + Header_LinkedAddress]
 
-	add v0, t0, t2
+	add  s0, t0, t2
 
-	push v0
-	la a0, EntryString
-	jal Puts
-	pop a0
-	push a0
-	jal Putn
-	li a0, 0xA
-	jal Putc
-	pop v0
+	la   a0, EntryString
+	jal  Puts
 
-	pop s0
-	pop lr
+	mov  a0, s0
+	jal  Putn
+
+	li   a0, 0xA
+	jal  Putc
+
+	mov  a0, s0
+
+	mov  s0, long [sp + 4]
+	mov  lr, long [sp]
+	addi sp, sp, 8
 	ret
 
 .notvalid:
-	lui a1, 0x05000000
-	la a0, InvalidString
-	jal Error
+	lui  a1, zero, 0x05000000
+	la   a0, InvalidString
+	jal  Error
 
-	j Reset
+	j    Reset
 
 ;a0 - section header
 ;a1 - image offset
 CopySection:
-	mov t0, long [a0 + Header_SectionOffset]
-	add t0, t0, a1 ;t0 now contains the section's address
+	mov  t0, long [a0 + Header_SectionOffset]
+	add  t0, t0, a1 ;t0 now contains the section's address
 
-	mov t1, long [a0 + Header_SectionSize]
-	mov t2, long [a0 + Header_LinkedAddress]
+	mov  t1, long [a0 + Header_SectionSize]
+	mov  t2, long [a0 + Header_LinkedAddress]
 
-	push lr
-	mov a0, t1
-	mov a1, t0
-	mov a2, t2
-	jal memcpy
-	pop lr
+	subi sp, sp, 4
+	mov  long [sp], lr
+
+	mov  a0, t1
+	mov  a1, t0
+	mov  a2, t2
+	jal  memcpy
+	
+	mov  lr, long [sp]
+	addi sp, sp, 4
 
 .out:
 	ret

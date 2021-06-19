@@ -43,6 +43,11 @@ end
 
 asm "
 
+Halt:
+.global Halt
+	.dl 0x10000029
+	ret
+
 .entry BIOSEntry
 
 ;set exception vector to zero and immediately cause an exception
@@ -50,20 +55,20 @@ asm "
 
 Reset:
 .global Reset
-	li ev, 0
-	div t0, t0, zero
+	mtcr evec, zero
+	.dl  0 ;this is an invalid instruction
 .wait:
-	b .wait
+	b    .wait
 
 "
 
 fn LinkInfo { -- }
 	"SECTION  BASE     SIZE     END\n" Printf
-	pointerof _text_end pointerof _text_size pointerof _text_end
+	pointerof _text_end pointerof _text_size pointerof _text
 	"   text  %08x %08x %08x\n" Printf
-	pointerof _data_end pointerof _data_size pointerof _data_end
+	pointerof _data_end pointerof _data_size pointerof _data
 	"   data  %08x %08x %08x\n" Printf
-	pointerof _bss_end pointerof _bss_size pointerof _bss_end
+	pointerof _bss_end pointerof _bss_size pointerof _bss
 	"    bss  %08x %08x %08x\n" Printf
 end
 

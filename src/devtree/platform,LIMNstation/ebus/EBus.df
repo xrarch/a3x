@@ -7,6 +7,9 @@ extern BuildLIMNGFX { -- }
 extern BuildSNVRAM { -- }
 extern BuildMemory { -- }
 
+const PBoardReset 0xF8800000
+const PBoardResetMagic 0xAABBCCDD
+
 fn BuildEBus { -- }
 	DeviceNew
 		"ebus" DSetName
@@ -66,10 +69,6 @@ fn EBusSlotInterruptRegister { handler slot -- }
 	handler@ slot@ 0x98 + InterruptRegister
 end
 
-asm "
-
-EBusReset:
-	lui rs, 0x80000000
-	ret
-
-"
+fn EBusReset { -- }
+	PBoardResetMagic PBoardReset!
+end

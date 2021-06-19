@@ -15,57 +15,74 @@ end
 asm "
 
 setvector:
-	la ev, exception_limn2k
+	la   t0, exception_limn2k
+	mtcr evec, t0
+
+	la   t0, firmware_call
+	mtcr fwvec, t0
+
 	ret
 
 exception_limn2k:
-	sub sp, 112
-	sgpr sp
-	push epc
-	push ers
-	push lr
+	mov  t0, sp
+	subi sp, sp, 12
+	mov  long [sp + 8], t0
+	mov  long [sp + 4], 0
+	mov  long [sp], 0
 
-	mov t0, sp
-	sub sp, 12
-	mov long [sp + 8], t0
-	mov long [sp + 4], 0
-	mov long [sp], 0
+	mfcr a3, ecause
+	mfcr a2, epc
+	mfcr a1, ers
+	mfcr a0, ebadaddr
+	jal  Exception
 
-	mov a3, ecause
-	mov a2, epc
-	mov a1, ers
-	mov a0, badaddr
-	jal Exception
+	j    Reset
 
-	add sp, 12
+;this global is fine because firmware calls will NEVER be nested
+savedfwcallLR:
+	.dl 0
 
-	li badaddr, 0
+firmware_call:
+	la   t0, savedfwcallLR
+	mov  long [t0], lr
 
-	pop lr
-	pop ers
-	pop epc
-	lgpr sp
-	add sp, 112
+	mfcr t0, epc
+	subi t0, t0, 4
+	mov  t0, long [t0]
+	rshi t0, t0, 6
+	la   t1, 0x3FFFFF
+	and  t0, t0, t1
+
+	la   t1, API
+	mov  t0, long [t1 + t0 LSH 2]
+
+	jalr lr, t0, 0
+
+	la   t0, savedfwcallLR
+	mov  lr, long [t0]
 	rfe
 
 "
 
 table ExceptionNames
-	"Unknown"
+	"Unknown0"
 	"Interrupt"
 	"Syscall"
-	"TLB refill"
+	"Firmware call"
 	"Bus error"
-	"Timer"
+	"Unknown5"
 	"Breakpoint"
-	"Invalid opcode"
+	"Invalid instruction"
 	"Privilege violation"
 	"Unaligned address"
-	"Unaligned PC"
-	"Division by zero"
+	"Unknown10"
+	"Unknown11"
 	"Page fault"
+	"Page fault write"
+	"Unknown14"
+	"Unknown15"
 endtable
-const ExceptionCount 12
+const ExceptionCount 16
 
 const Breakpoint 6
 
@@ -130,23 +147,27 @@ fn InterruptUnregister { num -- }
 	0 [num@]InterruptHandlers!
 end
 
+const Limn2500IntOffMask 0xFFFD
+
 asm "
 
 InterruptEnable:
 .global InterruptEnable
-	bset rs, rs, 1
+	mfcr t0, rs
+	ori  t0, t0, 2
+	mtcr rs, t0
 	ret
 
 InterruptDisable:
 .global InterruptDisable
-	mov v0, rs
-	bclr rs, rs, 3
-	bclr rs, rs, 1
+	mfcr a0, rs
+	andi t0, a0, Limn2500IntOffMask
+	mtcr rs, t0
 	ret
 
 InterruptRestore:
 .global InterruptRestore
-	mov rs, a0
+	mtcr rs, a0
 	ret
 
 "
