@@ -15,7 +15,7 @@ end
 asm "
 
 setvector:
-	la   t0, exception_limn2k
+	la   t0, exception_limn2500
 	mtcr evec, t0
 
 	la   t0, firmware_call
@@ -23,7 +23,7 @@ setvector:
 
 	ret
 
-exception_limn2k:
+exception_limn2500:
 	mov  t0, sp
 	subi sp, sp, 12
 	mov  long [sp + 8], t0

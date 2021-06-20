@@ -2,7 +2,7 @@
 
 Abbreviated frequently as a3x.
 
-Boot firmware for the LIMNstation architecture, written in limn2k assembly and dragonfruit.
+Boot firmware for the LIMNstation architecture, written in limn2500 assembly and dragonfruit.
 
 Makes heavy internal use of NVRAM variables and a device tree model.
 
