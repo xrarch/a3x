@@ -69,7 +69,7 @@ fn PlatformInit { -- }
 	"/platform/ebus/dma" PlatformDMAPath!
 	"/platform/ebus/pboard/citron/amanatsu/kbd/0" PlatformKeyboardPath!
 	"/platform/ebus/pboard/citron/amanatsu/mouse/0" PlatformMousePath!
-	"/platform/ebus/limngfx" PlatformScreenPath!
+	"/platform/ebus/kinnowfb" PlatformScreenPath!
 	"/platform/ebus/pboard/citron/serial/0" PlatformSerialPath!
 	"/platform/limn2500" PlatformCPUPath!
 	"/platform/ebus/ram" PlatformMemoryPath!

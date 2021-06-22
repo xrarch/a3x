@@ -8,7 +8,6 @@
 #include "<inc>/interrupt.h"
 #include "<inc>/ebus.h"
 #include "<inc>/pboard.h"
-#include "<inc>/dma.h"
 #include "<inc>/amanatsu.h"
 #include "<inc>/citron.h"
 #include "<inc>/platform.h"

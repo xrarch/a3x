@@ -8,7 +8,7 @@
 
 .define PBVersion 0xF8000800
 
-.define ExpectedPBVersion  0x2
+.define ExpectedPBVersion  0x3
 .define ExpectedCPUVersion 0x5
 
 .section text

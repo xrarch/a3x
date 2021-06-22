@@ -1,9 +1,8 @@
 #include "<df>/dragonfruit.h"
 #include "<inc>/a3x.h"
 
-extern BuildDMA { -- }
 extern BuildPBoard { -- }
-extern BuildLIMNGFX { -- }
+extern BuildKinnowFB { -- }
 extern BuildSNVRAM { -- }
 extern BuildMemory { -- }
 
@@ -34,11 +33,9 @@ fn BuildEBus { -- }
 
 		BuildMemory
 
-		BuildDMA
-
 		BuildPBoard
 
-		BuildLIMNGFX
+		BuildKinnowFB
 	DeviceExit
 end
 

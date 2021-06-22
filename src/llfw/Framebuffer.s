@@ -1,7 +1,7 @@
 .define EBusSlotsStart 0xC0000000
 .define EBusSlotSpace  0x8000000
 
-.define LIMNGFXSlotMID 0x4B494E34
+.define LIMNGFXSlotMID 0x4B494E35
 .define LGVRAMOffset   0x100000
 .define LGRegScreen    0x3000
 

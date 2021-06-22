@@ -1,9 +1,9 @@
 #include "<df>/dragonfruit.h"
 #include "<inc>/a3x.h"
 
-(* a3x driver for LIMNGFX video board *)
+(* a3x driver for kinnowfb video board *)
 
-const LGSlotMID 0x4B494E34
+const LGSlotMID 0x4B494E35
 
 const LGVRAMOffset 0x100000
 
@@ -34,7 +34,7 @@ var LGDMATransfer 0
 
 var LGFB 0
 
-fn BuildLIMNGFX { -- }
+fn BuildKinnowFB { -- }
 	auto slot
 	LGSlotMID EBusFindFirstBoard slot!
 
@@ -59,7 +59,7 @@ fn BuildLIMNGFX { -- }
 	wh@ 12 >> 0xFFF & h!
 
 	DeviceNew
-		"limngfx" DSetName
+		"kinnowfb" DSetName
 
 		fb@ "framebuffer" DAddProperty
 		w@ "width" DAddProperty
@@ -72,7 +72,7 @@ fn BuildLIMNGFX { -- }
 
 		"display" "deviceType" DAddProperty
 
-		"AISA,limngfx" "model" DAddProperty
+		"AISA,kinnowfb" "model" DAddProperty
 
 		slot@ "ebus,unit" DAddProperty
 
@@ -146,41 +146,154 @@ fn private LGFXBlitBitsM { argvt argcn -- out1 out2 out3 }
 	LGFXBlitBits
 end
 
-fn LGFXBlitBits { bpr fg bg bitd ptr x y w h -- }
-	if (LGDMANode@ 0 ==)
-		auto ndma
-		"/dma" DevTreeWalk ndma!
+fn LGFXBlitBitsFast { bpr fg bg bitd ptr dest mod w h -- }
+	// this function is so big because its overly optimized.
 
-		if (ndma@ 0 ~=)
-			ndma@ LGDMANode!
+	// emulates the function of the old "DMA board" that was removed
+	// from the LIMNstation architecture for being too complex
 
-			ndma@ DeviceSelectNode
-				"bitTransfer" DGetMethod LGDMATransfer!
-			DeviceExit
+	auto i
+	auto j
+	auto byte
+
+	auto jcmp
+	256 jcmp!
+
+	auto m1cmp
+	-1 m1cmp!
+
+	if (bitd@ ~~) // least significant is leftmost
+		if (bg@ m1cmp@ ==)
+			if (fg@ m1cmp@ ==)
+				return
+			end
+
+			while (h@)
+				bpr@ i!
+
+				while (i@)
+					ptr@ gb byte!
+
+					1 j!
+
+					while (j@ jcmp@ <)
+						if (byte@ j@ &)
+							fg@ dest@ si
+						end
+
+						2 dest +=
+						1 j <<=
+					end
+
+					1 i -=
+					1 ptr +=
+				end
+
+				mod@ dest +=
+				1 h -=
+			end
 		end else
-			return
+			while (h@)
+				bpr@ i!
+
+				while (i@)
+					ptr@ gb byte!
+
+					1 j!
+
+					while (j@ jcmp@ <)
+						if (byte@ j@ &)
+							if (fg@ m1cmp@ ~=)
+								fg@ dest@ si
+							end
+						end else
+							bg@ dest@ si
+						end
+
+						2 dest +=
+						1 j <<=
+					end
+
+					1 i -=
+					1 ptr +=
+				end
+
+				mod@ dest +=
+				1 h -=
+			end
+		end
+	end else // most significant is leftmost
+		if (bg@ m1cmp@ ==)
+			if (fg@ m1cmp@ ==)
+				return
+			end
+
+			while (h@)
+				bpr@ i!
+
+				while (i@)
+					ptr@ gb byte!
+
+					128 j!
+
+					while (j@)
+						if (byte@ j@ &)
+							fg@ dest@ si
+						end
+
+						2 dest +=
+						1 j >>=
+					end
+
+					1 i -=
+					1 ptr +=
+				end
+
+				mod@ dest +=
+				1 h -=
+			end
+		end else
+			while (h@)
+				bpr@ i!
+
+				while (i@)
+					ptr@ gb byte!
+
+					128 j!
+
+					while (j@)
+						if (byte@ j@ &)
+							if (fg@ m1cmp@ ~=)
+								fg@ dest@ si
+							end
+						end else
+							bg@ dest@ si
+						end
+
+						2 dest +=
+						1 j >>=
+					end
+
+					1 i -=
+					1 ptr +=
+				end
+
+				mod@ dest +=
+				1 h -=
+			end
 		end
 	end
+end
 
-	if (LGDMATransfer@ 0 ==)
-		return
-	end
-
+fn LGFXBlitBits { bpr fg bg bitd ptr x y w h -- }
 	auto dest
-	y@ LGWidth@ * 2 * x@ 2 * + LGVRAM@ + dest!
+	y@ LGWidth@ * 2 * x@ 2 * + LGFB@ + dest!
 
-	LGDMANode@ DeviceSelectNode
-		ptr@ dest@
-		1
-		2 w@ * 16 min
-		bpr@
-		0
-		h@
-		LGWidth@ 2 *
-		bpr@
-		bitd@ bg@ fg@
-		LGDMATransfer@ DCallMethodPtr drop drop drop
-	DeviceExit
+	auto mod
+	LGWidth@ 2 * w@ 2 * - mod!
+
+	bpr@ fg@ bg@ bitd@ ptr@ dest@ mod@ w@ h@
+	LGFXBlitBitsFast
 end
 
 fn LGFXScrollM { argvt argcn -- out1 out2 out3 }
