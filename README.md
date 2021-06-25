@@ -1,4 +1,4 @@
-# ARCSECOND 3.x firmware
+# LIMNstation BIOS
 
 Abbreviated frequently as a3x.
 

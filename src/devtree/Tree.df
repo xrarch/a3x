@@ -6,7 +6,6 @@ public PlatformInited
 
 extern BuildPlatform { -- }
 
-extern BuildGDMA { -- }
 extern BuildGSerial { -- }
 extern BuildGScreen { -- }
 extern BuildGConsole { -- }
@@ -30,7 +29,6 @@ fn BuildTree { -- }
 	BuildGCPU
 	BuildGBus
 	BuildGMemory
-	BuildGDMA
 	BuildGSerial
 	BuildGScreen
 	BuildGConsole
