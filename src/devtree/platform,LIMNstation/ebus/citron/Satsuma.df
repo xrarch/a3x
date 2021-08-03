@@ -157,7 +157,7 @@ fn BuildSatsuma { -- }
 
 			i@ AHDBPoll present! blocks!
 
-			if (present@ 1 ==)
+			if (present@ 1 &)
 				DeviceNew
 					auto lilbuf
 					5 Calloc lilbuf!

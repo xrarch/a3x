@@ -44,6 +44,10 @@ fn BuildCSerial { -- }
 	DeviceNew
 		"serial" DSetName
 
+		"AISA,serial" "model" DAddProperty
+
+		1 "revision" DAddProperty
+
 		0 BuildSerialPort
 		1 BuildSerialPort
 	DeviceExit
