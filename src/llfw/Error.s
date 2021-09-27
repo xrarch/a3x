@@ -1,12 +1,9 @@
 .extern Puts
-
 .extern Putc
-
 .extern Putn
-
 .extern Getc
-
 .extern Reset
+.extern memset
 
 .extern FBDisplayCode
 
@@ -47,22 +44,16 @@ Error:
 
 	jal  Getc
 	
-	li   t0, 'c'
-	beq  a0, t0, .out
+	subi t0, a0, 'c'
+	beq  t0, .out
 
-	li   t0, 'x'
-	bne  a0, t0, .reset
+	subi t0, a0, 'x'
+	bne  t0, .reset
 
-	li   t0, 0
-	lui  t1, zero, 0x100000
-
-.clear:
-	beq  t0, t1, .reset
-
-	mov  long [t0], 0
-
-	addi t0, t0, 4
-	b    .clear
+	li   a0, 0x0 ;word
+	la   a1, 0xFF000 ;size
+	li   a2, 0x1000 ;ptr
+	jal  memset
 
 .reset:
 	la   a0, LLFWTermClear

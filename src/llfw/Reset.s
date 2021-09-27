@@ -37,7 +37,7 @@ Reset:
 
 	la   t1, _bss_size
 	slt  t0, s0, t1
-	beq  t0, zero, .goodRAM ;continue if there's at least enough RAM to fit our bss section
+	beq  t0, .goodRAM ;continue if there's at least enough RAM to fit our bss section
 
 	j    Hang ;otherwise hang
 
@@ -81,12 +81,12 @@ Reset:
 Hang:
 	b    Hang
 
-.ds "limn2500 BootROM, by Will"
+.ds "limn2600 BootROM, by Will"
 
 .section data
 
 HiString:
-	.ds "\n============================\nlow-level firmware for limn2500\n============================\n\0"
+	.ds "\n===============================\nlow-level firmware for limn2600\n===============================\n\0"
 
 HLRString:
 	.ds "Jumping to high-level firmware!\n\n\0"

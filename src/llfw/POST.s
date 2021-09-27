@@ -9,7 +9,7 @@
 .define PBVersion 0xF8000800
 
 .define ExpectedPBVersion  0x3
-.define ExpectedCPUVersion 0x5
+.define ExpectedCPUVersion 0x6
 
 .section text
 
@@ -26,17 +26,20 @@ POST:
 	jal  Puts
 
 	lui  t0, zero, 0x40000
-	blt  s0, t0, .noRAM
+	sub  t1, s0, t0
+	blt  s1, .noRAM
 
 	la   t0, PBVersion
 	mov  t0, long [t0]
 	rshi t0, t0, 16
-	bnei t0, ExpectedPBVersion, .badPB
+	subi t1, t0, ExpectedPBVersion
+	bne  t1, .badPB
 
 	mfcr t0, cpuid
 	rshi t0, t0, 16
 	andi t0, t0, 0x7FFF
-	bnei t0, ExpectedCPUVersion, .badCPU
+	subi t1, t0, ExpectedCPUVersion
+	bne  t1, .badCPU
 
 	la   a0, POSTPassed
 	jal  Puts

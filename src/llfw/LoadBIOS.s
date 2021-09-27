@@ -41,7 +41,7 @@
 .end-struct
 
 .define LOFFMagic 0x4C4F4635
-.define LOFFArch  4
+.define LOFFArch  5
 
 .section text
 
@@ -56,13 +56,15 @@ LoadBIOS:
 	la   s0, _data_end ;this is where the BIOS image should be in ROM
 	mov  t0, long [s0 + LOFF_Magic]
 	la   t1, LOFFMagic
-	beq  t0, t1, .valid1
+	sub  t0, t0, t1
+	beq  t0, .valid1
 
 	b    .notvalid
 
 .valid1:
 	mov  t0, long [s0 + LOFF_Architecture]
-	beqi t0, LOFFArch, .valid
+	subi t0, t0, LOFFArch
+	beq  t0, .valid
 
 	b    .notvalid
 
@@ -92,8 +94,8 @@ LoadBIOS:
 
 .zdone:
 	mov  t0, long [s0 + LOFF_EntrySymbol]
-	subi t1, zero, 1 ;load constant 0xFFFFFFFF
-	beq  t0, t1, .notvalid
+	addi t1, t0, 1 ;compare with constant 0xFFFFFFFF
+	beq  t1, .notvalid
 
 	mov  t1, long [s0 + LOFF_SymbolTableOffset]
 	add  t1, t1, s0
@@ -103,7 +105,8 @@ LoadBIOS:
 	add  t0, t0, t1
 
 	mov  t1, long [t0 + Symbol_Section]
-	bnei t1, 1, .notvalid
+	subi t2, t1, 1
+	bne  t2, .notvalid
 
 	mov  t0, long [t0 + Symbol_Value]
 	mov  t1, long [s0 + LOFF_TextHeader]

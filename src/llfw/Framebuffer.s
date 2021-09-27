@@ -18,12 +18,13 @@ FindFB:
 
 .loop:
 	mov  t4, long [t0 + 4]
-	beq  t4, t2, .found
+	sub  t4, t4, t2
+	beq  t4, .found
 
 	add  t0, t0, t3
 	subi t1, t1, 1
 
-	bne  t1, zero, .loop
+	bne  t1, .loop
 
 	b    .out
 
@@ -62,7 +63,7 @@ FBDisplayCode:
 
 	la   t0, FBAddress
 	mov  s0, long [t0]
-	beq  s0, zero, .out
+	beq  s0, .out
 
 	mov  s1, a0
 
@@ -117,7 +118,7 @@ FBPutx:
 	mov  t0, a0
 	rshi a0, a0, 4
 	andi t1, t0, 15
-	beq  a0, zero, .ldigit
+	beq  a0, .ldigit
 
 	subi a2, a2, 16
 	jal  FBPutx
@@ -156,17 +157,17 @@ FBDrawGlyph:
 
 	rsh  t3, t2, t1
 	andi t3, t3, 1
-	beq  t3, zero, .nopix
+	beq  t3, .nopix
 
 	mov  int [a2], t4
 
 .nopix:
 	addi a2, a2, 2
-	bne  t1, zero, .xloop
+	bne  t1, .xloop
 
 	addi a0, a0, 1
 	add  a2, a2, a1
-	bne  t0, zero, .yloop
+	bne  t0, .yloop
 
 	ret
 

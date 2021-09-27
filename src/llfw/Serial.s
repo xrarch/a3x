@@ -14,7 +14,7 @@ Puts:
 
 .loop:
 	mov  t0, byte [s0]
-	beq  t0, zero, .out
+	beq  t0, .out
 
 	mov  a0, t0
 	jal  Putc
@@ -33,16 +33,16 @@ Puts:
 Getc:
 .global Getc
 	la   t0, SerialPortA
-	li   t1, 0xFFFF
 	
 .busy:
 	mov  t2, byte [t0]
-	bne  t2, zero, .busy
+	bne  t2, .busy
 
 	mov  byte [t0], 2
 	mov  a0, int [t0 + 4]
 
-	beq  a0, t1, .busy
+	subi t2, a0, 0xFFFF
+	beq  t2, .busy
 
 	ret 
 
@@ -53,7 +53,7 @@ Putc:
 
 .wait:
 	mov  t1, byte [t0]
-	bne  t1, zero, .wait
+	bne  t1, .wait
 
 	mov  long [t0 + 4], a0
 	mov  long [t0], 1
@@ -70,7 +70,7 @@ Putn:
 	mov  t0, a0
 	rshi a0, a0, 4
 	andi s0, t0, 15
-	beq  a0, zero, .ldigit
+	beq  a0, .ldigit
 
 	jal  Putn
 

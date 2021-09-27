@@ -5,8 +5,14 @@
 ;a2 - ptr
 memset:
 .global memset
-	bne  a1, zero, .gzero
+	mov  t0, sp
+	subi sp, sp, 8
+	mov  long [sp + 4], lr
+	mov  long [sp], t0
 
+	bne  a1, .gzero
+
+	addi sp, sp, 8
 	ret
 
 .gzero:
@@ -14,11 +20,12 @@ memset:
 	addi t1, t1, 1
 	andi t1, t1, 3
 
-	beq  t1, zero, .fdone
+	beq  t1, .fdone
 
 	mov  t2, a0
 
-	blt  t1, a1, .goodlen
+	slt  t3, t1, a1
+	bne  t3, .goodlen
 
 	mov  t1, a1
 
@@ -32,14 +39,14 @@ memset:
 
 	addi a2, a2, 1
 	subi t1, t1, 1
-	bne  t1, zero, .fu
+	bne  t1, .fu
 
 .fdone:
 	;ptr is now aligned
 
 	rshi t1, a1, 6 ;do 64 bytes each loop
 
-	beq  t1, zero, .b64done
+	beq  t1, .b64done
 
 .b64:
 	mov  long [a2], a0
@@ -61,26 +68,26 @@ memset:
 
 	addi a2, a2, 64
 	subi t1, t1, 1
-	bne  t1, zero, .b64
+	bne  t1, .b64
 
 .b64done:
 	andi t1, a1, 63
 
 	rshi t1, t1, 2 ;do 4 bytes each loop
 
-	beq  t1, zero, .b4done
+	beq  t1, .b4done
 
 .b4:
 	mov  long [a2], a0
 
 	addi a2, a2, 4
 	subi t1, t1, 1
-	bne  t1, zero, .b4
+	bne  t1, .b4
 
 .b4done:
 	andi t1, a1, 3 ;do 1 byte each loop
 
-	beq  t1, zero, .b1done
+	beq  t1, .b1done
 
 .b1:
 	mov  byte [a2], a0
@@ -89,9 +96,10 @@ memset:
 
 	addi a2, a2, 1
 	subi t1, t1, 1
-	bne  t1, zero, .b1
+	bne  t1, .b1
 
 .b1done:
+	addi sp, sp, 8
 	ret
 
 ;a0 - sz
@@ -99,16 +107,22 @@ memset:
 ;a2 - dest
 memcpy:
 .global memcpy
-	beq  a0, zero, .zerosize
+	mov  t0, sp
+	subi sp, sp, 8
+	mov  long [sp + 4], lr
+	mov  long [sp], t0
+
+	beq  a0, .zerosize
 
 	xor  t0, a1, a2
 
 	andi  t1, t0, 1
-	beq   t1, zero, .aligned_with_eachother
+	beq   t1, .aligned_with_eachother
 
 	b     .unaligned
 
 .zerosize:
+	addi sp, sp, 8
 	ret
 
 .aligned_with_eachother:
@@ -116,9 +130,10 @@ memcpy:
 	addi t1, t1, 1
 	andi t1, t1, 3
 
-	beq  t1, zero, .fdone
+	beq  t1, .fdone
 
-	blt  t1, a0, .goodlen
+	slt  t3, t1, a0
+	bne  t3 .goodlen
 
 	mov  t1, a0
 
@@ -132,16 +147,16 @@ memcpy:
 	addi a1, a1, 1
 	addi a2, a2, 1
 	subi t1, t1, 1
-	bne  t1, zero, .fu
+	bne  t1, .fu
 
 .fdone:
 	andi t1, t0, 3
-	beq  t1, zero, .aligned32
+	beq  t1, .aligned32
 
 .aligned16:
 	rshi t0, a0, 6 ;do 64 bytes each loop
 
-	beq  t0, zero, .copy16_by_64done
+	beq  t0, .copy16_by_64done
 
 .copy16_by_64:
 	mov  t1, int [a1]
@@ -227,7 +242,7 @@ memcpy:
 	addi a2, a2, 64
 	addi a1, a1, 64
 	subi t0, t0, 1
-	bne  t0, zero, .copy16_by_64
+	bne  t0, .copy16_by_64
 
 .copy16_by_64done:
 	andi t0, a0, 63
@@ -237,7 +252,7 @@ memcpy:
 .aligned32:
 	rshi t0, a0, 6 ;do 64 bytes each loop
 
-	beq  t0, zero, .copy32_by_64done
+	beq  t0, .copy32_by_64done
 
 .copy32_by_64:
 	mov  t1, long [a1]
@@ -283,7 +298,7 @@ memcpy:
 	addi a2, a2, 64
 	addi a1, a1, 64
 	subi t0, t0, 1
-	bne  t0, zero, .copy32_by_64
+	bne  t0, .copy32_by_64
 
 .copy32_by_64done:
 	andi t0, a0, 63
@@ -293,7 +308,7 @@ memcpy:
 .unaligned:
 	rshi t0, a0, 5 ;do 32 bytes each loop
 
-	beq  t0, zero, .copy8_by_32done
+	beq  t0, .copy8_by_32done
 
 .copy8_by_32:
 	mov  t1, byte [a1]
@@ -379,13 +394,13 @@ memcpy:
 	addi a2, a2, 32
 	addi a1, a1, 32
 	subi t0, t0, 1
-	bne  t0, zero, .copy8_by_32
+	bne  t0, .copy8_by_32
 
 .copy8_by_32done:
 	andi t0, a0, 31 ;do 1 byte each loop
 
 .copy_last_bytes:
-	beq  t0, zero, .done
+	beq  t0, .done
 
 .b1:
 	mov  t1, byte [a1]
@@ -394,7 +409,8 @@ memcpy:
 	addi a2, a2, 1
 	addi a1, a1, 1
 	subi t0, t0, 1
-	bne  t0, zero, .b1
+	bne  t0, .b1
 
 .done:
+	addi sp, sp, 8
 	ret
