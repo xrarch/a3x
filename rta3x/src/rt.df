@@ -7,3 +7,7 @@ end
 fn FPuts { fd s -- }
 	s@ Puts	
 end
+
+fn VPrintf { argvt argcn fmt -- }
+	argvt@ argcn@ fmt@ 1 VFPrintf
+end
