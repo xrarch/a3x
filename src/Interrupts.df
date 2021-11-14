@@ -24,10 +24,7 @@ setvector:
 	ret
 
 exception_limn2500:
-	mov  t0, sp
-	subi sp, sp, 12
-	mov  long [sp + 8], t0
-	mov  long [sp + 4], 0
+	subi sp, sp, 8
 	mov  long [sp], 0
 
 	mfcr a3, ecause

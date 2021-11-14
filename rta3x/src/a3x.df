@@ -22,13 +22,14 @@ end
 
 asm "
 
+subi sp, sp, 0
 a3xReturn:
 .global a3xReturn
 	la   t0, a3xFwctx
 	mov  sp, long [t0]
 
-	mov  lr, long [sp + 4]
-	addi sp, sp, 8
+	mov  lr, long [sp]
+	addi sp, sp, 4
 	ret
 
 .define _a3xCIC_Putc 0

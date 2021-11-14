@@ -11,10 +11,8 @@
 
 _a3xEntry:
 .global _a3xEntry
-	mov  t0, sp
-	subi sp, sp, 8
-	mov  long [sp], t0
-	mov  long [sp + 4], lr
+	subi sp, sp, 4
+	mov  long [sp], lr
 
 	la   t0, a3xFwctx
 	mov  long [t0], sp
