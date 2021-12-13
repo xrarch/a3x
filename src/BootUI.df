@@ -283,6 +283,8 @@ fn BootUI { -- node }
 				DeviceExit
 			end
 
+			BUISelected@ 0 DrawBadge drop drop
+
 			return
 		end elseif (scan@ 80 ==) (* ctrl *)
 			1 Ctrl!
