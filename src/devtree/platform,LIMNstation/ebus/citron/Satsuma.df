@@ -26,12 +26,12 @@ struct AHDB_PTE
 endstruct
 
 fn private AHDBTransferBlock { src dest -- }
-	dest@ src@ 4096 memcpy
+	dest@ src@ 512 memcpy
 end
 
 fn AHDBBootable { part id -- }
 	auto brecord
-	4096 Malloc brecord!
+	512 Malloc brecord!
 
 	if (brecord@ 1 AHDBRead 1 ==)
 		(* is it a valid boot record? *)
@@ -43,9 +43,11 @@ fn AHDBBootable { part id -- }
 			auto badge
 			512 Malloc badge!
 
-			badge@ brecord@ BootRecord_BadgeBitmap + 512 memcpy
-
-			badge@ "osBadge" DAddProperty
+			if (badge@ 2 AHDBRead 1 ==)
+				badge@ "osBadge" DAddProperty
+			end else
+				badge@ Free
+			end
 
 			AddBootable
 		end
@@ -64,12 +66,12 @@ end
 
 fn AHDBPartitions { id -- pcount }
 	auto vdbuf
-	4096 Malloc vdbuf!
+	512 Malloc vdbuf!
 
 	0 pcount!
 
 	if (vdbuf@ 0 AHDBRead 1 ==)
-		if (vdbuf@ AHDB_VDB_Magic + @ 0x4E4D494C ==)
+		if (vdbuf@ AHDB_VDB_Magic + @ 0x4E4D494D ==)
 			vdbuf@ AHDB_VDB_Label + strdup "diskLabel" DAddProperty
 
 			auto i
@@ -79,7 +81,7 @@ fn AHDBPartitions { id -- pcount }
 			0 pc!
 
 			auto offset
-			2 offset!
+			4 offset!
 
 			while (i@ 8 <)
 				auto ptr
@@ -98,7 +100,7 @@ fn AHDBPartitions { id -- pcount }
 					DeviceNew
 						char@ DSetName
 
-						4096 "blockSize" DAddProperty
+						512 "blockSize" DAddProperty
 						id@ "satsuma,id" DAddProperty
 						ptr@ AHDB_PTE_Blocks + @ "blocks" DAddProperty
 						offset@ "offset" DAddProperty
@@ -164,7 +166,7 @@ fn BuildSatsuma { -- }
 					i@ lilbuf@ itoa
 					lilbuf@ DSetName
 
-					4096 "blockSize" DAddProperty
+					512 "blockSize" DAddProperty
 					i@ "satsuma,id" DAddProperty
 					blocks@ "blocks" DAddProperty
 					0 "offset" DAddProperty
