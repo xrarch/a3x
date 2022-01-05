@@ -76,7 +76,7 @@ fn GConsoleDefault { -- }
 		(* "screen-fg" NVRAMGetVarNum dup *) GConsoleFG dup GCColorDefFG! GCColorFG!
 
 		if ("console-rows" NVRAMGetVar 0 ==)
-			34 "console-rows" NVRAMSetVarNum
+			30 "console-rows" NVRAMSetVarNum
 		end
 		if ("console-cols" NVRAMGetVar 0 ==)
 			80 "console-cols" NVRAMSetVarNum
@@ -365,7 +365,7 @@ fn GConsoleUIBox { title x y w h -- }
 end
 
 fn VConsoleDraw { -- }
-	if (GConsoleX@ 80 >= GConsoleY@ 80 >= && GCFancy@ &&) (* there is at least GConsoleMargin/2 pixels around the edge, do a pretty box *)
+	if (GConsoleX@ 60 >= GConsoleY@ 60 >= && GCFancy@ &&) (* there is at least GConsoleMargin/2 pixels around the edge, do a pretty box *)
 		GCScreenNode@ DeviceSelectNode
 			"init" DCallMethod drop drop drop drop
 		DeviceExit
