@@ -38,6 +38,11 @@ fn HeapInit { -- }
 
 	FWEND KHeapStart@ - KHeapSize!
 
+	KHeapStart@ // ptr
+	KHeapSize@ // size
+	0 // word
+	memset
+
 	KHeapSize@ KHeapStart@ KHeapHeader_size + !
 	0 KHeapStart@ KHeapHeader_last + !
 	0 KHeapStart@ KHeapHeader_allocated + !

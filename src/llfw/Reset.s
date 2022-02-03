@@ -48,9 +48,10 @@ Reset:
 	mtcr evec,  t0 ;set exception vectors
 	mtcr fwvec, t0
 
+	;zero out bss
 	li   a0, 0
-	la   a1, 0x3F000
-	la   a2, 0x1000
+	la   a1, _bss_size
+	la   a2, _bss
 	jal  memset
 
 	jal  FindFB
