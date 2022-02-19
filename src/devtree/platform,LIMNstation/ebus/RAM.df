@@ -87,7 +87,7 @@ fn BuildMemory { -- }
 
 				// extend last descriptor
 
-				thissize@ memdescr@ MemoryDescriptor_Size + +=
+				thissize@ memdesc@ MemoryDescriptor_Size + +=
 			end
 
 			1 i +=
