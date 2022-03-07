@@ -32,67 +32,105 @@ fn BuildMemory { -- }
 
 		pointerof RAM256NextDescriptorM "nextDescriptor" DAddMethod
 		pointerof RAM256DescriptorInfoM "getDescriptorInfo" DAddMethod
+	DeviceExit
+end
 
-		auto memdesc
-		auto memdescr
+fn TestSlot { base max -- size }
+	0 size!
 
-		FWMemDescriptor memdescr!
-		FWMemDescriptor memdesc!
+	// size the RAM region by writing along it until a bus error occurs.
 
-		auto max
-		RAM256Slots max!
+	0 BusErrorOccurred!
+	1 BusErrorExpected!
 
-		auto lastsize
-		0 lastsize!
+	while (size@ max@ <)
+		0xAA55AA55 base@!
 
-		auto i
-		0 i!
-
-		auto sz
-		0 sz!
-
-		while (i@ max@ <)
-			auto thissize
-
-			i@ RAM256SlotSize thissize!
-
-			thissize@ sz +=
-
-			if (lastsize@ RAM256SlotSz <)
-				// only make a new descriptor if not contiguous
-
-				thissize@ lastsize!
-
-				if (thissize@)
-					// create a descriptor for this RAM slot
-
-					memdesc@ memdescr!
-
-					MemoryDescriptor_SIZEOF Malloc memdesc!
-
-					memdesc@ memdescr@ MemoryDescriptor_Next + !
-
-					if (i@ 0 ==)
-						FWEND memdesc@ MemoryDescriptor_BaseAddress + !
-						FWEND thissize -=
-					end else
-						i@ RAM256SlotSz * memdesc@ MemoryDescriptor_BaseAddress + !
-					end
-
-					thissize@  memdesc@ MemoryDescriptor_Size + !
-					MEMORYFREE memdesc@ MemoryDescriptor_Type + !
-				end
-			end else
-				thissize@ lastsize!
-
-				// extend last descriptor
-
-				thissize@ memdesc@ MemoryDescriptor_Size + +=
-			end
-
-			1 i +=
+		if (BusErrorOccurred@)
+			return
 		end
 
+		4096 base +=
+		4096 size +=
+	end
+
+	0 BusErrorExpected!
+end
+
+fn TestMemory { -- }
+	auto i
+	0 i!
+
+	auto base
+	0 base!
+
+	auto lastsize
+	0 lastsize!
+
+	auto memdesc
+	auto memdescr
+
+	FWMemDescriptor memdescr!
+	FWMemDescriptor memdesc!
+
+	auto thissize
+
+	auto sz
+	0 sz!
+
+	while (i@ 8 <)
+		if (i@ 0 ==)
+			FWEND // base
+			RAM256SlotSz FWEND - // max
+			TestSlot thissize!
+
+			FWEND thissize +=
+		end else
+			base@ // base
+			RAM256SlotSz // max
+			TestSlot thissize!
+		end
+
+		thissize@ sz +=
+
+		if (lastsize@ RAM256SlotSz <)
+			// only make a new descriptor if not contiguous
+
+			thissize@ lastsize!
+
+			if (thissize@)
+				// create a descriptor for this RAM slot
+
+				memdesc@ memdescr!
+
+				MemoryDescriptor_SIZEOF Malloc memdesc!
+
+				memdesc@ memdescr@ MemoryDescriptor_Next + !
+
+				if (i@ 0 ==)
+					FWEND memdesc@ MemoryDescriptor_BaseAddress + !
+					FWEND thissize -=
+				end else
+					i@ RAM256SlotSz * memdesc@ MemoryDescriptor_BaseAddress + !
+				end
+
+				thissize@  memdesc@ MemoryDescriptor_Size + !
+				MEMORYFREE memdesc@ MemoryDescriptor_Type + !
+				0 memdesc@ MemoryDescriptor_Next + !
+			end
+		end else
+			thissize@ lastsize!
+
+			// extend last descriptor
+
+			thissize@ memdesc@ MemoryDescriptor_Size + +=
+		end
+
+		RAM256SlotSz base +=
+		1 i +=
+	end
+
+	"/memory" DeviceSelect
 		sz@ "totalRAM" DAddProperty
 	DeviceExit
 end

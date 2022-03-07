@@ -16,8 +16,6 @@
 
 .extern memset
 
-.define RAMSlotZero 0x10000004
-
 .define PBoardReset 0xF8800000
 .define PBoardResetMagic 0xAABBCCDD
 
@@ -32,16 +30,6 @@ Reset:
 	mtcr evec,  zero ;clear exception vectors
 	mtcr fwvec, zero
 
-	la   t0, RAMSlotZero
-	mov  s0, long [t0]
-
-	la   t1, _bss_size
-	slt  t0, s0, t1
-	beq  t0, .goodRAM ;continue if there's at least enough RAM to fit our bss section
-
-	j    Hang ;otherwise hang
-
-.goodRAM:
 	la   sp, LLFWStackTop ;set stack
 
 	la   t0, ExceptionVector
@@ -59,7 +47,6 @@ Reset:
 	la   a0, HiString
 	jal  Puts
 
-	mov  a0, s0
 	jal  POST ;self test
 
 	jal  LoadBIOS ;load bios image into RAM

@@ -11,6 +11,8 @@ extern PlatformInit { -- }
 
 extern Main { -- }
 
+extern TestMemory { -- }
+
 fn BIOSEntry { -- }
 	HeapInit
 
@@ -31,6 +33,8 @@ fn BIOSEntry { -- }
 	DeviceInit
 
 	InterruptsInit
+
+	TestMemory
 
 	FirmwareBanner
 

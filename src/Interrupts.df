@@ -12,6 +12,29 @@ fn InterruptsInit { -- }
 	setvector
 end
 
+struct Context
+	4 t0    4 t1
+	4 t2    4 t3
+	4 t4    4 t5
+	4 a0    4 a1
+	4 a2    4 a3
+	4 s0    4 s1
+	4 s2    4 s3
+	4 s4    4 s5
+	4 s6    4 s7
+	4 s8    4 s9
+	4 s10   4 s11
+	4 s12   4 s13
+	4 s14   4 s15
+	4 s16   4 s17
+	4 s18
+
+	4 sp
+	4 ers
+	4 epc
+	4 lr
+endstruct
+
 asm "
 
 setvector:
@@ -24,8 +47,38 @@ setvector:
 	ret
 
 exception_limn2500:
-	subi sp, sp, 8
-	mov  long [sp], 0
+	subi sp, sp, Context_SIZEOF
+
+	mov  long [sp + Context_t0],  t0
+	mov  long [sp + Context_t1],  t1
+	mov  long [sp + Context_t2],  t2
+	mov  long [sp + Context_t3],  t3
+	mov  long [sp + Context_t4],  t4
+	mov  long [sp + Context_t5],  t5
+	mov  long [sp + Context_a0],  a0
+	mov  long [sp + Context_a1],  a1
+	mov  long [sp + Context_a2],  a2
+	mov  long [sp + Context_a3],  a3
+	mov  long [sp + Context_s0],  s0
+	mov  long [sp + Context_s1],  s1
+	mov  long [sp + Context_s2],  s2
+	mov  long [sp + Context_s3],  s3
+	mov  long [sp + Context_s4],  s4
+	mov  long [sp + Context_s5],  s5
+	mov  long [sp + Context_s6],  s6
+	mov  long [sp + Context_s7],  s7
+	mov  long [sp + Context_s8],  s8
+	mov  long [sp + Context_s9],  s9
+	mov  long [sp + Context_s10], s10
+	mov  long [sp + Context_s11], s11
+	mov  long [sp + Context_s12], s12
+	mov  long [sp + Context_s13], s13
+	mov  long [sp + Context_s14], s14
+	mov  long [sp + Context_s15], s15
+	mov  long [sp + Context_s16], s16
+	mov  long [sp + Context_s17], s17
+	mov  long [sp + Context_s18], s18
+	mov  long [sp + Context_lr],  lr
 
 	mfcr a3, ecause
 	mfcr a2, epc
@@ -33,7 +86,39 @@ exception_limn2500:
 	mfcr a0, ebadaddr
 	jal  Exception
 
-	j    Reset
+	mov t0,  long [sp + Context_t0]
+	mov t1,  long [sp + Context_t1]
+	mov t2,  long [sp + Context_t2]
+	mov t3,  long [sp + Context_t3]
+	mov t4,  long [sp + Context_t4]
+	mov t5,  long [sp + Context_t5]
+	mov a0,  long [sp + Context_a0]
+	mov a1,  long [sp + Context_a1]
+	mov a2,  long [sp + Context_a2]
+	mov a3,  long [sp + Context_a3]
+	mov s0,  long [sp + Context_s0]
+	mov s1,  long [sp + Context_s1]
+	mov s2,  long [sp + Context_s2]
+	mov s3,  long [sp + Context_s3]
+	mov s4,  long [sp + Context_s4]
+	mov s5,  long [sp + Context_s5]
+	mov s6,  long [sp + Context_s6]
+	mov s7,  long [sp + Context_s7]
+	mov s8,  long [sp + Context_s8]
+	mov s9,  long [sp + Context_s9]
+	mov s10, long [sp + Context_s10]
+	mov s11, long [sp + Context_s11]
+	mov s12, long [sp + Context_s12]
+	mov s13, long [sp + Context_s13]
+	mov s14, long [sp + Context_s14]
+	mov s15, long [sp + Context_s15]
+	mov s16, long [sp + Context_s16]
+	mov s17, long [sp + Context_s17]
+	mov s18, long [sp + Context_s18]
+	mov  lr, long [sp + Context_lr]
+
+	addi sp, sp, Context_SIZEOF
+	rfe
 
 ;this global is fine because firmware calls will NEVER be nested
 savedfwcallLR:
@@ -79,7 +164,15 @@ const Breakpoint 6
 
 const ExtInterrupt 1
 
+const BusError 4
+
 const LSICClaimComplete 0xF8030010
+
+var BusErrorExpected 0
+public BusErrorExpected
+
+var BusErrorOccurred 0
+public BusErrorOccurred
 
 fnptr IntHandler { -- }
 
@@ -105,6 +198,12 @@ fn Exception { state ecause epc ers badaddr -- }
 		end
 
 		return
+	end elseif (ecause@ BusError ==)
+		if (BusErrorExpected@)
+			1 BusErrorOccurred!
+
+			return
+		end
 	end
 
 	ConsoleUserOut

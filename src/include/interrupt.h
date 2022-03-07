@@ -7,3 +7,6 @@ extern InterruptEnable { -- }
 extern InterruptDisable { -- rs }
 
 extern InterruptRestore { rs -- }
+
+externptr BusErrorExpected
+externptr BusErrorOccurred
