@@ -12,6 +12,8 @@ extern DCitronOuti { int port -- }
 
 extern DCitronOutl { long port -- }
 
+extern DCitronWait { port -- }
+
 extern DCitronCommand { command port -- }
 
 (* doesn't wait for the device to report the operation as completed before returning *)

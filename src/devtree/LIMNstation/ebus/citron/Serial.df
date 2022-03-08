@@ -68,8 +68,8 @@ fn SerialWrite { c -- }
 	auto rs
 	InterruptDisable rs!
 
+	cmd@ DCitronWait
 	c@ data@ DCitronOutb
-	SerialCmdWrite cmd@ DCitronCommand
 
 	rs@ InterruptRestore
 end
@@ -88,7 +88,6 @@ fn SerialRead { -- c }
 	auto rs
 	InterruptDisable rs!
 
-	SerialCmdRead cmd@ DCitronCommand
 	data@ DCitronIni c!
 
 	rs@ InterruptRestore

@@ -32,14 +32,13 @@ Puts:
 ;a0 - char
 Getc:
 .global Getc
-	la   t0, SerialPortA
+	la   t0, SerialPortB
 	
 .busy:
 	mov  t2, byte [t0]
 	bne  t2, .busy
 
-	mov  byte [t0], 2
-	mov  a0, int [t0 + 4]
+	mov  a0, int [t0]
 
 	subi t2, a0, 0xFFFF
 	beq  t2, .busy
@@ -56,7 +55,6 @@ Putc:
 	bne  t1, .wait
 
 	mov  long [t0 + 4], a0
-	mov  long [t0], 1
 
 	ret
 

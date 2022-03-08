@@ -55,6 +55,13 @@ fn DCitronOutl { long port -- }
 	long@ port@ 4 * DCitronBase + !
 end
 
+fn DCitronWait { port -- }
+	auto pbase
+	port@ 4 * DCitronBase + pbase!
+
+	while (pbase@ gb 0 ~=) end
+end
+
 fn DCitronCommand { command port -- }
 	auto pbase
 	port@ 4 * DCitronBase + pbase!

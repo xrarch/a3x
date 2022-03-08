@@ -40,11 +40,13 @@ fn TestSlot { base max -- size }
 
 	// size the RAM region by writing along it until a bus error occurs.
 
+	0xFFF base +=
+
 	0 BusErrorOccurred!
 	1 BusErrorExpected!
 
 	while (size@ max@ <)
-		0xAA55AA55 base@!
+		0xA5 base@ sb
 
 		if (BusErrorOccurred@)
 			return
