@@ -266,7 +266,7 @@ fn MonitorCommandNVReset { -- }
 end
 
 fn MonitorCommandClear { -- }
-	"\[[0m\[c" Printf
+	"\[[0m\[[1;1H\[[2J" Printf
 end
 
 fn MonitorCommandAutoboot { -- }

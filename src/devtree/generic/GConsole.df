@@ -489,7 +489,7 @@ fn GConsoleParseEscape { c -- }
 	if (c@ '[' ==) return end
 	elseif (c@ ';' ==) GCEV@ 1 + GCEVC % GCEV! return end
 	elseif (c@ 'm' ==) GConsoleSetColor end
-	elseif (c@ 'c' ==) GConsoleReset end
+	elseif (c@ 'J' ==) GConsoleClear end
 	elseif (c@ 'K' ==) GConsoleClearLine end
 
 	0 GCEscape!
