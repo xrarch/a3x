@@ -86,6 +86,9 @@ exception_limn2500:
 	mfcr a0, ebadaddr
 	jal  Exception
 
+	mov t0,  long [sp + Context_epc]
+	mtcr epc, t0
+
 	mov t0,  long [sp + Context_t0]
 	mov t1,  long [sp + Context_t1]
 	mov t2,  long [sp + Context_t2]
@@ -206,6 +209,8 @@ fn Exception { state epc rs badaddr -- }
 		return
 	end elseif (ecause@ BusError ==)
 		if (BusErrorExpected@)
+			epc@ 4 + state@ Context_epc + !
+
 			1 BusErrorOccurred!
 
 			return
