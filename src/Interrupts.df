@@ -80,9 +80,9 @@ exception_limn2500:
 	mov  long [sp + Context_s18], s18
 	mov  long [sp + Context_lr],  lr
 
-	mfcr a3, ecause
+	mov  a3, sp
 	mfcr a2, epc
-	mfcr a1, ers
+	mfcr a1, rs
 	mfcr a0, ebadaddr
 	jal  Exception
 
@@ -176,7 +176,13 @@ public BusErrorOccurred
 
 fnptr IntHandler { -- }
 
-fn Exception { state ecause epc ers badaddr -- }
+fn Exception { state epc rs badaddr -- }
+	auto ecause
+	rs@ 28 >> 15 & ecause!
+
+	auto ers
+	rs@ 8 >> 255 & ers!
+
 	if (ecause@ ExtInterrupt ==)
 		auto int
 

@@ -25,12 +25,6 @@ POST:
 	subi t1, t0, ExpectedPBVersion
 	bne  t1, .badPB
 
-	mfcr t0, cpuid
-	rshi t0, t0, 16
-	andi t0, t0, 0x7FFF
-	subi t1, t0, ExpectedCPUVersion
-	bne  t1, .badCPU
-
 	la   a0, POSTPassed
 	jal  Puts
 
@@ -47,17 +41,7 @@ POST:
 	jal  Error
 	j    Reset
 
-.badCPU:
-	lui  a1, zero, 0x04000000
-	or   a1, a1, s0
-	la   a0, BadCPUString
-	jal  Error
-	j    Reset
-
 .section data
-
-BadCPUString:
-	.ds "Incompatible CPU type!\n\0"
 
 BadPBString:
 	.ds "Incompatible motherboard!\n\0"

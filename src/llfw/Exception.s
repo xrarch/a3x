@@ -8,16 +8,20 @@
 
 ExceptionVector:
 .global ExceptionVector
+	mfcr s0, rs
+
 	la   a0, EPCName
 	mfcr a1, epc
 	jal  PrintInfo
 
 	la   a0, ERSName
-	mfcr a1, ers
+	lshi a1, s0, 8
+	andi a1, a1, 0xFF
 	jal  PrintInfo
 
 	la   a0, ECAUSEName
-	mfcr a1, ecause
+	lshi s1, s0, 28
+	andi a1, s1, 15
 	jal  PrintInfo
 
 	la   a0, BADADDRName
@@ -27,8 +31,7 @@ ExceptionVector:
 	mtcr ebadaddr, zero
 
 	lui  a1, zero, 0x02000000
-	mfcr t0, ecause
-	or   a1, a1, t0
+	or   a1, a1, s1
 	la   a0, ExceptionString
 	jal  Error
 
