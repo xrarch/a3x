@@ -21,6 +21,8 @@ public BootableDevs
 var NumBootableDevs 0
 public NumBootableDevs
 
+extern CPUSynchronizeIcache { -- }
+
 fn AddBootable { -- }
 	if (NumBootableDevs@ 5 >=)
 		return
@@ -180,6 +182,8 @@ fn BootNode { devnode args -- ok }
 	if (BootBottom@ BootMagic ~=)
 		6 ok! return
 	end
+
+	CPUSynchronizeIcache
 
 	"\[[33mexecuting boot program!\[[0m\n" Printf
 

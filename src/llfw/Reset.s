@@ -23,6 +23,8 @@
 
 Reset:
 .global Reset
+	cachei 5 ;invalidate dcache and icache (but don't writeback dcache)
+
 	la   t0, PBoardResetMagic
 	la   t1, PBoardReset
 	mov  long [t1], t0 ;reset ebus
@@ -55,6 +57,8 @@ Reset:
 
 	la   a0, HLRString
 	jal  Puts
+
+	cachei 3
 
 	;make phony pointer to last frame as defined by limn2500 abi
 	;for the benefit of stack traces

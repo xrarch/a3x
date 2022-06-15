@@ -141,6 +141,11 @@ firmware_call:
 	mov  lr, long [t0]
 	rfe
 
+CPUSynchronizeIcache:
+.global CPUSynchronizeIcache
+	cachei 3 ;invalidate icache, writeback dcache
+	ret
+
 "
 
 table ExceptionNames
