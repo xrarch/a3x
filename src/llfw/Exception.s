@@ -20,7 +20,7 @@ ExceptionVector:
 	jal  PrintInfo
 
 	la   a0, ECAUSEName
-	lshi s1, s0, 28
+	rshi s1, s0, 28
 	andi a1, s1, 15
 	jal  PrintInfo
 
