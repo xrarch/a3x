@@ -219,7 +219,7 @@ fn AHDBRead { ptr block -- ok }
 	block@ AHDBPortA DCitronOutl
 	AHDBCmdRead AHDBCmdPort DCitronCommand
 
-	AHDBBuffer ptr@ AHDBTransferBlock
+	AHDBBuffer id@ 512 * + ptr@ AHDBTransferBlock
 
 	rs@ InterruptRestore
 
@@ -245,7 +245,7 @@ fn AHDBWrite { ptr block -- ok }
 
 	id@ AHDBSelect
 
-	ptr@ AHDBBuffer AHDBTransferBlock
+	ptr@ AHDBBuffer id@ 512 * + AHDBTransferBlock
 
 	block@ AHDBPortA DCitronOutl
 	AHDBCmdWrite AHDBCmdPort DCitronCommand
