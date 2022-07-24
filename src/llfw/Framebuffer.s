@@ -31,8 +31,7 @@ FindFB:
 .found:
 	lui  t1, zero, LGVRAMOffset
 	add  t1, t0, t1
-	la   t2, FBAddress
-	mov  long [t2], t1
+	mov  long [FBAddress], t1, tmp=t2
 
 	li   t2, LGRegScreen
 	mov  t1, long [t0 + t2]
@@ -42,13 +41,11 @@ FindFB:
 	mov  long [t0], t2
 
 	rshi t3, t1, 12
-	la   t0, FBHeight
-	mov  long [t0], t3
+	mov  long [FBHeight], t3, tmp=t0
 
 	mul  t2, t2, t3
 	lshi t2, t2, 1
-	la   t0, FBSize
-	mov  long [t0], t2
+	mov  long [FBSize], t2, tmp=t0
 
 .out:
 	ret
@@ -61,19 +58,15 @@ FBDisplayCode:
 	mov  long [sp + 4], s0
 	mov  long [sp + 8], s1
 
-	la   t0, FBAddress
-	mov  s0, long [t0]
+	mov  s0, long [FBAddress]
 	beq  s0, .out
 
 	mov  s1, a0
 
 	jal  FBClear
 
-	la   t0, FBWidth
-	mov  t0, long [t0]
-
-	la   t1, FBHeight
-	mov  t1, long [t1]
+	mov  t0, long [FBWidth]
+	mov  t1, long [FBHeight]
 
 	rshi t2, t0, 1
 	subi t2, t2, 32
@@ -175,11 +168,8 @@ FBClear:
 	subi sp, sp, 4
 	mov  long [sp], lr
 
-	la   a2, FBAddress
-	mov  a2, long [a2]
-
-	la   a1, FBSize
-	mov  a1, long [a1]
+	mov  a2, long [FBAddress]
+	mov  a1, long [FBSize]
 
 	la   a0, 0x082E082E
 

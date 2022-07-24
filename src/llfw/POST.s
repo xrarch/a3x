@@ -19,8 +19,7 @@ POST:
 	mov  long [sp], lr
 	mov  long [sp + 4], s0
 
-	la   t0, PBVersion
-	mov  t0, long [t0]
+	mov  t0, long [PBVersion]
 	rshi t0, t0, 16
 	subi t1, t0, ExpectedPBVersion
 	bne  t1, .badPB

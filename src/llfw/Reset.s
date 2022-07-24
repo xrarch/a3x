@@ -26,8 +26,7 @@ Reset:
 	cachei 5 ;invalidate dcache and icache (but don't writeback dcache)
 
 	la   t0, PBoardResetMagic
-	la   t1, PBoardReset
-	mov  long [t1], t0 ;reset ebus
+	mov  long [PBoardReset], t0, tmp=t1 ;reset ebus
 
 	mtcr evec,  zero ;clear exception vectors
 	mtcr fwvec, zero
