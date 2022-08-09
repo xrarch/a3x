@@ -50,6 +50,16 @@ Putc:
 .global Putc
 	la   t0, SerialPortA
 
+	subi t2, a0, 0xA
+	bne  t2, .wait
+
+.wait1:
+	mov  t1, byte [t0]
+	bne  t1, .wait1
+
+	li   t2, 0xD
+	mov  long [t0 + 4], t2
+
 .wait:
 	mov  t1, byte [t0]
 	bne  t1, .wait

@@ -68,6 +68,11 @@ fn SerialWrite { c -- }
 	auto rs
 	InterruptDisable rs!
 
+	if (c@ '\n' ==)
+		cmd@ DCitronWait
+		'\r' data@ DCitronOutb
+	end
+
 	cmd@ DCitronWait
 	c@ data@ DCitronOutb
 
