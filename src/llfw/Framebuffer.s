@@ -1,7 +1,7 @@
 .define EBusSlotsStart 0xC0000000
 .define EBusSlotSpace  0x8000000
 
-.define LIMNGFXSlotMID 0x4B494E35
+.define LIMNGFXSlotMID 0x4B494E36
 .define LGVRAMOffset   0x100000
 .define LGRegScreen    0x3000
 
@@ -44,7 +44,6 @@ FindFB:
 	mov  long [FBHeight], t3, tmp=t0
 
 	mul  t2, t2, t3
-	lshi t2, t2, 1
 	mov  long [FBSize], t2, tmp=t0
 
 .out:
@@ -77,13 +76,11 @@ FBDisplayCode:
 	mul  t1, t1, t0
 	add  t1, t1, t2
 
-	lshi t1, t1, 1
 	add  s0, s0, t1
 
-	addi s0, s0, 112
+	addi s0, s0, 56
 
-	lshi t0, t0, 1
-	subi a1, t0, 16 ;width of a character
+	subi a1, t0, 8 ;width of a character
 
 	mov  a0, s1
 	mov  a2, s0
@@ -136,7 +133,7 @@ FBPutx:
 FBDrawGlyph:
 	li   t0, 16
 
-	li   t4, 0x7FFF
+	li   t4, 0xFF
 
 .yloop:
 	subi t0, t0, 1
@@ -152,10 +149,10 @@ FBDrawGlyph:
 	andi t3, t3, 1
 	beq  t3, .nopix
 
-	mov  int [a2], t4
+	mov  byte [a2], t4
 
 .nopix:
-	addi a2, a2, 2
+	addi a2, a2, 1
 	bne  t1, .xloop
 
 	addi a0, a0, 1
@@ -171,7 +168,7 @@ FBClear:
 	mov  a2, long [FBAddress]
 	mov  a1, long [FBSize]
 
-	la   a0, 0x082E082E
+	la   a0, 0x09090909
 
 	jal  memset
 

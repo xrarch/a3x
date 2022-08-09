@@ -53,9 +53,9 @@ fn private DrawBadge { index s -- x y }
 	index@ DEVPERROW % TILEWIDTH * sw@ + x!
 
 	if (s@)
-		0x03FF s!
+		249 s!
 	end else
-		0x6F78 s!
+		223 s!
 	end
 
 	auto badge
@@ -80,13 +80,13 @@ fn private Box { x y w h color -- }
 end
 
 fn private BUIBox { bbx bby boxw boxh -- }
-	bbx@ bby@ boxw@ boxh@ 0x7FFF Box
-	bbx@ 1 + bby@ 1 + boxw@ boxh@ 0x4210 Box
-	bbx@ 1 + bby@ 1 + boxw@ 1 - boxh@ 1 - 0x6318 BUIRect
-	bbx@ 10 + bby@ 20 + boxw@ 18 - boxh@ 28 - 0x7FFF Box
-	bbx@ 10 + bby@ 20 + boxw@ 19 - boxh@ 29 - 0x4210 Box
-	bbx@ 11 + bby@ 21 + boxw@ 21 - boxh@ 31 - 0x7FFF Box
-	bbx@ 12 + bby@ 22 + boxw@ 22 - boxh@ 32 - 0x6318 Box
+	bbx@ bby@ boxw@ boxh@ 255 Box
+	bbx@ 1 + bby@ 1 + boxw@ boxh@ 148 Box
+	bbx@ 1 + bby@ 1 + boxw@ 1 - boxh@ 1 - 222 BUIRect
+	bbx@ 10 + bby@ 20 + boxw@ 18 - boxh@ 28 - 255 Box
+	bbx@ 10 + bby@ 20 + boxw@ 19 - boxh@ 29 - 148 Box
+	bbx@ 11 + bby@ 21 + boxw@ 21 - boxh@ 31 - 255 Box
+	bbx@ 12 + bby@ 22 + boxw@ 22 - boxh@ 32 - 222 Box
 
 	auto title
 	"Bootable Disks" title!
@@ -126,11 +126,11 @@ fn private BeSpecific { t -- }
 	if (t@)
 		BUIScreenWidth@ 2 / osname@ strlen FontWidth * 2 / -
 		y@
-		osname@ -1 0x7FFF FontDrawString
+		osname@ -1 255 FontDrawString
 
 		BUIScreenWidth@ 2 / path@ strlen FontWidth * 2 / -
 		y@ FontHeight +
-		path@ -1 0x7FFF FontDrawString
+		path@ -1 255 FontDrawString
 	end else
 		BUIScreenWidth@ 2 / osname@ strlen FontWidth * 2 / -
 		y@
@@ -169,13 +169,13 @@ fn private DrawInitial { index -- }
 	if (plabel@)
 		x@ TILEWIDTH 2 / + plabel@ strlen FontWidth * 2 / -
 		y@ 70 +
-		plabel@ -1 0x7FFF FontDrawString
+		plabel@ -1 255 FontDrawString
 	end
 
 	if (disklabel@)
 		x@ TILEWIDTH 2 / + disklabel@ strlen FontWidth * 2 / -
 		y@ 70 + FontHeight +
-		disklabel@ -1 0x7FFF FontDrawString
+		disklabel@ -1 255 FontDrawString
 	end
 end
 
@@ -203,7 +203,7 @@ fn private DrawAll { -- }
 	bby@ 14 -
 	boxw@ 10 +
 	boxh@ 20 +
-	0x394C
+	75
 	BUIRect
 
 	while (i@ NumBootableDevs@ <)

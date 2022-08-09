@@ -74,6 +74,6 @@ fn PlatformInit { -- }
 
 	"LIMNstation" PlatformName!
 
-	"14784" PlatformDefaultScreenBG!
-	"32767" PlatformDefaultScreenFG!
+	"132" PlatformDefaultScreenBG!
+	"255" PlatformDefaultScreenFG!
 end

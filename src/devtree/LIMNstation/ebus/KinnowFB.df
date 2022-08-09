@@ -3,7 +3,7 @@
 
 (* a3x driver for kinnowfb video board *)
 
-const LGSlotMID 0x4B494E35
+const LGSlotMID 0x4B494E36
 
 const LGVRAMOffset 0x100000
 
@@ -64,7 +64,7 @@ fn BuildKinnowFB { -- }
 		fb@ "framebuffer" DAddProperty
 		w@ "width" DAddProperty
 		h@ "height" DAddProperty
-		16 "depth" DAddProperty
+		8 "depth" DAddProperty
 
 		fb@ "vram" DAddProperty
 
@@ -72,7 +72,7 @@ fn BuildKinnowFB { -- }
 
 		"display" "deviceType" DAddProperty
 
-		"AISA,kinnowfb" "model" DAddProperty
+		"AISA,kinnowfb8" "model" DAddProperty
 
 		slot@ "ebus,unit" DAddProperty
 
@@ -114,16 +114,16 @@ fn LGFXRectangle { x y w h color -- }
 	0 row!
 
 	auto v
-	color@ 16 << color@ | v!
+	color@ color@ 8 << | color@ 16 << | color@ 24 << | v!
 
 	auto ptr
-	y@ LGWidth@ * 2 * x@ 2 * + LGFB@ + ptr!
+	y@ LGWidth@ * x@ + LGFB@ + ptr!
 
 	auto mod
-	LGWidth@ 2 * mod!
+	LGWidth@ mod!
 
 	auto rowsz
-	w@ 2 * rowsz!
+	w@ rowsz!
 
 	while (row@ h@ <)
 		ptr@ rowsz@ v@ memset
@@ -178,10 +178,10 @@ fn LGFXBlitBitsFast { bpr fg bg bitd ptr dest mod w h -- }
 
 					while (j@ jcmp@ <)
 						if (byte@ j@ &)
-							fg@ dest@ si
+							fg@ dest@ sb
 						end
 
-						2 dest +=
+						1 dest +=
 						1 j <<=
 					end
 
@@ -204,13 +204,13 @@ fn LGFXBlitBitsFast { bpr fg bg bitd ptr dest mod w h -- }
 					while (j@ jcmp@ <)
 						if (byte@ j@ &)
 							if (fg@ m1cmp@ ~=)
-								fg@ dest@ si
+								fg@ dest@ sb
 							end
 						end else
-							bg@ dest@ si
+							bg@ dest@ sb
 						end
 
-						2 dest +=
+						1 dest +=
 						1 j <<=
 					end
 
@@ -238,10 +238,10 @@ fn LGFXBlitBitsFast { bpr fg bg bitd ptr dest mod w h -- }
 
 					while (j@)
 						if (byte@ j@ &)
-							fg@ dest@ si
+							fg@ dest@ sb
 						end
 
-						2 dest +=
+						1 dest +=
 						1 j >>=
 					end
 
@@ -264,13 +264,13 @@ fn LGFXBlitBitsFast { bpr fg bg bitd ptr dest mod w h -- }
 					while (j@)
 						if (byte@ j@ &)
 							if (fg@ m1cmp@ ~=)
-								fg@ dest@ si
+								fg@ dest@ sb
 							end
 						end else
-							bg@ dest@ si
+							bg@ dest@ sb
 						end
 
-						2 dest +=
+						1 dest +=
 						1 j >>=
 					end
 
@@ -287,10 +287,10 @@ end
 
 fn LGFXBlitBits { bpr fg bg bitd ptr x y w h -- }
 	auto dest
-	y@ LGWidth@ * 2 * x@ 2 * + LGFB@ + dest!
+	y@ LGWidth@ * x@ + LGFB@ + dest!
 
 	auto mod
-	LGWidth@ 2 * w@ 2 * - mod!
+	LGWidth@ w@ - mod!
 
 	bpr@ fg@ bg@ bitd@ ptr@ dest@ mod@ w@ h@
 	LGFXBlitBitsFast
@@ -311,16 +311,16 @@ fn LGFXScroll { x y w h color rows -- }
 	0 row!
 
 	auto dest
-	y@ LGWidth@ * 2 * x@ 2 * + LGFB@ + dest!
+	y@ LGWidth@ * x@ + LGFB@ + dest!
 
 	auto src
-	y@ rows@ + LGWidth@ * 2 * x@ 2 * + LGFB@ + src!
+	y@ rows@ + LGWidth@ * x@ + LGFB@ + src!
 
 	auto mod
-	LGWidth@ 2 * mod!
+	LGWidth@ mod!
 
 	auto rowsz
-	w@ 2 * rowsz!
+	w@ rowsz!
 
 	auto rh
 	h@ rows@ - rh!
