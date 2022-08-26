@@ -253,6 +253,8 @@ fn BootUI { -- node }
 		GetScan scan!
 
 		if (scan@ 53 ==) (* escape *)
+			0 BeSpecific
+
 			return
 		end elseif (scan@ 54 ==) (* left arrow *)
 			0 BeSpecific
