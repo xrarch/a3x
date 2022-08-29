@@ -7,19 +7,19 @@ DC  =  ../../sdk/dragonc.sh
 AS  =  ../../sdk/asm.sh
 LD  =  ../../sdk/link.sh link
 
-all: obj/cia3x.o obj/rta3x.o obj/_boot.o
+all: obj/limn2600/cia3x.o obj/limn2600/rta3x.o obj/limn2600/_boot.o
 
-obj/cia3x.o: src/a3x.o
-	mkdir -p obj
-	cp src/a3x.o obj/cia3x.o
+obj/limn2600/cia3x.o: src/a3x.o
+	mkdir -p obj/limn2600
+	cp src/a3x.o obj/limn2600/cia3x.o
 
-obj/rta3x.o: $(OBJ) $(SOBJ)
-	mkdir -p obj
-	$(LD) -f obj/rta3x.o L/dfrt/dfrt.f.o $(OBJ) $(SOBJ)
+obj/limn2600/rta3x.o: $(OBJ) $(SOBJ)
+	mkdir -p obj/limn2600
+	$(LD) -f obj/limn2600/rta3x.o $(OBJ) $(SOBJ) L/dfrt/dfrt.f.o
 
-obj/_boot.o: ./client/_boot.s
-	mkdir -p obj
-	$(AS) ./client/_boot.s obj/_boot.o
+obj/limn2600/_boot.o: ./client/_boot.s
+	mkdir -p obj/limn2600
+	$(AS) ./client/_boot.s obj/limn2600/_boot.o
 
 %.o: %.df
 	$(DC) $< $@ incdir=./headers/
@@ -28,4 +28,4 @@ obj/_boot.o: ./client/_boot.s
 	$(AS) $< $@
 
 cleanup:
-	rm -f $(OBJ) $(SOBJ) obj/rta3x.o obj/_boot.o
+	rm -f $(OBJ) $(SOBJ) obj/*/*.o
