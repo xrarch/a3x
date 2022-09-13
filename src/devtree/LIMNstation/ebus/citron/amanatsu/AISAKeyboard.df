@@ -108,7 +108,7 @@ end
 
 fn AKeyboardSpecial { code -- char }
 	if (code@ 50 ==)
-		'\n' char!
+		'\r' char!
 	end elseif (code@ 51 ==)
 		'\b' char!
 	end else

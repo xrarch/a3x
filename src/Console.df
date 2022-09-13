@@ -187,7 +187,7 @@ fn Gets { s max -- }
 			Getc c!
 		end
 
-		if (c@ '\n' ==)
+		if (c@ '\r' ==)
 			'\n' Putc
 			break
 		end
