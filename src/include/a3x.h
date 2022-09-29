@@ -30,4 +30,4 @@ const MEMORYBAD      3
 
 // make sure to update link values if you change this
 const FWSTART 0x4000
-const FWEND   0x40000
+const FWEND   0x20000
