@@ -36,7 +36,7 @@ fn DebugMonitor { state -- }
 		DeviceExit
 
 		if (MonitorHeight@ 0 ==)
-			25 MonitorHeight!
+			24 MonitorHeight!
 		end
 	end
 
