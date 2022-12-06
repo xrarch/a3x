@@ -27,6 +27,10 @@ fn Main { -- }
 		DeviceExit
 	end
 
+	if (NumBootableDevs@ 1 >)
+		0 fv!
+	end
+
 	if (fv@)
 		ConsoleUserOut
 	end
