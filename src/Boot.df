@@ -120,6 +120,8 @@ end
 fnptr BootProgramEntry { api devnode args -- ret }
 
 fn BootNode { devnode args -- ok }
+	ConsoleUserOut
+
 	auto brecord
 
 	devnode@ DevBootableR ok! brecord!
