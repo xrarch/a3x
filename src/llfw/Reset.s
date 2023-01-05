@@ -71,12 +71,12 @@ Reset:
 Hang:
 	b    Hang
 
-.ds "limn2600 BootROM, by Will"
+.ds "XR/17032 BootROM, by Will"
 
 .section data
 
 HiString:
-	.ds "\n===============================\nlow-level firmware for limn2600\n===============================\n\0"
+	.ds "\n===============================\nlow-level firmware for XR/17032\n===============================\n\0"
 
 HLRString:
 	.ds "Jumping to high-level firmware!\n\n\0"

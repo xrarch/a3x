@@ -7,19 +7,19 @@ DC  =  ../../sdk/dragonc.sh
 AS  =  ../../sdk/asm.sh
 LD  =  ../../sdk/link.sh link
 
-all: obj/limn2600/cia3x.o obj/limn2600/rta3x.o obj/limn2600/_boot.o
+all: obj/xr17032/cia3x.o obj/xr17032/rta3x.o obj/xr17032/_boot.o
 
-obj/limn2600/cia3x.o: src/a3x.o
-	mkdir -p obj/limn2600
-	cp src/a3x.o obj/limn2600/cia3x.o
+obj/xr17032/cia3x.o: src/a3x.o
+	mkdir -p obj/xr17032
+	cp src/a3x.o obj/xr17032/cia3x.o
 
-obj/limn2600/rta3x.o: $(OBJ) $(SOBJ)
-	mkdir -p obj/limn2600
-	$(LD) -f obj/limn2600/rta3x.o $(OBJ) $(SOBJ) L/dfrt/dfrt.f.o
+obj/xr17032/rta3x.o: $(OBJ) $(SOBJ)
+	mkdir -p obj/xr17032
+	$(LD) -f obj/xr17032/rta3x.o $(OBJ) $(SOBJ) L/dfrt/dfrt.f.o
 
-obj/limn2600/_boot.o: ./client/_boot.s
-	mkdir -p obj/limn2600
-	$(AS) ./client/_boot.s obj/limn2600/_boot.o
+obj/xr17032/_boot.o: ./client/_boot.s
+	mkdir -p obj/xr17032
+	$(AS) ./client/_boot.s obj/xr17032/_boot.o
 
 %.o: %.df
 	$(DC) $< $@ incdir=./headers/

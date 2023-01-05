@@ -150,7 +150,7 @@ fn LGFXBlitBitsFast { bpr fg bg bitd ptr dest mod w h -- }
 	// this function is so big because its overly optimized.
 
 	// emulates the function of the old "DMA board" that was removed
-	// from the LIMNstation architecture for being too complex
+	// from the XRstation architecture for being too complex
 
 	auto i
 	auto j

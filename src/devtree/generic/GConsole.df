@@ -370,7 +370,7 @@ fn VConsoleDraw { -- }
 			"init" DCallMethod drop drop drop drop
 		DeviceExit
 
-		"LIMNstation"
+		"XR/STATION"
 		GConsoleX@ 15 -
 		GConsoleY@ 25 -
 		GCWidth@ FontWidth * 30 +

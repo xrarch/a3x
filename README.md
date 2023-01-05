@@ -1,8 +1,8 @@
-# LIMNstation BIOS
+# XR/STATION Firmware
 
 Abbreviated frequently as a3x.
 
-Boot firmware for the LIMNstation architecture, written in limn2600 assembly and dragonfruit.
+Boot firmware for the XR/station architecture, written in xr17032 assembly and dragonfruit.
 
 Makes heavy internal use of NVRAM variables and a device tree model.
 
@@ -10,7 +10,7 @@ Makes heavy internal use of NVRAM variables and a device tree model.
 
 ## Building
 
-Download the LIMNstation sdk, and place it in a folder titled `sdk` in your current directory.
+Download the XR/station sdk, and place it in a folder titled `sdk` in your current directory.
 
 Then run the `build.sh` script using the path you'd like to place the ROM file as the argument.
 

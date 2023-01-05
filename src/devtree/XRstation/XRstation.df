@@ -2,18 +2,18 @@
 #include "<inc>/a3x.h"
 
 extern BuildEBus { -- }
-extern BuildLimn2600 { -- }
+extern BuildXr17032 { -- }
 extern BuildLSIC { -- }
 
 fn BuildPlatform { -- }
 	DeviceNew
 		"platform" DSetName
 
-		"LIMNstation" "model" DAddProperty
+		"XR/station" "model" DAddProperty
 
 		"platform" "deviceType" DAddProperty
 
-		BuildLimn2600
+		BuildXr17032
 
 		BuildEBus
 
@@ -67,12 +67,12 @@ fn PlatformInit { -- }
 	"/platform/ebus/pboard/citron/amanatsu/mouse/0" PlatformMousePath!
 	"/platform/ebus/kinnowfb" PlatformScreenPath!
 	"/platform/ebus/pboard/citron/serial/0" PlatformSerialPath!
-	"/platform/limn2600" PlatformCPUPath!
+	"/platform/xr17032" PlatformCPUPath!
 	"/platform/ebus/ram" PlatformMemoryPath!
 	"/platform/ebus" PlatformBusPath!
 	"/platform/lsic" PlatformInterruptPath!
 
-	"LIMNstation" PlatformName!
+	"XR/station" PlatformName!
 
 	"132" PlatformDefaultScreenBG!
 	"255" PlatformDefaultScreenFG!
