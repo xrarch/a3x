@@ -6,7 +6,7 @@ Boot firmware for the XR/station architecture, written in xr17032 assembly and d
 
 Makes heavy internal use of NVRAM variables and a device tree model.
 
-![Running](https://i.imgur.com/TTYU8WT.png)
+![Running](https://raw.githubusercontent.com/xrarch/a3x/main/screenshot.png)
 
 ## Building
 
