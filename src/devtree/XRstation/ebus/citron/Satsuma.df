@@ -19,6 +19,14 @@ struct AHDB_VDB
 	4 Magic
 endstruct
 
+struct APT_VDB_VARIANT
+	15 BootCode
+	1 FFIfVariant
+	128 PartitionTable
+	4 Magic
+	16 Label
+endstruct
+
 struct AHDB_PTE
 	8 Label
 	4 Blocks
@@ -72,7 +80,11 @@ fn AHDBPartitions { id -- pcount }
 
 	if (vdbuf@ 0 AHDBRead 1 ==)
 		if (vdbuf@ AHDB_VDB_Magic + @ 0x4E4D494D ==)
-			vdbuf@ AHDB_VDB_Label + strdup "diskLabel" DAddProperty
+			if (vdbuf@ APT_VDB_VARIANT_FFIfVariant + gb 0xFF ==)
+				vdbuf@ APT_VDB_VARIANT_Label + strdup "diskLabel" DAddProperty
+			end else
+				vdbuf@ AHDB_VDB_Label + strdup "diskLabel" DAddProperty
+			end
 
 			auto i
 			0 i!
