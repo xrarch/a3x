@@ -1,17 +1,19 @@
 const NVRAMBase 0xF8001000
-const NVRAMSize 65536
+const NVRAMSize 4096
 
-const NVRAMVarCount 255
+const NVRAMVarCount 31
 
-const NVRAMMagic 0x4C001CA7
+const NVRAMMagic 0x5C001CA7
 
 struct NVRAMHeader
 	4 Magic
+	60 Padding
+	64 PermanentlyReserved // xremu stores some RTC information here...
 endstruct
 
 struct NVRAMVariable
 	32 Name
-	224 Contents
+	96 Contents
 endstruct
 
 extern NVRAMCheck { -- ok }
