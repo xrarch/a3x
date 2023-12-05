@@ -29,13 +29,11 @@ Reset:
 	mov  long [PBoardReset], t0, tmp=t1 ;reset ebus
 
 	mtcr evec,  zero ;clear exception vectors
-	mtcr fwvec, zero
 
 	la   sp, LLFWStackTop ;set stack
 
 	la   t0, ExceptionVector
 	mtcr evec,  t0 ;set exception vectors
-	mtcr fwvec, t0
 
 	;zero out bss
 	li   a0, 0
