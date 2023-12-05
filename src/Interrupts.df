@@ -41,9 +41,6 @@ setvector:
 	la   t0, exception_limn2500
 	mtcr evec, t0
 
-	la   t0, firmware_call
-	mtcr fwvec, t0
-
 	ret
 
 exception_limn2500:
@@ -123,24 +120,6 @@ exception_limn2500:
 	addi sp, sp, Context_SIZEOF
 	rfe
 
-;this global is fine because firmware calls will NEVER be nested
-savedfwcallLR:
-	.dl 0
-
-firmware_call:
-.global firmware_call
-	la   t1, savedfwcallLR
-	mov  long [t1], lr
-
-	la   t1, API
-	mov  t0, long [t1 + t0 LSH 2]
-
-	jalr lr, t0, 0
-
-	la   t0, savedfwcallLR
-	mov  lr, long [t0]
-	rfe
-
 CPUSynchronizeIcache:
 .global CPUSynchronizeIcache
 	cachei 3 ;invalidate icache, writeback dcache
@@ -152,7 +131,7 @@ table ExceptionNames
 	"Unknown0"
 	"Interrupt"
 	"Syscall"
-	"Firmware call"
+	"Unknown3"
 	"Bus error"
 	"Unknown5"
 	"Breakpoint"

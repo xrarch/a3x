@@ -33,191 +33,493 @@ a3xReturn:
 	ret
 
 .define _a3xCIC_Putc 0
-.define _a3xCIC_Getc 1
-.define _a3xCIC_Gets 2
-.define _a3xCIC_Puts 3
-.define _a3xCIC_DevTree 4
-.define _a3xCIC_Malloc 5
-.define _a3xCIC_Calloc 6
-.define _a3xCIC_Free 7
+.define _a3xCIC_Getc 4
+.define _a3xCIC_Gets 8
+.define _a3xCIC_Puts 12
+.define _a3xCIC_DevTree 16
+.define _a3xCIC_Malloc 20
+.define _a3xCIC_Calloc 24
+.define _a3xCIC_Free 28
+.define _a3xCIC_DevTreeWalk 32
+.define _a3xCIC_DeviceParent 36
+.define _a3xCIC_DeviceSelectNode 40
+.define _a3xCIC_DeviceSelect 44
+.define _a3xCIC_DeviceDGetProperty 48
+.define _a3xCIC_DeviceDGetMethod 52
+.define _a3xCIC_DeviceDCallMethod 56
+.define _a3xCIC_DeviceExit 60
+.define _a3xCIC_DeviceDSetProperty 64
+.define _a3xCIC_DeviceDCallMethodPtr 68
+.define _a3xCIC_DevIteratorInit 72
+.define _a3xCIC_DevIterate 76
+.define _a3xCIC_DeviceDGetName 80
+.define _a3xCIC_ConsoleUserOut 84
+.define _a3xCIC_DGetCurrent 88
 
-.define _a3xCIC_DevTreeWalk 8
-.define _a3xCIC_DeviceParent 9
-.define _a3xCIC_DeviceSelectNode 10
-.define _a3xCIC_DeviceSelect 11
-.define _a3xCIC_DeviceDGetProperty 12
-.define _a3xCIC_DeviceDGetMethod 13
-.define _a3xCIC_DeviceDCallMethod 14
-.define _a3xCIC_DeviceExit 15
-.define _a3xCIC_DeviceDSetProperty 16
-.define _a3xCIC_DeviceDCallMethodPtr 17
-.define _a3xCIC_DevIteratorInit 18
-.define _a3xCIC_DevIterate 19
-.define _a3xCIC_DeviceDGetName 20
+SavedS0:
+	.dl 0
 
-.define _a3xCIC_ConsoleUserOut 21
-
-.define _a3xCIC_DGetCurrent 22
+SavedLR:
+	.dl 0
 
 ; buffer maxchars --
 a3xGets:
 .global a3xGets
-	li   t0, _a3xCIC_Gets
-	fwc  _a3xCIC_Gets
+	mov  long [SavedS0], s0, tmp=t0
+	mov  long [SavedLR], lr, tmp=t0
+
+	mfcr s0, rs
+	andi t0, s0, 0xFFF8 ;disable paging and interrupts
+	mtcr rs, t0
+
+	mov  t0, long [a3xCIPtr]
+	mov  t0, long [t0 + _a3xCIC_Gets]
+	jalr lr, t0, 0
+
+	mtcr rs, s0
+
+	mov  lr, long [SavedLR]
+	mov  s0, long [SavedS0]
 	ret
 
 ; char -- 
 a3xPutc:
 .global a3xPutc
-	li   t0, _a3xCIC_Putc
-	fwc _a3xCIC_Putc
+	mov  long [SavedS0], s0, tmp=t0
+	mov  long [SavedLR], lr, tmp=t0
+
+	mfcr s0, rs
+	andi t0, s0, 0xFFF8 ;disable paging and interrupts
+	mtcr rs, t0
+
+	mov  t0, long [a3xCIPtr]
+	mov  t0, long [t0 + _a3xCIC_Putc]
+	jalr lr, t0, 0
+
+	mtcr rs, s0
+
+	mov  lr, long [SavedLR]
+	mov  s0, long [SavedS0]
 	ret
 
 ; -- char
 a3xGetc:
 .global a3xGetc
-	li   t0, _a3xCIC_Getc
-	fwc _a3xCIC_Getc
+	mov  long [SavedS0], s0, tmp=t0
+	mov  long [SavedLR], lr, tmp=t0
+
+	mfcr s0, rs
+	andi t0, s0, 0xFFF8 ;disable paging and interrupts
+	mtcr rs, t0
+
+	mov  t0, long [a3xCIPtr]
+	mov  t0, long [t0 + _a3xCIC_Getc]
+	jalr lr, t0, 0
+
+	mtcr rs, s0
+
+	mov  lr, long [SavedLR]
+	mov  s0, long [SavedS0]
 	ret
 
 ; str --
 a3xPuts:
 .global a3xPuts
-	li   t0, _a3xCIC_Puts
-	fwc _a3xCIC_Puts
+	mov  long [SavedS0], s0, tmp=t0
+	mov  long [SavedLR], lr, tmp=t0
+
+	mfcr s0, rs
+	andi t0, s0, 0xFFF8 ;disable paging and interrupts
+	mtcr rs, t0
+
+	mov  t0, long [a3xCIPtr]
+	mov  t0, long [t0 + _a3xCIC_Puts]
+	jalr lr, t0, 0
+
+	mtcr rs, s0
+
+	mov  lr, long [SavedLR]
+	mov  s0, long [SavedS0]
 	ret
 
 ; -- root dcp
 a3xAPIDevTree:
 .global a3xAPIDevTree
-	li   t0, _a3xCIC_DevTree
-	fwc _a3xCIC_DevTree
+	mov  long [SavedS0], s0, tmp=t0
+	mov  long [SavedLR], lr, tmp=t0
+
+	mfcr s0, rs
+	andi t0, s0, 0xFFF8 ;disable paging and interrupts
+	mtcr rs, t0
+
+	mov  t0, long [a3xCIPtr]
+	mov  t0, long [t0 + _a3xCIC_DevTree]
+	jalr lr, t0, 0
+
+	mtcr rs, s0
+
+	mov  lr, long [SavedLR]
+	mov  s0, long [SavedS0]
 	ret
 
 ; sz -- ptr
 a3xMalloc:
 .global a3xMalloc
-	li  t0, _a3xCIC_Malloc
-	fwc _a3xCIC_Malloc
+	mov  long [SavedS0], s0, tmp=t0
+	mov  long [SavedLR], lr, tmp=t0
+
+	mfcr s0, rs
+	andi t0, s0, 0xFFF8 ;disable paging and interrupts
+	mtcr rs, t0
+
+	mov  t0, long [a3xCIPtr]
+	mov  t0, long [t0 + _a3xCIC_Malloc]
+	jalr lr, t0, 0
+
+	mtcr rs, s0
+
+	mov  lr, long [SavedLR]
+	mov  s0, long [SavedS0]
 	ret
 
 ; sz -- ptr
 a3xCalloc:
 .global a3xCalloc
-	li  t0, _a3xCIC_Calloc
-	fwc _a3xCIC_Calloc
+	mov  long [SavedS0], s0, tmp=t0
+	mov  long [SavedLR], lr, tmp=t0
+
+	mfcr s0, rs
+	andi t0, s0, 0xFFF8 ;disable paging and interrupts
+	mtcr rs, t0
+
+	mov  t0, long [a3xCIPtr]
+	mov  t0, long [t0 + _a3xCIC_Calloc]
+	jalr lr, t0, 0
+
+	mtcr rs, s0
+
+	mov  lr, long [SavedLR]
+	mov  s0, long [SavedS0]
 	ret
 
 ; ptr -- 
 a3xFree:
 .global a3xFree
-	li  t0, _a3xCIC_Free
-	fwc _a3xCIC_Free
+	mov  long [SavedS0], s0, tmp=t0
+	mov  long [SavedLR], lr, tmp=t0
+
+	mfcr s0, rs
+	andi t0, s0, 0xFFF8 ;disable paging and interrupts
+	mtcr rs, t0
+
+	mov  t0, long [a3xCIPtr]
+	mov  t0, long [t0 + _a3xCIC_Free]
+	jalr lr, t0, 0
+
+	mtcr rs, s0
+
+	mov  lr, long [SavedLR]
+	mov  s0, long [SavedS0]
 	ret
 
 ; path -- node
 a3xDevTreeWalk:
 .global a3xDevTreeWalk
-	li  t0, _a3xCIC_DevTreeWalk
-	fwc _a3xCIC_DevTreeWalk
+	mov  long [SavedS0], s0, tmp=t0
+	mov  long [SavedLR], lr, tmp=t0
+
+	mfcr s0, rs
+	andi t0, s0, 0xFFF8 ;disable paging and interrupts
+	mtcr rs, t0
+
+	mov  t0, long [a3xCIPtr]
+	mov  t0, long [t0 + _a3xCIC_DevTreeWalk]
+	jalr lr, t0, 0
+
+	mtcr rs, s0
+
+	mov  lr, long [SavedLR]
+	mov  s0, long [SavedS0]
 	ret
 
 ; --
 a3xDeviceParent:
 .global a3xDeviceParent
-	li  t0, _a3xCIC_DeviceParent
-	fwc _a3xCIC_DeviceParent
+	mov  long [SavedS0], s0, tmp=t0
+	mov  long [SavedLR], lr, tmp=t0
+
+	mfcr s0, rs
+	andi t0, s0, 0xFFF8 ;disable paging and interrupts
+	mtcr rs, t0
+
+	mov  t0, long [a3xCIPtr]
+	mov  t0, long [t0 + _a3xCIC_DeviceParent]
+	jalr lr, t0, 0
+
+	mtcr rs, s0
+
+	mov  lr, long [SavedLR]
+	mov  s0, long [SavedS0]
 	ret
 
 ; node -- 
 a3xDeviceSelectNode:
 .global a3xDeviceSelectNode
-	li  t0, _a3xCIC_DeviceSelectNode
-	fwc _a3xCIC_DeviceSelectNode
+	mov  long [SavedS0], s0, tmp=t0
+	mov  long [SavedLR], lr, tmp=t0
+
+	mfcr s0, rs
+	andi t0, s0, 0xFFF8 ;disable paging and interrupts
+	mtcr rs, t0
+
+	mov  t0, long [a3xCIPtr]
+	mov  t0, long [t0 + _a3xCIC_DeviceSelectNode]
+	jalr lr, t0, 0
+
+	mtcr rs, s0
+
+	mov  lr, long [SavedLR]
+	mov  s0, long [SavedS0]
 	ret
 
 ; path -- 
 a3xDeviceSelect:
 .global a3xDeviceSelect
-	li  t0, _a3xCIC_DeviceSelect
-	fwc _a3xCIC_DeviceSelect
+	mov  long [SavedS0], s0, tmp=t0
+	mov  long [SavedLR], lr, tmp=t0
+
+	mfcr s0, rs
+	andi t0, s0, 0xFFF8 ;disable paging and interrupts
+	mtcr rs, t0
+
+	mov  t0, long [a3xCIPtr]
+	mov  t0, long [t0 + _a3xCIC_DeviceSelect]
+	jalr lr, t0, 0
+
+	mtcr rs, s0
+
+	mov  lr, long [SavedLR]
+	mov  s0, long [SavedS0]
 	ret
 
 ; name -- value
 a3xDGetProperty:
 .global a3xDGetProperty
-	li  t0, _a3xCIC_DeviceDGetProperty
-	fwc _a3xCIC_DeviceDGetProperty
+	mov  long [SavedS0], s0, tmp=t0
+	mov  long [SavedLR], lr, tmp=t0
+
+	mfcr s0, rs
+	andi t0, s0, 0xFFF8 ;disable paging and interrupts
+	mtcr rs, t0
+
+	mov  t0, long [a3xCIPtr]
+	mov  t0, long [t0 + _a3xCIC_DeviceDGetProperty]
+	jalr lr, t0, 0
+
+	mtcr rs, s0
+
+	mov  lr, long [SavedLR]
+	mov  s0, long [SavedS0]
 	ret
 
 ; name -- ptr
 a3xDGetMethod:
 .global a3xDGetMethod
-	li  t0, _a3xCIC_DeviceDGetMethod
-	fwc _a3xCIC_DeviceDGetMethod
+	mov  long [SavedS0], s0, tmp=t0
+	mov  long [SavedLR], lr, tmp=t0
+
+	mfcr s0, rs
+	andi t0, s0, 0xFFF8 ;disable paging and interrupts
+	mtcr rs, t0
+
+	mov  t0, long [a3xCIPtr]
+	mov  t0, long [t0 + _a3xCIC_DeviceDGetMethod]
+	jalr lr, t0, 0
+
+	mtcr rs, s0
+
+	mov  lr, long [SavedLR]
+	mov  s0, long [SavedS0]
 	ret
 
 ; name -- success
 a3xDCallMethod:
 .global a3xDCallMethod
-	li  t0, _a3xCIC_DeviceDCallMethod
-	fwc _a3xCIC_DeviceDCallMethod
+	mov  long [SavedS0], s0, tmp=t0
+	mov  long [SavedLR], lr, tmp=t0
+
+	mfcr s0, rs
+	andi t0, s0, 0xFFF8 ;disable paging and interrupts
+	mtcr rs, t0
+
+	mov  t0, long [a3xCIPtr]
+	mov  t0, long [t0 + _a3xCIC_DeviceDCallMethod]
+	jalr lr, t0, 0
+
+	mtcr rs, s0
+
+	mov  lr, long [SavedLR]
+	mov  s0, long [SavedS0]
 	ret
 
 ; -- 
 a3xDeviceExit:
 .global a3xDeviceExit
-	li  t0, _a3xCIC_DeviceExit
-	fwc _a3xCIC_DeviceExit
+	mov  long [SavedS0], s0, tmp=t0
+	mov  long [SavedLR], lr, tmp=t0
+
+	mfcr s0, rs
+	andi t0, s0, 0xFFF8 ;disable paging and interrupts
+	mtcr rs, t0
+
+	mov  t0, long [a3xCIPtr]
+	mov  t0, long [t0 + _a3xCIC_DeviceExit]
+	jalr lr, t0, 0
+
+	mtcr rs, s0
+
+	mov  lr, long [SavedLR]
+	mov  s0, long [SavedS0]
 	ret
 
 ; prop name --
 a3xDSetProperty:
 .global a3xDSetProperty
-	li  t0, _a3xCIC_DeviceDSetProperty
-	fwc _a3xCIC_DeviceDSetProperty
+	mov  long [SavedS0], s0, tmp=t0
+	mov  long [SavedLR], lr, tmp=t0
+
+	mfcr s0, rs
+	andi t0, s0, 0xFFF8 ;disable paging and interrupts
+	mtcr rs, t0
+
+	mov  t0, long [a3xCIPtr]
+	mov  t0, long [t0 + _a3xCIC_DeviceDSetProperty]
+	jalr lr, t0, 0
+
+	mtcr rs, s0
+
+	mov  lr, long [SavedLR]
+	mov  s0, long [SavedS0]
 	ret
 
 ; ptr --
 a3xDCallMethodPtr:
 .global a3xDCallMethodPtr
-	li  t0, _a3xCIC_DeviceDCallMethodPtr
-	fwc _a3xCIC_DeviceDCallMethodPtr
+	mov  long [SavedS0], s0, tmp=t0
+	mov  long [SavedLR], lr, tmp=t0
+
+	mfcr s0, rs
+	andi t0, s0, 0xFFF8 ;disable paging and interrupts
+	mtcr rs, t0
+
+	mov  t0, long [a3xCIPtr]
+	mov  t0, long [t0 + _a3xCIC_DeviceDCallMethodPtr]
+	jalr lr, t0, 0
+
+	mtcr rs, s0
+
+	mov  lr, long [SavedLR]
+	mov  s0, long [SavedS0]
 	ret
 
 ; -- iter
 a3xDevIteratorInit:
 .global a3xDevIteratorInit
-	li  t0, _a3xCIC_DevIteratorInit
-	fwc _a3xCIC_DevIteratorInit
+	mov  long [SavedS0], s0, tmp=t0
+	mov  long [SavedLR], lr, tmp=t0
+
+	mfcr s0, rs
+	andi t0, s0, 0xFFF8 ;disable paging and interrupts
+	mtcr rs, t0
+
+	mov  t0, long [a3xCIPtr]
+	mov  t0, long [t0 + _a3xCIC_DevIteratorInit]
+	jalr lr, t0, 0
+
+	mtcr rs, s0
+
+	mov  lr, long [SavedLR]
+	mov  s0, long [SavedS0]
 	ret
 
 ; iter -- iter
 a3xDevIterate:
 .global a3xDevIterate
-	li  t0, _a3xCIC_DevIterate
-	fwc _a3xCIC_DevIterate
+	mov  long [SavedS0], s0, tmp=t0
+	mov  long [SavedLR], lr, tmp=t0
+
+	mfcr s0, rs
+	andi t0, s0, 0xFFF8 ;disable paging and interrupts
+	mtcr rs, t0
+
+	mov  t0, long [a3xCIPtr]
+	mov  t0, long [t0 + _a3xCIC_DevIterate]
+	jalr lr, t0, 0
+
+	mtcr rs, s0
+
+	mov  lr, long [SavedLR]
+	mov  s0, long [SavedS0]
 	ret
 
 ; -- name
 a3xDGetName:
 .global a3xDGetName
-	li  t0, _a3xCIC_DeviceDGetName
-	fwc _a3xCIC_DeviceDGetName
+	mov  long [SavedS0], s0, tmp=t0
+	mov  long [SavedLR], lr, tmp=t0
+
+	mfcr s0, rs
+	andi t0, s0, 0xFFF8 ;disable paging and interrupts
+	mtcr rs, t0
+
+	mov  t0, long [a3xCIPtr]
+	mov  t0, long [t0 + _a3xCIC_DeviceDGetName]
+	jalr lr, t0, 0
+
+	mtcr rs, s0
+
+	mov  lr, long [SavedLR]
+	mov  s0, long [SavedS0]
 	ret
 
 ; --
 a3xConsoleUserOut:
 .global a3xConsoleUserOut
-	li  t0, _a3xCIC_ConsoleUserOut
-	fwc _a3xCIC_ConsoleUserOut
+	mov  long [SavedS0], s0, tmp=t0
+	mov  long [SavedLR], lr, tmp=t0
+
+	mfcr s0, rs
+	andi t0, s0, 0xFFF8 ;disable paging and interrupts
+	mtcr rs, t0
+
+	mov  t0, long [a3xCIPtr]
+	mov  t0, long [t0 + _a3xCIC_ConsoleUserOut]
+	jalr lr, t0, 0
+
+	mtcr rs, s0
+
+	mov  lr, long [SavedLR]
+	mov  s0, long [SavedS0]
 	ret
 
 ; -- current
 a3xDGetCurrent:
 .global a3xDGetCurrent
-	li  t0, _a3xCIC_DGetCurrent
-	fwc _a3xCIC_DGetCurrent
+	mov  long [SavedS0], s0, tmp=t0
+	mov  long [SavedLR], lr, tmp=t0
+
+	mfcr s0, rs
+	andi t0, s0, 0xFFF8 ;disable paging and interrupts
+	mtcr rs, t0
+
+	mov  t0, long [a3xCIPtr]
+	mov  t0, long [t0 + _a3xCIC_DGetCurrent]
+	jalr lr, t0, 0
+
+	mtcr rs, s0
+
+	mov  lr, long [SavedLR]
+	mov  s0, long [SavedS0]
 	ret
 
 "
