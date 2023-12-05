@@ -21,6 +21,74 @@
 
 .section text
 
+;this MUST be page-aligned!
+
+ExceptionHandlers:
+;vector 0 - nothing
+	j    ExceptionVector
+
+.align 256
+;vector 1 - interrupt
+	j    ExceptionVector
+
+.align 256
+;vector 2 - syscall
+	j    ExceptionVector
+
+.align 256
+;vector 3 - nothing
+	j    ExceptionVector
+
+.align 256
+;vector 4 - bus error
+	j    ExceptionVector
+
+.align 256
+;vector 5 - NMI
+	j    ExceptionVector
+
+.align 256
+;vector 6 - breakpoint
+	j    ExceptionVector
+
+.align 256
+;vector 7 - illegal instruction
+	j    ExceptionVector
+
+.align 256
+;vector 8 - privilege violation
+	j    ExceptionVector
+
+.align 256
+;vector 9 - unaligned address
+	j    ExceptionVector
+
+.align 256
+;vector 10 - nothing
+	j    ExceptionVector
+
+.align 256
+;vector 11 - nothing
+	j    ExceptionVector
+
+.align 256
+;vector 12 - page fault read
+	j    ExceptionVector
+
+.align 256
+;vector 13 - page fault write
+	j    ExceptionVector
+
+.align 256
+;vector 14 - nothing
+	j    ExceptionVector
+
+.align 256
+;vector 15 - nothing
+	j    ExceptionVector
+
+.align 256
+
 Reset:
 .global Reset
 	cachei 5 ;invalidate dcache and icache (but don't writeback dcache)
@@ -28,12 +96,10 @@ Reset:
 	la   t0, PBoardResetMagic
 	mov  long [PBoardReset], t0, tmp=t1 ;reset ebus
 
-	mtcr evec,  zero ;clear exception vectors
-
 	la   sp, LLFWStackTop ;set stack
 
-	la   t0, ExceptionVector
-	mtcr evec,  t0 ;set exception vectors
+	la   t0, ExceptionHandlers
+	mtcr eb, t0 ;set exception vectors
 
 	;zero out bss
 	li   a0, 0
@@ -81,5 +147,5 @@ HLRString:
 
 .section bss
 
-.bytes 4096 0
+.bytes 1024 0
 LLFWStackTop:

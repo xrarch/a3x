@@ -81,8 +81,3 @@ InfoString:
 
 ExceptionString:
 	.ds "An unexpected exception occurred.\n\0"
-
-.section bss
-
-.bytes 1024 0
-ExceptionStackTop:

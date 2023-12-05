@@ -9,7 +9,7 @@ all: llfw.bin
 
 llfw.bin: $(OBJ)
 	$(LD) llfw.bin $(OBJ)
-	$(OBJTOOL) move llfw.bin text=0xFFFE0000,data=text+text_size,bss=0x1000
+	$(OBJTOOL) move llfw.bin text=0xFFFE0000,data=text+text_size,bss=0x3000
 	cp llfw.bin llfw.LOFF
 	$(OBJTOOL) binary -nobss llfw.bin
 

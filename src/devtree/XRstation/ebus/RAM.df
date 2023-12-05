@@ -17,8 +17,8 @@ const RAM256SlotSz    0x2000000
 buffer FWMemDescriptor MemoryDescriptor_SIZEOF
 
 fn BuildMemory { -- }
-	0x1000         FWMemDescriptor MemoryDescriptor_BaseAddress + !
-	FWEND 0x1000 - FWMemDescriptor MemoryDescriptor_Size + !
+	0x2000         FWMemDescriptor MemoryDescriptor_BaseAddress + !
+	FWEND 0x2000 - FWMemDescriptor MemoryDescriptor_Size + !
 	MEMORYRESERVED FWMemDescriptor MemoryDescriptor_Type + !
 
 	DeviceNew

@@ -9,6 +9,24 @@ public SavedState
 extern setvector { -- }
 
 fn InterruptsInit { -- }
+	auto i
+	0 i!
+
+	auto ptr
+	0x2000 ptr!
+
+	auto jalinstruction
+	6 jalinstruction!
+
+	pointerof exception_limn2500 2 >> 3 << jalinstruction |=
+
+	while (i@ 16 <)
+		jalinstruction@ ptr@!
+
+		256 ptr +=
+		1 i +=
+	end
+
 	setvector
 end
 
@@ -38,8 +56,8 @@ endstruct
 asm "
 
 setvector:
-	la   t0, exception_limn2500
-	mtcr evec, t0
+	li   t0, 0x00002000
+	mtcr eb, t0
 
 	ret
 
