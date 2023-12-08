@@ -91,7 +91,11 @@ ExceptionHandlers:
 
 Reset:
 .global Reset
-	cachei 5 ;invalidate dcache and icache (but don't writeback dcache)
+	; invalidate caches
+
+	li   t0, 3
+	mtcr icachectrl, t0
+	mtcr dcachectrl, t0
 
 	la   t0, PBoardResetMagic
 	mov  long [PBoardReset], t0, tmp=t1 ;reset ebus
@@ -121,7 +125,10 @@ Reset:
 	la   a0, HLRString
 	jal  Puts
 
-	cachei 3
+	; invalidate icache again
+
+	li   t0, 3
+	mtcr icachectrl, t0
 
 	;make phony pointer to last frame as defined by limn2500 abi
 	;for the benefit of stack traces

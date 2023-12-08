@@ -140,7 +140,9 @@ exception_limn2500:
 
 CPUSynchronizeIcache:
 .global CPUSynchronizeIcache
-	cachei 3 ;invalidate icache, writeback dcache
+	wmb
+	li   t0, 3
+	mtcr icachectrl, t0
 	ret
 
 "
