@@ -97,6 +97,9 @@ Reset:
 	mtcr icachectrl, t0
 	mtcr dcachectrl, t0
 
+	mfcr t0, whami
+	bne  t0, .no_multiprocessor_yet_bad_xrstation
+
 	la   t0, PBoardResetMagic
 	mov  long [PBoardReset], t0, tmp=t1 ;reset ebus
 
@@ -138,6 +141,10 @@ Reset:
 	mov  long [sp + 4], 0
 
 	jalr lr, s0, 0 ;jump into bios entry point
+
+.no_multiprocessor_yet_bad_xrstation:
+	hlt
+	b    .no_multiprocessor_yet_bad_xrstation
 
 Hang:
 	b    Hang
