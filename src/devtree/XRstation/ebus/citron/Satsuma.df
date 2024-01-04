@@ -10,8 +10,8 @@ const AHDBCmdRead 0x2
 const AHDBCmdWrite 0x3
 const AHDBCmdInfo 0x4
 const AHDBCmdPoll 0x5
-
-const AHDBBuffer 0xF8020000
+const AHDBCmdTransferCount 0x8
+const AHDBCmdTransferAddress 0x9
 
 struct AHDB_VDB
 	16 Label
@@ -33,13 +33,15 @@ struct AHDB_PTE
 	4 Status
 endstruct
 
-fn private AHDBTransferBlock { src dest -- }
-	dest@ src@ 512 memcpy
-end
-
 fn AHDBBootable { part id -- }
+	auto realbuf
+	1024 Malloc realbuf!
+
+	auto nofree
+	0 nofree!
+
 	auto brecord
-	512 Malloc brecord!
+	realbuf@ 511 + 511 ~ & brecord!
 
 	if (brecord@ 1 AHDBRead 1 ==)
 		(* is it a valid boot record? *)
@@ -48,13 +50,9 @@ fn AHDBBootable { part id -- }
 
 			brecord@ BootRecord_OSLabel + strdup "osLabel" DAddProperty
 
-			auto badge
-			512 Malloc badge!
-
-			if (badge@ 2 AHDBRead 1 ==)
-				badge@ "osBadge" DAddProperty
-			end else
-				badge@ Free
+			if (brecord@ 2 AHDBRead 1 ==)
+				brecord@ "osBadge" DAddProperty
+				1 nofree!
 			end
 
 			AddBootable
@@ -69,12 +67,17 @@ fn AHDBBootable { part id -- }
 		pc@ id@ "dks%d/%l: couldn't read boot record\n" Printf
 	end
 
-	brecord@ Free
+	if (nofree@ ~~)
+		realbuf@ Free
+	end
 end
 
 fn AHDBPartitions { id -- pcount }
+	auto realbuf
+	1024 Malloc realbuf!
+
 	auto vdbuf
-	512 Malloc vdbuf!
+	realbuf@ 511 + 511 ~ & vdbuf!
 
 	0 pcount!
 
@@ -148,7 +151,7 @@ fn AHDBPartitions { id -- pcount }
 		id@ "dks%d: couldn't read blk0\n" Printf
 	end
 
-	vdbuf@ Free
+	realbuf@ Free
 end
 
 fn BuildSatsuma { -- }
@@ -215,7 +218,14 @@ fn private AHDBReadM { argvt argcn -- out1 out2 out3 }
 	AHDBRead out1!
 end
 
+extern CPUFlushDcache { -- }
+extern CPUFlushWriteBuffer { -- }
+
 fn AHDBRead { ptr block -- ok }
+	if (ptr@ 511 &)
+		ptr@ "Read Non sector aligned pointer %x\n" Problem
+	end
+
 	auto rs
 	InterruptDisable rs!
 
@@ -228,12 +238,18 @@ fn AHDBRead { ptr block -- ok }
 
 	id@ AHDBSelect
 
+	ptr@ AHDBPortA DCitronOutl
+	AHDBCmdTransferAddress AHDBCmdPort DCitronCommand
+
+	1 AHDBPortA DCitronOutl
+	AHDBCmdTransferCount AHDBCmdPort DCitronCommand
+
 	block@ AHDBPortA DCitronOutl
 	AHDBCmdRead AHDBCmdPort DCitronCommand
 
-	AHDBBuffer id@ 512 * + ptr@ AHDBTransferBlock
-
 	rs@ InterruptRestore
+
+	CPUFlushDcache
 
 	1 ok!
 end
@@ -245,6 +261,12 @@ fn private AHDBWriteM { argvt argcn -- out1 out2 out3 }
 end
 
 fn AHDBWrite { ptr block -- ok }
+	if (ptr@ 511 &)
+		ptr@ "Write Non sector aligned pointer %x\n" Problem
+	end
+
+	CPUFlushWriteBuffer
+
 	auto rs
 	InterruptDisable rs!
 
@@ -257,7 +279,11 @@ fn AHDBWrite { ptr block -- ok }
 
 	id@ AHDBSelect
 
-	ptr@ AHDBBuffer id@ 512 * + AHDBTransferBlock
+	ptr@ AHDBPortA DCitronOutl
+	AHDBCmdTransferAddress AHDBCmdPort DCitronCommand
+
+	1 AHDBPortA DCitronOutl
+	AHDBCmdTransferCount AHDBCmdPort DCitronCommand
 
 	block@ AHDBPortA DCitronOutl
 	AHDBCmdWrite AHDBCmdPort DCitronCommand

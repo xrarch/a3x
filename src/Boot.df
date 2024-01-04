@@ -36,22 +36,13 @@ fn AddBootable { -- }
 	1 NumBootableDevs +=
 end
 
-fn DevBootable { devnode -- bootable }
-	auto brecord
-
-	devnode@ DevBootableR bootable! brecord!
-
-	if (bootable@ 1 ==)
-		brecord@ Free
-	end
-end
-
-fn DevBootableR { devnode -- brecord bootable }
+fn DevBootableR { devnode -- realbuf brecord bootable }
 	if (devnode@ 0 ==)
 		7 bootable! return
 	end
 
-	512 Malloc brecord!
+	1024 Malloc realbuf!
+	realbuf@ 511 + 511 ~ & brecord!
 
 	auto ok
 	auto dok
@@ -61,17 +52,17 @@ fn DevBootableR { devnode -- brecord bootable }
 	DeviceExit
 
 	if (ok@ ~~)
-		brecord@ Free
+		realbuf@ Free
 		2 bootable! return (* not supported *)
 	end
 
 	if (dok@ ERR ==)
-		brecord@ Free
+		realbuf@ Free
 		3 bootable! return (* failed to load boot record *)
 	end
 
 	if (brecord@ BootRecord_Magic + @ BootMagic == ~~)
-		brecord@ Free
+		realbuf@ Free
 		4 bootable! return (* invalid boot record *)
 	end
 
@@ -123,8 +114,9 @@ fn BootNode { devnode args -- ok }
 	ConsoleUserOut
 
 	auto brecord
+	auto realbuf
 
-	devnode@ DevBootableR ok! brecord!
+	devnode@ DevBootableR ok! brecord! realbuf!
 
 	if (ok@ 1 ~=)
 		return
@@ -144,7 +136,7 @@ fn BootNode { devnode args -- ok }
 
 	pa@ brecord@ BootRecord_OSLabel + "\[[33mbooting: \[[0m\[[94m%s (%s)\[[0m\n" Printf
 
-	brecord@ Free
+	realbuf@ Free
 
 	auto ptr
 	BootBottom ptr!

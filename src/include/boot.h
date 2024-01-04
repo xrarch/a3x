@@ -20,10 +20,6 @@ externptr BootableDevs (* table *)
 
 externptr NumBootableDevs (* var *)
 
-extern DevBootable { devnode -- bootable }
-
-extern DevBootableR { devnode -- brecord bootable }
-
 extern AutoBoot { -- ok }
 
 extern BootNode { devnode args -- ok }
