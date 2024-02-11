@@ -1,7 +1,22 @@
 #include "<df>/dragonfruit.h"
 #include "<inc>/a3x.h"
 
+struct LSIC
+	4 Mask00_31
+	4 Mask32_63
+	4 Interrupting00_31
+	4 Interrupting32_63
+	4 ClaimComplete
+	4 IPL
+endstruct
+
 fn BuildLSIC { -- }
+	0 0xF8030000 LSIC_Mask00_31 + !
+	0 0xF8030000 LSIC_Mask32_63 + !
+	0 0xF8030000 LSIC_Interrupting00_31 + !
+	0 0xF8030000 LSIC_Interrupting32_63 + !
+	63 0xF8030000 LSIC_IPL + !
+
 	DeviceNew
 		"lsic" DSetName
 
