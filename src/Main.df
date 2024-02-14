@@ -23,9 +23,7 @@ fn CheckForInstantBoot { -- }
 	auto r
 	dev@ "" BootNode r!
 
-	[r@]BootErrors@ "boot: %s\n" Printf
-
-	Reset
+	[r@]BootErrors@ "Failed to boot: %s\n" Problem
 end
 
 fn Main { -- }
