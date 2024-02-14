@@ -1,7 +1,36 @@
 #include "<df>/dragonfruit.h"
 #include "<inc>/a3x.h"
 
+fn CheckForInstantBoot { -- }
+	auto bootvar
+	"instant-boot" NVRAMGetVar bootvar!
+
+	if (bootvar@ ~~)
+		return
+	end
+
+	"instant-boot" NVRAMDeleteVar
+
+	auto dev
+	bootvar@ DevTreeWalk dev!
+
+	if (dev@ 0 ==)
+		bootvar@ "bad device path %s.\n" Printf
+
+		Reset
+	end
+
+	auto r
+	dev@ "" BootNode r!
+
+	[r@]BootErrors@ "boot: %s\n" Printf
+
+	Reset
+end
+
 fn Main { -- }
+	CheckForInstantBoot
+
 	auto kbn
 	"/keyboard" DevTreeWalk kbn!
 	
