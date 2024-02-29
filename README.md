@@ -1,8 +1,8 @@
 # XR/STATION Firmware
 
-Abbreviated frequently as a3x.
+Abbreviated frequently as a3x. Retired in favor of [a4x](https://github.com/xrarch/a4x) in February 2024 after 5 years of faithful service to the project.
 
-Boot firmware for the XR/station architecture, written in xr17032 assembly and dragonfruit.
+Old boot firmware for the XR/station architecture, written in xr17032 assembly and dragonfruit.
 
 Makes heavy internal use of NVRAM variables and a device tree model.
 
