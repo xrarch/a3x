@@ -20,8 +20,11 @@ fn CheckForInstantBoot { -- }
 		Reset
 	end
 
+	auto args
+	"" "boot-args" NVRAMDefaultGetVar args!
+
 	auto r
-	dev@ "" BootNode r!
+	dev@ args@ BootNode r!
 
 	[r@]BootErrors@ "Failed to boot: %s\n" Problem
 end
