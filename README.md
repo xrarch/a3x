@@ -8,6 +8,10 @@ Makes heavy internal use of NVRAM variables and a device tree model.
 
 ![Running](https://raw.githubusercontent.com/xrarch/a3x/master/screenshot.png)
 
+## License
+
+a3x is licensed under GPLv3. See LICENSE.
+
 ## Building
 
 Download the XR/station sdk, and place it in a folder titled `sdk` in your current directory.
