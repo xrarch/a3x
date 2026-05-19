@@ -39,6 +39,8 @@ fn BuildEBus { -- }
 	DeviceExit
 end
 
+var ProbeDest 0
+
 (* find first board of id *)
 fn EBusFindFirstBoard { id -- slot }
 	auto i
@@ -48,12 +50,21 @@ fn EBusFindFirstBoard { id -- slot }
 		auto bp
 		i@ EBusSlotSpace * EBusSlotsStart + bp!
 
-		if (bp@@ EBusBoardMagic ==)
-			if (bp@ 4 + @ id@ ==)
-				i@ slot!
-				return
+		0 BusErrorOccurred!
+		1 BusErrorExpected!
+
+		bp@@ ProbeDest!
+
+		if (BusErrorOccurred@ ~~)
+			if (bp@@ EBusBoardMagic ==)
+				if (bp@ 4 + @ id@ ==)
+					i@ slot!
+					return
+				end
 			end
 		end
+
+		0 BusErrorExpected!
 
 		1 i +=
 	end

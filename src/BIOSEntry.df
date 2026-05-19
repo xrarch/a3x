@@ -30,9 +30,9 @@ fn BIOSEntry { -- }
 
 	PlatformName@ "\nWelcome to %s\n" Printf
 
-	DeviceInit
-
 	InterruptsInit
+
+	DeviceInit
 
 	TestMemory
 
